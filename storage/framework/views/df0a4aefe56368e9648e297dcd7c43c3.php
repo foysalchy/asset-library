@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
-    <title><?php echo e($title ?? 'Dashboard'); ?> | TailAdmin - Laravel Tailwind CSS Admin Dashboard Template</title>
+    <title><?php echo e($title ?? 'Asset Library'); ?> |  Admin Dashboard Template</title>
 
     <!-- Scripts -->
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
@@ -149,6 +149,26 @@
         </div>
 
     </div>
+    <?php if (isset($component)) { $__componentOriginalb7eac87efb73c0c2c26fe03ec80faafd = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalb7eac87efb73c0c2c26fe03ec80faafd = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.delete-modal','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('delete-modal'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalb7eac87efb73c0c2c26fe03ec80faafd)): ?>
+<?php $attributes = $__attributesOriginalb7eac87efb73c0c2c26fe03ec80faafd; ?>
+<?php unset($__attributesOriginalb7eac87efb73c0c2c26fe03ec80faafd); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalb7eac87efb73c0c2c26fe03ec80faafd)): ?>
+<?php $component = $__componentOriginalb7eac87efb73c0c2c26fe03ec80faafd; ?>
+<?php unset($__componentOriginalb7eac87efb73c0c2c26fe03ec80faafd); ?>
+<?php endif; ?>
 
 </body>
 

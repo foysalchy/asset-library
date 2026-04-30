@@ -46,7 +46,7 @@
                 <div class="lg:col-span-5 bg-white shadow-sm border border-gray-200 flex flex-col">
                     <!-- Buttons Top Area -->
                     <div class="p-6 border-b border-gray-100 flex gap-3">
-                        <a href="{{ $asset->file_url }}" download
+                        <a href="{{ route('drive.file.stream', ['type' => 'asset', 'id' => $asset->id]) }}" download
                             class="flex-1 bg-[#0071c5] text-white font-bold py-3 px-6 flex items-center justify-center gap-2 hover:bg-[#005ea3] transition-all">
                             <i class="fa-solid fa-download"></i> Download
                         </a>

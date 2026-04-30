@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DriveUploadController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\Frontend\FrontendAuthController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SiteSettingController;
@@ -34,8 +35,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 // ── Admin ────────────────────────────────────────────────────────────
 Route::middleware('auth')->prefix('admin')->group(function () {
 
-    Route::get('/drive/file/{type}/{id}', [FileController::class, 'stream'])
-        ->name('drive.file.stream');
+
 
 
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -122,6 +122,8 @@ Route::prefix('')->group(function () {
         Route::get('/asset/{slug}', [HomeController::class, 'assetdetails'])->name('asset.details');
         Route::get('filter', [HomeController::class, 'filter'])->name('home.filter');
         Route::post('frontend/logout', [FrontendAuthController::class, 'logout'])->name('frontend.logout');
+        Route::get('/drive/file/{type}/{id}', [FileController::class, 'stream'])
+            ->name('drive.file.stream');
     });
 
     Route::get('settings', [SiteSettingController::class, 'index'])->name('settings.index');
@@ -133,6 +135,6 @@ Route::prefix('')->group(function () {
 
     Route::post('/drive/upload/complete', [DriveUploadController::class, 'completeUpload'])
         ->name('drive.upload.complete');
-        Route::post('/drive/upload/resolve', [DriveUploadController::class, 'resolveFileId'])
-    ->name('drive.upload.resolve');
+    Route::post('/drive/upload/resolve', [DriveUploadController::class, 'resolveFileId'])
+        ->name('drive.upload.resolve');
 });

@@ -45,7 +45,6 @@ class Campaign extends Model
         static::creating(function (Campaign $c) {
             if (empty($c->slug)) $c->slug = Str::slug($c->title);
         });
-      
     }
 
     public function creator()
@@ -63,13 +62,13 @@ class Campaign extends Model
         };
     }
 
-public function getThumbnailUrlAttribute(): ?string
-{
-    if (!$this->thumbnail) return null;
-    
-    $path = ltrim(str_replace('public/', '', $this->thumbnail), '/');
-    return Storage::disk('public')->url($path);
-}
+    public function getThumbnailUrlAttribute(): ?string
+    {
+        if (!$this->thumbnail) return null;
+
+        $path = ltrim(str_replace('public/', '', $this->thumbnail), '/');
+        return Storage::disk('public')->url($path);
+    }
 
     public function getFileUrlAttribute(): ?string
     {
@@ -79,5 +78,15 @@ public function getThumbnailUrlAttribute(): ?string
     public function getFileNameAttribute(): ?string
     {
         return $this->file ? basename($this->file) : null;
+    }
+    public function downloadLogs()
+    {
+        return $this->hasMany(DownloadLog::class, 'model_id')
+            ->where('model', class_basename($this));
+    }
+
+    public function getTotalDownloadsAttribute(): int
+    {
+        return $this->downloadLogs()->sum('count');
     }
 }

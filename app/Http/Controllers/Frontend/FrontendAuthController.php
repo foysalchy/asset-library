@@ -16,7 +16,7 @@ class FrontendAuthController extends Controller
         if (Auth::check()) return redirect()->route('frontend.dashboard');
         return view('frontend.auth.signup');
     }
-
+ 
     public function signup(Request $request)
     {
         $request->validate([

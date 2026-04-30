@@ -75,8 +75,8 @@
                 <a href="#"
                     class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
 
-                    @if (Auth::user()->getAttributes()['avator'])
-                        <img src="{{ Auth::user()->avator }}" alt="Profile"
+                    @if (Auth::user()->getAttributes()['avatar'])
+                        <img src="{{ Auth::user()->avatar }}" alt="Profile"
                             class="w-6 h-6 rounded-full object-cover border border-white/50">
                     @else
                         <img src="{{ asset('images/user/user-36.jpg') }}" alt="Profile"
