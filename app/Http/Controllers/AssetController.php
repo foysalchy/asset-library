@@ -7,12 +7,16 @@ use App\Models\Asset;
 use App\Models\AssetMedia;
 use App\Models\AssetType;
 use App\Models\Project;
+use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class AssetController extends Controller
 {
+    public function __construct(
+        private ActivityLogService $activityLog
+    ) {}
     public function index(Request $request)
     {
         $query = Asset::query()->with('project', 'assetType', 'creator');
@@ -61,10 +65,13 @@ class AssetController extends Controller
 
         $validated['created_by'] = auth()->id();
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
-
+        if ($request->filled('drive_file_id')) {
+            $validated['file_path'] = 'drive:' . $request->drive_file_id;
+        }
         $asset = Asset::create($validated);
 
         $this->syncMedia($request, $asset);
+        $this->activityLog->log('created', $asset, "Created asset: {$asset->title}");
 
         return redirect()->route('assets.show', $asset)->with('success', 'Asset created successfully.');
     }
@@ -88,13 +95,16 @@ class AssetController extends Controller
     {
         $validated = $this->validateAsset($request, $asset->id);
 
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            FileUploadHelper::deleteFile($asset->file_path);
-            $validated['file_path']          = FileUploadHelper::uploadFile($file);
-            $validated['file_original_name'] = $file->getClientOriginalName();
-            $validated['file_mime_type']     = $file->getMimeType();
-            $validated['file_size']          = $file->getSize();
+        // File — Google Drive (Resumable Upload)
+        if ($request->filled('drive_file_id')) {
+            // নতুন file আলাদা হলে পুরনোটা delete করো
+            if ($asset->file_path && $asset->file_path !== 'drive:' . $request->drive_file_id) {
+                FileUploadHelper::deleteFile($asset->file_path);
+            }
+            $validated['file_path']          = 'drive:' . $request->drive_file_id;
+            $validated['file_original_name'] = $request->drive_file_name;
+            $validated['file_mime_type']     = $request->drive_file_mime;
+            $validated['file_size']          = $request->drive_file_size;
         } elseif ($request->boolean('remove_file')) {
             FileUploadHelper::deleteFile($asset->file_path);
             $validated['file_path']          = null;
@@ -104,21 +114,29 @@ class AssetController extends Controller
         }
 
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
-        $asset->update($validated);
 
+        $old = $asset->only(['title', 'asset_id_code', 'project_id', 'asset_type_id']);
+        $asset->update($validated);
         $this->syncMedia($request, $asset);
+        $new = $asset->only(['title', 'asset_id_code', 'project_id', 'asset_type_id']);
+
+        $this->activityLog->log('updated', $asset, "Updated asset: {$asset->title}", [
+            'before' => $old,
+            'after'  => $new,
+        ]);
 
         return redirect()->route('assets.show', $asset)->with('success', 'Asset updated successfully.');
     }
-
     public function destroy(Asset $asset)
     {
         foreach ($asset->media as $media) {
-            FileUploadHelper::deleteFile($media->file_path);
+            FileUploadHelper::deleteImage($media->file_path);
         }
 
         FileUploadHelper::deleteFile($asset->file_path);
         $asset->delete();
+
+        $this->activityLog->log('deleted', $asset, "Deleted asset: {$asset->title}");
 
         return redirect()->route('assets.index')->with('success', 'Asset deleted successfully.');
     }
@@ -127,7 +145,7 @@ class AssetController extends Controller
 
     public function destroyMedia(AssetMedia $media)
     {
-        FileUploadHelper::deleteFile($media->file_path);
+        FileUploadHelper::deleteImage($media->file_path);
         $media->delete();
 
         return response()->json(['success' => true]);
@@ -159,7 +177,7 @@ class AssetController extends Controller
                 $isLocal   = str_starts_with($mime, 'image') || str_starts_with($mime, 'video');
                 $mediaType = str_starts_with($mime, 'video') ? 'video' : 'image';
 
-         
+
                 $path = $isLocal
                     ? FileUploadHelper::uploadImage($file, 'assets/media')
                     : FileUploadHelper::uploadFile($file, 'assets/media');
@@ -179,6 +197,7 @@ class AssetController extends Controller
     private function validateAsset(Request $request, ?string $ignoreId = null): array
     {
         return $request->validate([
+            'drive_file_id' => ['nullable', 'string'],
             'project_id'          => ['required', 'exists:projects,id'],
             'asset_type_id'       => ['required', 'exists:asset_types,id'],
             'title'               => ['required', 'string', 'max:255'],

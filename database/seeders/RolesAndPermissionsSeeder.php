@@ -45,6 +45,7 @@ class RolesAndPermissionsSeeder extends Seeder
             ['name' => 'roles.delete',       'label' => 'Delete Roles',       'group' => 'Roles'],
 
             ['name' => 'activity_logs.view', 'label' => 'View Activity Logs', 'group' => 'Logs'],
+            ['name' => 'settings.manage',    'label' => 'Manage Settings',    'group' => 'Settings'],
         ];
 
         foreach ($permissions as $permission) {

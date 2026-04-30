@@ -64,7 +64,9 @@ class CampaignController extends Controller
         if (empty($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['title']);
         }
-
+        if ($request->filled('drive_file_id')) {
+            $validated['file'] = 'drive:' . $request->drive_file_id;
+        }
         $campaign = Campaign::create($validated);
         $this->activityLog->log('created', $campaign, "Created campaign: {$campaign->title}");
 
@@ -83,6 +85,8 @@ class CampaignController extends Controller
         return view('campaigns.edit', compact('campaign', 'projects'));
     }
 
+
+
     public function update(Request $request, Campaign $campaign)
     {
         $validated = $this->validateCampaign($request, $campaign->id);
@@ -96,10 +100,13 @@ class CampaignController extends Controller
             $validated['thumbnail'] = null;
         }
 
-        // File — Google Drive
-        if ($request->hasFile('file')) {
-            FileUploadHelper::deleteFile($campaign->file);
-            $validated['file'] = FileUploadHelper::uploadFile($request->file('file'));
+        // File — Google Drive (Resumable Upload)
+        if ($request->filled('drive_file_id')) {
+            // নতুন file আলাদা হলে পুরনোটা delete করো
+            if ($campaign->file && $campaign->file !== 'drive:' . $request->drive_file_id) {
+                FileUploadHelper::deleteFile($campaign->file);
+            }
+            $validated['file'] = 'drive:' . $request->drive_file_id;
         } elseif ($request->boolean('remove_file')) {
             FileUploadHelper::deleteFile($campaign->file);
             $validated['file'] = null;
@@ -111,6 +118,7 @@ class CampaignController extends Controller
         $old = $campaign->only(['title', 'status', 'is_featured']);
         $campaign->update($validated);
         $new = $campaign->only(['title', 'status', 'is_featured']);
+
         $this->activityLog->log('updated', $campaign, "Updated campaign: {$campaign->title}", [
             'before' => $old,
             'after'  => $new,
@@ -133,6 +141,7 @@ class CampaignController extends Controller
     private function validateCampaign(Request $request, ?int $ignoreId = null): array
     {
         return $request->validate([
+            'drive_file_id' => ['nullable', 'string'],
             'title'        => ['required', 'string', 'max:255'],
             'slug'         => ['nullable', 'string', 'max:255', Rule::unique('campaigns', 'slug')->ignore($ignoreId)],
             'project_id'   => ['required', 'exists:projects,id'],
