@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -84,5 +85,13 @@ class User extends Authenticatable
             'inactive' => 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
             default    => 'bg-gray-100 text-gray-600',
         };
+    }
+    public function getAvatorAttribute($value): string
+    {
+        if ($value) {
+            return Storage::url($value);
+        }
+
+        return asset('assets/images/default-user.png');
     }
 }

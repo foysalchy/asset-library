@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>" class="h-full">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+     <meta name="description" content="Explore our Asset">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+    <title><?php echo e($setup->title ?? 'Intel'); ?></title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="">
+     <!-- Outfit Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        media="print" onload="this.media='all' rel="stylesheet" />
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        media="print" onload="this.media='all'">
+
+
+    <!-- Scripts -->
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+
+</head>
+
+<body>
+     <?php echo $__env->make('frontend.partials.header', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
+    <!-- Page Content Area -->
+    <main class="bg-[#f9f9fb]  ">
+        <?php echo $__env->yieldContent('content'); ?>
+    </main>
+
+    <!-- FOOTER -->
+    <?php echo $__env->make('frontend.partials.footer', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
+</body>
+
+<?php echo $__env->yieldPushContent('scripts'); ?>
+
+</html>
+<?php /**PATH C:\laragon\www\asset-library\resources\views/frontend/layouts/font.blade.php ENDPATH**/ ?>
