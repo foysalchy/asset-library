@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
 </head>
 
 <body class="bg-gray-50 dark:bg-gray-950 min-h-screen flex items-center justify-center p-4">
 
     <div class="w-full max-w-md">
 
-        {{-- Logo --}}
+        
         <div class="flex justify-center mb-8">
             <div class="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center">
                 <svg width="24" height="24" viewBox="0 0 20 20" fill="white">
@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        {{-- Card --}}
+        
         <div class="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
 
             <div class="mb-6">
@@ -29,31 +29,38 @@
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Enter your credentials to continue</p>
             </div>
 
-            {{-- Error --}}
-            @if($errors->any())
+            
+            <?php if($errors->any()): ?>
             <div class="mb-5 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 dark:border-red-800 dark:bg-red-900/20">
                 <svg class="shrink-0 text-red-500 mt-0.5" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" />
                 </svg>
-                <p class="text-sm text-red-700 dark:text-red-400">{{ $errors->first() }}</p>
+                <p class="text-sm text-red-700 dark:text-red-400"><?php echo e($errors->first()); ?></p>
             </div>
-            @endif
+            <?php endif; ?>
 
-            <form action="{{ route('login') }}" method="POST">
-                @csrf
+            <form action="<?php echo e(route('signin')); ?>" method="POST">
+                <?php echo csrf_field(); ?>
                 <div class="space-y-5">
 
-                    {{-- Email --}}
+                    
                     <div>
                         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                             Email <span class="text-red-500">*</span>
                         </label>
-                        <input type="email" name="email" value="{{ old('email') }}"
+                        <input type="email" name="email" value="<?php echo e(old('email')); ?>"
                             placeholder="info@example.com" autofocus
-                            class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('email') border-red-400 dark:border-red-500 @enderror" />
+                            class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-400 dark:border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" />
                     </div>
 
-                    {{-- Password --}}
+                    
                     <div>
                         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                             Password <span class="text-red-500">*</span>
@@ -62,7 +69,14 @@
                             <input :type="show ? 'text' : 'password'"
                                 name="password"
                                 placeholder="Enter your password"
-                                class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('password') border-red-400 dark:border-red-500 @enderror" />
+                                class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-400 dark:border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" />
                             <span @click="show = !show"
                                 class="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                                 <svg x-show="!show" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
@@ -75,7 +89,7 @@
                         </div>
                     </div>
 
-                    {{-- Remember + Forgot --}}
+                    
                     <div class="flex items-center justify-between">
                         <div x-data="{ checked: false }">
                             <label class="flex cursor-pointer items-center gap-2 text-sm font-normal text-gray-700 select-none dark:text-gray-400">
@@ -95,7 +109,7 @@
                         </div>
                     </div>
 
-                    {{-- Submit --}}
+                    
                     <button type="submit"
                         class="flex w-full items-center justify-center rounded-lg bg-blue-500 px-4 py-3 text-sm font-medium text-white shadow-theme-xs hover:bg-blue-600 transition-colors">
                         Sign In
@@ -103,9 +117,17 @@
 
                 </div>
             </form>
+            
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Doesn't have an account?
+                    <a href="<?php echo e(route('signup')); ?>" class="text-blue-600 hover:underline font-medium">Sign up</a>
+                </p>
+            </div>
         </div>
     </div>
 
 </body>
 
 </html>
+<?php /**PATH C:\laragon\www\asset-library\resources\views/frontend/auth/signin.blade.php ENDPATH**/ ?>

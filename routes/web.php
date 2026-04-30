@@ -5,6 +5,7 @@ use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AssetTypeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CampaignController;
+use App\Http\Controllers\Frontend\HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DriveUploadController;
@@ -105,6 +106,23 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('activity-logs', [ActivityLogController::class, 'index'])
         ->name('activity-logs.index')
         ->middleware('permission:activity_logs.view');
+});
+Route::prefix('')->group(function () {
+
+    // Guest only
+    Route::middleware('guest')->group(function () {
+        Route::get('/signup', [FrontendAuthController::class, 'showSignup'])->name('signup');
+        Route::post('/signup', [FrontendAuthController::class, 'signup'])->name('signup');
+        Route::get('/signin', [FrontendAuthController::class, 'showSignin'])->name('signin');
+        Route::post('/signin', [FrontendAuthController::class, 'signin']);
+    });
+    Route::middleware('auth')->group(function () {
+        Route::get('/', [HomeController::class, 'index'])->name('home.index');
+        Route::get('/campaign/{slug}', [HomeController::class, 'campaignDetails'])->name('campaign.details');
+        Route::get('/asset/{slug}', [HomeController::class, 'assetdetails'])->name('asset.details');
+        Route::get('filter', [HomeController::class, 'filter'])->name('home.filter');
+        Route::post('frontend/logout', [FrontendAuthController::class, 'logout'])->name('frontend.logout');
+    });
 
     Route::get('settings', [SiteSettingController::class, 'index'])->name('settings.index');
     Route::put('settings', [SiteSettingController::class, 'update'])->name('settings.update');

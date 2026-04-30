@@ -7,14 +7,15 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 // FullCalendar
 import { Calendar } from '@fullcalendar/core';
-
+import Swiper from 'swiper/bundle';
+import 'swiper/css/bundle';
 
 
 window.Alpine = Alpine;
 window.ApexCharts = ApexCharts;
 window.flatpickr = flatpickr;
 window.FullCalendar = Calendar;
-
+window.Swiper = Swiper;
 Alpine.start();
 
 // Initialize components on DOM ready
@@ -47,5 +48,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // Calendar init
     if (document.querySelector('#calendar')) {
         import('./components/calendar-init').then(module => module.calendarInit());
+    }
+    // Latest Marketing Assets
+    if (document.querySelector('.mySwiper')) {
+        new Swiper(".mySwiper", {
+            slidesPerView: 1,
+            spaceBetween: 24,
+            navigation: {
+                nextEl: ".swiper-button-next-custom",
+            },
+            breakpoints: {
+                640: { slidesPerView: 2 },
+                1024: { slidesPerView: 4 },
+            },
+        });
+    }
+
+    // Recommended Assets
+    if (document.querySelector('.recommendSwiper')) {
+        new Swiper(".recommendSwiper", {
+            slidesPerView: 1,
+            spaceBetween: 24,
+            navigation: {
+                nextEl: ".swiper-button-next-recommend",
+            },
+            breakpoints: {
+                640: { slidesPerView: 2 },
+                1024: { slidesPerView: 4 },
+            },
+        });
     }
 });
