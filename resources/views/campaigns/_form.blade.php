@@ -153,6 +153,7 @@
 @endpush
 
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    {{-- Create/Edit form এ --}}
 
     {{-- ── Left Column ─────────────────────────────────────────────── --}}
     <div class="lg:col-span-2 space-y-5">
@@ -168,7 +169,7 @@
                         <path d="M3 4a1 1 0 000 2h1v8H3a1 1 0 100 2h14a1 1 0 100-2h-1V6h1a1 1 0 100-2H3zm3 2h2v8H6V6zm4 0h4v8h-4V6z" fill="#667085" />
                     </svg>
                 </span>
-                <input type="text" name="title" id="title"
+                <input type="text" name="title" id="title" required
                     value="{{ old('title', $isEdit ? $campaign->title : '') }}"
                     placeholder="e.g. Eid Special Offer 2025"
                     class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pl-[62px] text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('title') border-red-400 dark:border-red-500 @enderror" />
@@ -334,7 +335,7 @@
                 <input type="hidden" name="remove_file" :value="removed ? '1' : '0'">
 
                 {{-- Drop Zone --}}
-                <div @click="$refs.fileInput.click()"
+                <!-- <div @click="$refs.fileInput.click()"
                     @dragover.prevent @drop.prevent="handleFile({ target: { files: $event.dataTransfer.files } })"
                     class="relative flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/50 p-4 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 dark:border-gray-700 dark:bg-gray-800/40 dark:hover:border-blue-600 transition-all"
                     :class="displayName ? 'border-green-400 bg-green-50/20 dark:border-green-700 dark:bg-green-900/5' : ''">
@@ -372,7 +373,12 @@
                             </div>
                         </div>
                     </template>
-                </div>
+                </div> -->
+                {{-- Create --}}
+                <x-drive-upload
+                    field-name="drive_file_id"
+                    :file-id="old('drive_file_id', $isEdit && $campaign->file ? str_replace('drive:', '', $campaign->file) : '')" />
+
 
                 <input type="file" id="file_input" x-ref="fileInput" name="file"
                     accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt,.csv"
@@ -397,7 +403,7 @@
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                     Project <span class="text-red-500">*</span>
                 </label>
-                <select name="project_id"
+                <select name="project_id" required
                     class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 @error('concern') border-red-400 @enderror">
                     <option value="">— Select Project —</option>
                     @foreach($projects as $project)
@@ -454,8 +460,8 @@
             </h4>
             <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Select at least one language</p>
 
-            @php $selectedLangs = old('languages', $isEdit ? $campaign->languages : []); @endphp
-
+            @php $selectedLangs = old('languages', $isEdit ? $campaign->languages : ['en']); @endphp
+            
             <div class="space-y-2">
                 <label class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 cursor-pointer hover:border-blue-300 dark:border-gray-700 dark:bg-gray-800 transition-colors has-[:checked]:border-blue-400 has-[:checked]:bg-blue-50 dark:has-[:checked]:bg-blue-900/20 dark:has-[:checked]:border-blue-700">
                     <input type="checkbox" name="languages[]" value="en"

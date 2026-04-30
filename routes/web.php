@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AssetTypeController;
 use App\Http\Controllers\AuthController;
@@ -7,9 +8,11 @@ use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\Frontend\HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Frontend\FrontendAuthController;
+use App\Http\Controllers\DriveUploadController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\UserController;
 use Google\Service\Storage;
 use Illuminate\Support\Facades\Storage as FacadesStorage;
@@ -31,16 +34,30 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 // ── Admin ────────────────────────────────────────────────────────────
 Route::middleware('auth')->prefix('admin')->group(function () {
 
-    Route::get('/', fn() => redirect()->route('admin.dashboard'));
+    Route::get('/drive/file/{type}/{id}', [FileController::class, 'stream'])
+        ->name('drive.file.stream');
 
-    Route::get('dashboard', function () {
-        return view('dashboard.dashboard', ['title' => 'Dashboard']);
-    })->name('dashboard');
 
-    Route::resource('projects', ProjectController::class);
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('asset-types', AssetTypeController::class);
-
+    Route::resource('projects', ProjectController::class)
+        ->middleware([
+            'index'   => 'permission:projects.view',
+            'create'  => 'permission:projects.create',
+            'store'   => 'permission:projects.create',
+            'edit'    => 'permission:projects.edit',
+            'update'  => 'permission:projects.edit',
+            'destroy' => 'permission:projects.delete',
+        ]);
+    Route::resource('asset-types', AssetTypeController::class)
+        ->middleware([
+            'index'   => 'permission:asset-types.view',
+            'create'  => 'permission:asset-types.create',
+            'store'   => 'permission:asset-types.create',
+            'edit'    => 'permission:asset-types.edit',
+            'update'  => 'permission:asset-types.edit',
+            'destroy' => 'permission:asset-types.delete',
+        ]);
     Route::resource('campaigns', CampaignController::class)
         ->middleware([
             'index'   => 'permission:campaigns.view',
@@ -106,4 +123,16 @@ Route::prefix('')->group(function () {
         Route::get('filter', [HomeController::class, 'filter'])->name('home.filter');
         Route::post('frontend/logout', [FrontendAuthController::class, 'logout'])->name('frontend.logout');
     });
+
+    Route::get('settings', [SiteSettingController::class, 'index'])->name('settings.index');
+    Route::put('settings', [SiteSettingController::class, 'update'])->name('settings.update');
+
+
+    Route::post('/drive/upload/session', [DriveUploadController::class, 'createUploadSession'])
+        ->name('drive.upload.session');
+
+    Route::post('/drive/upload/complete', [DriveUploadController::class, 'completeUpload'])
+        ->name('drive.upload.complete');
+        Route::post('/drive/upload/resolve', [DriveUploadController::class, 'resolveFileId'])
+    ->name('drive.upload.resolve');
 });

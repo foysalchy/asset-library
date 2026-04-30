@@ -21,6 +21,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
+        'status',
+        'avatar',
         'password',
     ];
 
@@ -86,12 +89,11 @@ class User extends Authenticatable
             default    => 'bg-gray-100 text-gray-600',
         };
     }
-    public function getAvatorAttribute($value): string
+    public function getAvatarUrlAttribute(): ?string
     {
-        if ($value) {
-            return Storage::url($value);
-        }
+        if (!$this->avatar) return null;
 
-        return asset('assets/images/default-user.png');
+        $path = ltrim(str_replace('public/', '', $this->avatar), '/');
+        return Storage::disk('public')->url($path);
     }
 }

@@ -8,6 +8,8 @@ use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use App\Helpers\FileUploadHelper;
+
 
 class UserController extends Controller
 {
@@ -22,7 +24,7 @@ class UserController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%');
+                    ->orWhere('email', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -61,7 +63,7 @@ class UserController extends Controller
 
         $avatarPath = null;
         if ($request->hasFile('avatar')) {
-            $avatarPath = $this->fileUpload->uploadImage($request->file('avatar'), 'users/avatars');
+            $avatarPath = FileUploadHelper::uploadImage($request->file('avatar'), 'users/avatars');
         }
 
         $user = User::create([
@@ -85,7 +87,7 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        $user->load('roles.permissions', 'creator');
+        $user->load('roles.permissions');
         $logs = \App\Models\ActivityLog::where('user_id', $user->id)
             ->latest()->limit(20)->get();
 
@@ -115,6 +117,7 @@ class UserController extends Controller
 
         $data = [
             'name'   => $request->name,
+            'avatar'   => $request->avatar,
             'email'  => $request->email,
             'phone'  => $request->phone,
             'status' => $request->status,
@@ -125,15 +128,17 @@ class UserController extends Controller
         }
 
         if ($request->hasFile('avatar')) {
-            $this->fileUpload->delete($user->avatar);
-            $data['avatar'] = $this->fileUpload->uploadImage($request->file('avatar'), 'users/avatars');
+            FileUploadHelper::deleteImage($user->avatar);
+            $data['avatar'] = FileUploadHelper::uploadImage($request->file('avatar'), 'users/avatars');
         } elseif ($request->boolean('remove_avatar')) {
-            $this->fileUpload->delete($user->avatar);
+            FileUploadHelper::deleteImage($user->avatar);
             $data['avatar'] = null;
         }
 
         $user->update($data);
-        $user->roles()->sync($request->roles ?? []);
+        if (!$user->isSuperAdmin()) {
+            $user->roles()->sync($request->roles ?? []);
+        }
 
         $this->activityLog->log('updated', $user, "Updated user: {$user->name}");
 
@@ -150,7 +155,7 @@ class UserController extends Controller
             return redirect()->route('users.index')->with('error', 'Super admin cannot be deleted.');
         }
 
-        $this->fileUpload->delete($user->avatar);
+        FileUploadHelper::deleteImage($user->avatar);
         $this->activityLog->log('deleted', $user, "Deleted user: {$user->name}");
         $user->delete();
 

@@ -10,7 +10,7 @@
             <label for="title" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                 Title <span class="text-red-500">*</span>
             </label>
-            <input type="text" name="title" id="title"
+            <input type="text" name="title" id="title" required
                 value="{{ old('title', $isEdit ? $asset->title : '') }}"
                 placeholder="e.g. Static Banners: Intel® Arc™ B580 Graphics"
                 class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('title') border-red-400 @enderror" />
@@ -195,37 +195,15 @@
                 <span class="text-xs font-normal text-gray-400 ml-1">ZIP, PDF, DOC, XLS · max 100MB</span>
             </label>
             <input type="hidden" name="remove_file" :value="removed ? '1' : '0'">
-            <div @click="$refs.fileInput.click()"
-                 @dragover.prevent @drop.prevent="handleFile({ target: { files: $event.dataTransfer.files } })"
-                 class="relative flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/50 p-4 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 dark:border-gray-700 dark:bg-gray-800/40 transition-all"
-                 :class="displayName ? 'border-green-400 bg-green-50/20 dark:border-green-700' : ''">
-                <template x-if="displayName">
-                    <div class="flex items-center gap-3 w-full px-2">
-                        <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center shrink-0 dark:bg-green-900/30">
-                            <svg class="text-green-600" width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/></svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300 truncate" x-text="displayName"></p>
-                            <p class="text-xs text-gray-400" x-text="fileSize || 'Existing file'"></p>
-                        </div>
-                        <button type="button" @click.stop="remove()"
-                                class="w-7 h-7 flex items-center justify-center rounded-full text-gray-400 hover:bg-red-100 hover:text-red-500 dark:hover:bg-red-900/30 transition-colors">
-                            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/></svg>
-                        </button>
-                    </div>
-                </template>
-                <template x-if="!displayName">
-                    <div class="flex flex-col items-center gap-2 py-3 text-center">
-                        <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center dark:bg-gray-700">
-                            <svg class="text-gray-400" width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"/></svg>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Click or drag file here</p>
-                            <p class="text-xs text-gray-400 mt-0.5">PDF, DOC, XLS, ZIP and more</p>
-                        </div>
-                    </div>
-                </template>
-            </div>
+             <x-drive-upload
+                    field-name="drive_file_id"
+                    :file-id="old('drive_file_id', $isEdit && $asset->file ? str_replace('drive:', '', $asset->file) : '')" />
+
+
+                <input type="file" id="file_input" x-ref="fileInput" name="file"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt,.csv"
+                    class="hidden" @change="handleFile($event)">
+                @error('file')<p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>@enderror
             <input type="file" id="asset_file_input" x-ref="fileInput" name="file"
                 accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt,.csv"
                 class="hidden" @change="handleFile($event)">
@@ -246,7 +224,7 @@
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                     Project <span class="text-red-500">*</span>
                 </label>
-                <select name="project_id"
+                <select name="project_id" required
                         class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 @error('project_id') border-red-400 @enderror">
                     <option value="">— Select Project —</option>
                     @foreach($projects as $project)
@@ -264,7 +242,7 @@
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                     Asset Type <span class="text-red-500">*</span>
                 </label>
-                <select name="asset_type_id"
+                <select name="asset_type_id" required
                         class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 @error('asset_type_id') border-red-400 @enderror">
                     <option value="">— Select Type —</option>
                     @foreach($assetTypes as $type)

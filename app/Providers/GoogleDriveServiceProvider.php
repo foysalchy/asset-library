@@ -22,6 +22,7 @@ class GoogleDriveServiceProvider extends ServiceProvider
 
             $service = new Drive($client);
             $adapter = new GoogleDriveAdapter($service, $config['folderId'] ?? null);
+            \Log::info('Google Drive adapter initialized with config: ' . json_encode($config));
             $driver  = new Filesystem($adapter);
 
             

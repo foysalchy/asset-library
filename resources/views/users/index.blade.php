@@ -81,7 +81,6 @@
                             <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">User</th>
                             <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Roles</th>
                             <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Status</th>
-                            <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Last Login</th>
                             <th class="relative px-4 py-3"><span class="sr-only">Actions</span></th>
                         </tr>
                     </thead>
@@ -121,11 +120,7 @@
                                         {{ $user->status }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-4 whitespace-nowrap">
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">
-                                        {{ $user->last_login_at ? $user->last_login_at->diffForHumans() : '—' }}
-                                    </span>
-                                </td>
+                               
                                 <td class="px-4 py-4 whitespace-nowrap">
                                     <div class="flex items-center justify-end gap-2">
                                         @permission('users.view')

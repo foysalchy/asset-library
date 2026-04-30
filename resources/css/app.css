@@ -7,7 +7,7 @@
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
-
+@source inline("menu-item-icon menu-item-icon-active menu-item-icon-inactive menu-item-active menu-item-inactive menu-item");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -204,7 +204,9 @@
 @utility menu-item-inactive {
   @apply text-gray-700 hover:bg-gray-100 group-hover:text-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-gray-300;
 }
-
+@utility menu-item-text {
+  @apply text-gray-700 dark:text-white;
+}
 @utility menu-item-icon {
   @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400;
 }

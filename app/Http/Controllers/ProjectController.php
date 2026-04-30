@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use App\Helpers\FileUploadHelper;
-
+use App\Services\ActivityLogService;
 
 class ProjectController extends Controller
 {
+    public function __construct(
+        private ActivityLogService $activityLog
+    ) {}
 
     public function index(Request $request)
     {
@@ -38,7 +41,8 @@ class ProjectController extends Controller
             $validated['logo'] = FileUploadHelper::uploadImage($request->file('logo'), 'projects/logos');
         }
 
-        Project::create($validated);
+        $project = Project::create($validated);
+        $this->activityLog->log('created', $project, "Created project: {$project->name}");
         return redirect()->route('projects.index')->with('success', 'Project created.');
     }
 
@@ -64,12 +68,15 @@ class ProjectController extends Controller
         }
 
         $project->update($validated);
+        $this->activityLog->log('updated', $project, "Updated project: {$project->name}");
         return redirect()->route('projects.index')->with('success', 'Project updated.');
     }
 
     public function destroy(Project $project)
     {
-        $this->fileUpload->delete($project->logo);
+        FileUploadHelper::deleteImage($project->logo);
+        $this->activityLog->log('deleted', $project, "Deleted project: {$project->name}");
+
         $project->delete();
         return back()->with('success', 'Project deleted.');
     }

@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\AssetType;
+use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class AssetTypeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct(
+        private ActivityLogService $activityLog
+    ) {}
     public function index()
     {
         // Get all asset types, paginated by 10
@@ -26,14 +27,16 @@ class AssetTypeController extends Controller
     {
         $validated = $request->validate([
             'name' => [
-                'required', 
-                'string', 
-                'max:255', 
+                'required',
+                'string',
+                'max:255',
                 'unique:asset_types,name'
             ],
         ]);
 
-        AssetType::create($validated);
+        $assetType = AssetType::create($validated);
+
+        $this->activityLog->log('created', $assetType, "Created asset type: {$assetType->name}");
 
         return redirect()->route('asset-types.index')
             ->with('success', 'Asset Type created successfully.');
@@ -54,14 +57,16 @@ class AssetTypeController extends Controller
     {
         $validated = $request->validate([
             'name' => [
-                'required', 
-                'string', 
-                'max:255', 
+                'required',
+                'string',
+                'max:255',
                 Rule::unique('asset_types', 'name')->ignore($assetType->id)
             ],
         ]);
-
+        
         $assetType->update($validated);
+
+        $this->activityLog->log('updated', $assetType, "Updated asset type: {$assetType->name}");
 
         return redirect()->route('asset-types.index')
             ->with('success', 'Asset Type updated successfully.');
@@ -73,6 +78,7 @@ class AssetTypeController extends Controller
     public function destroy(AssetType $assetType)
     {
         $assetType->delete();
+        $this->activityLog->log('deleted', $assetType, "Deleted asset type: {$assetType->name}");
 
         return redirect()->route('asset-types.index')
             ->with('success', 'Asset Type deleted successfully.');
