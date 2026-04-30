@@ -13,10 +13,21 @@ class Asset extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'project_id', 'asset_type_id', 'title', 'slug', 'asset_id_code',
-        'description', 'file_path', 'file_original_name', 'file_mime_type',
-        'file_size', 'available_formats', 'dimensions', 'sort_order',
-        'uploaded_at', 'created_by',
+        'project_id',
+        'asset_type_id',
+        'title',
+        'slug',
+        'asset_id_code',
+        'description',
+        'file_path',
+        'file_original_name',
+        'file_mime_type',
+        'file_size',
+        'available_formats',
+        'dimensions',
+        'sort_order',
+        'uploaded_at',
+        'created_by',
     ];
 
     protected $casts = [
@@ -24,12 +35,11 @@ class Asset extends Model
         'dimensions'        => 'array',
         'uploaded_at'       => 'date',
     ];
-   protected static function booted(): void
+    protected static function booted(): void
     {
         static::creating(function (Asset $a) {
             if (empty($a->slug)) $a->slug = Str::slug($a->title);
         });
-      
     }
     public function project()
     {
@@ -62,7 +72,20 @@ class Asset extends Model
         $units = ['B', 'KB', 'MB', 'GB'];
         $size = $this->file_size;
         $i = 0;
-        while ($size >= 1024 && $i < count($units) - 1) { $size /= 1024; $i++; }
+        while ($size >= 1024 && $i < count($units) - 1) {
+            $size /= 1024;
+            $i++;
+        }
         return round($size, 1) . ' ' . $units[$i];
+    }
+    public function downloadLogs()
+    {
+        return $this->hasMany(DownloadLog::class, 'model_id')
+            ->where('model', class_basename($this));
+    }
+
+    public function getTotalDownloadsAttribute(): int
+    {
+        return $this->downloadLogs()->sum('count');
     }
 }

@@ -263,7 +263,7 @@
                                     </div>
 
                                     <div class="mt-auto flex items-center justify-between">
-                                        <a href="<?php echo e($asset->file_path); ?>" download
+                                        <a href="<?php echo e(route('drive.file.stream', ['type' => 'asset', 'id' => $asset->id])); ?>" download
                                             class="flex items-center gap-2 text-[#005da4] text-xs font-bold uppercase hover:opacity-75">
                                             <i class="fa-solid fa-download text-sm"></i>
                                             <span>Download</span>
@@ -328,7 +328,7 @@
 
                                     <div class="mt-auto flex items-center justify-between">
                                         <!-- Download Link -->
-                                        <a href="<?php echo e($asset->file_url); ?>" download
+                                        <a href="<?php echo e(route('drive.file.stream', ['type' => 'asset', 'id' => $asset->id])); ?>" download
                                             class="flex items-center gap-2 text-[#005da4] text-xs font-bold uppercase hover:opacity-75">
                                             <i class="fa-solid fa-download text-sm"></i>
                                             <span>Download</span>

@@ -135,29 +135,46 @@
                                 <span class="text-gray-300 dark:text-gray-600">—</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                <div class="flex items-center justify-end gap-2">
-                                    <a href="<?php echo e(route('assets.show', $asset)); ?>"
-                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/10 transition-colors">
-                                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
-                                        </svg>
-                                    </a>
-                                    <a href="<?php echo e(route('assets.edit', $asset)); ?>"
-                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-blue-900/20 transition-colors">
-                                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                        </svg>
-                                    </a>
-                                    <button type="button" @click="openDelete('<?php echo e($asset->id); ?>', '<?php echo e(addslashes($asset->title)); ?>')"
-                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20 transition-colors">
-                                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
+                           <td class="px-4 py-4 whitespace-nowrap">
+    <div class="flex items-center justify-end gap-2">
+        
+        
+        <?php if(auth()->check() && auth()->user()->hasPermission('assets.view')): ?>
+        <a href="<?php echo e(route('assets.show', $asset)); ?>"
+            class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/10 transition-colors">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+        </a>
+        <?php endif; ?>
+        
+        
+        <?php if(auth()->check() && auth()->user()->hasPermission('assets.edit')): ?>
+        <a href="<?php echo e(route('assets.edit', $asset)); ?>"
+            class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-blue-900/20 transition-colors">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+            </svg>
+        </a>
+        <?php endif; ?>
+        
+        
+        <?php if(auth()->check() && auth()->user()->hasPermission('assets.delete')): ?>
+        <button type="button" 
+            @click="$dispatch('open-delete-modal', { 
+                url: '<?php echo e(route('assets.destroy', $asset->id)); ?>', 
+                title: '<?php echo e(addslashes($asset->title)); ?>' 
+            })"
+            class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20 transition-colors">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" />
+            </svg>
+        </button>
+        <?php endif; ?>
+        
+    </div>
+</td>
                         </tr>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
@@ -191,38 +208,7 @@
 
 
 
-        
-        <div x-show="deleteModal" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display:none;">
-            <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" @click="deleteModal = false"></div>
-            <div class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900"
-                x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
-                <div class="flex flex-col items-center text-center gap-4">
-                    <div class="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center dark:bg-red-900/30">
-                        <svg class="text-red-500" width="28" height="28" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Delete Asset</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            Are you sure you want to delete <span class="font-medium text-gray-700 dark:text-gray-300" x-text='"' + deleteTitle + '"'"></span>? This action cannot be undone.
-                        </p>
-                    </div>
-                    <div class=" flex gap-3 w-full">
-                                <button type="button" @click="deleteModal = false"
-                                    class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-colors">
-                                    Cancel
-                                </button>
-                                <form :action="'/assets/' + deleteId" method="POST" class="flex-1">
-                                    <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
-                                    <button type="submit" class="w-full rounded-lg bg-red-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-600 transition-colors">
-                                        Delete
-                                    </button>
-                                </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+    
     </div>
 </div>
 <?php $__env->stopSection(); ?>
