@@ -22,39 +22,41 @@ class FileController extends Controller
     ];
 
     public function stream(string $type, string $id)
-{
-    if (!array_key_exists($type, $this->models)) {
-        abort(404);
+    {
+        if (!array_key_exists($type, $this->models)) {
+            abort(404);
+        }
+
+        $config = $this->models[$type];
+        $model  = $config['class']::findOrFail($id);
+        $field  = $config['field'];
+
+        if (empty($model->$field)) {
+            abort(404, 'No file attached.');
+        }
+
+        $this->logDownload($type, $id);
+
+        return FileUploadHelper::streamFile($model->$field);
     }
 
-    $config = $this->models[$type];
-    $model  = $config['class']::findOrFail($id);
-    $field  = $config['field'];
-
-    if (empty($model->$field)) {
-        abort(404, 'No file attached.');
+    private function logDownload(string $type, string $id): void
+    {
+        try {
+            DownloadLog::updateOrCreate(
+                [
+                    'user_id'  => auth()->id(),
+                    'model'    => $type,
+                    'model_id' => $id,
+                ],
+                [
+                    'ip_address' => request()->ip(),
+                ]
+            )->increment('count');
+        } catch (\Exception $e) {
+            Log::error('Download log error: ' . $e->getMessage());
+        }
     }
+    
 
-    $this->logDownload($type, $id);
-
-    return FileUploadHelper::streamFile($model->$field);
-}
-
-private function logDownload(string $type, string $id): void
-{
-    try {
-        DownloadLog::updateOrCreate(
-            [
-                'user_id'  => auth()->id(),
-                'model'    => $type,
-                'model_id' => $id,
-            ],
-            [
-                'ip_address' => request()->ip(),
-            ]
-        )->increment('count');
-    } catch (\Exception $e) {
-        Log::error('Download log error: ' . $e->getMessage());
-    }
-}
 }

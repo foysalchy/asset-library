@@ -50,7 +50,7 @@
                             class="flex-1 bg-[#0071c5] text-white font-bold py-3 px-6 flex items-center justify-center gap-2 hover:bg-[#005ea3] transition-all">
                             <i class="fa-solid fa-download"></i> Download
                         </a>
-                        <button
+                        <button onclick="openGlobalShareModal(window.location.href, 'Check out this Asset')"
                             class="flex-1 border-2 border-[#0071c5] text-[#0071c5] font-bold py-3 px-6 flex items-center justify-center gap-2 hover:bg-blue-50 transition-all">
                             <i class="fa-solid fa-share-nodes"></i> Share
                         </button>

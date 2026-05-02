@@ -5,13 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-     <meta name="description" content="Explore our Asset">
+    <meta name="description" content="Explore our Asset">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
     <title>{{ $setup->title ?? 'Intel' }}</title>
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="">
-     <!-- Outfit Font -->
+    <!-- Outfit Font -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
         media="print" onload="this.media='all' rel="stylesheet" />
     <!-- FontAwesome -->
@@ -25,7 +25,7 @@
 </head>
 
 <body>
-     @include('frontend.partials.header')
+    @include('frontend.partials.header')
 
     <!-- Page Content Area -->
     <main class="bg-[#f9f9fb]  ">
@@ -34,9 +34,38 @@
 
     <!-- FOOTER -->
     @include('frontend.partials.footer')
-
+    <x-frontend.share-modal />
+    @stack('scripts')
+    <script>
+        function toggleBookmark(btn, type, id) {
+            fetch('/bookmark', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        type,
+                        id
+                    })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    const icon = btn.querySelector('i');
+                    if (data.bookmarked) {
+                        icon.className = 'fa-solid fa-bookmark text-2xl';
+                        btn.classList.remove('text-[#00aeef]');
+                        btn.classList.add('text-[#0071c5]');
+                    } else {
+                        icon.className = 'fa-regular fa-bookmark text-2xl';
+                        btn.classList.remove('text-[#0071c5]');
+                        btn.classList.add('text-[#00aeef]');
+                    }
+                });
+        }
+    </script>
 </body>
 
-@stack('scripts')
+
 
 </html>

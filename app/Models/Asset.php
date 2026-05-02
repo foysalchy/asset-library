@@ -88,4 +88,13 @@ class Asset extends Model
     {
         return $this->downloadLogs()->sum('count');
     }
+    public function bookmarks()
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
+    public function isBookmarkedBy($userId): bool
+    {
+        return $this->bookmarks()->where('user_id', $userId)->exists();
+    }
 }

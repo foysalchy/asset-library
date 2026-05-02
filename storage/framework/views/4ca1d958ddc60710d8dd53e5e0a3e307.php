@@ -24,40 +24,29 @@
             </a>
 
             <!-- Campaigns -->
-            <a href="<?php echo e(route('home.index')); ?>"
+            <a href="<?php echo e(route('home.filter', ['section' => 'campaigns'])); ?>"
                 class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                 <i class="fas fa-bullhorn text-lg"></i>
-                <span class="text-sm tracking-wide flex items-center gap-1">Campaigns <i
-                        class="fas fa-chevron-down text-[7px] mt-px"></i></span>
+                <span class="text-sm tracking-wide flex items-center gap-1">Campaigns </span>
             </a>
 
             <!-- Assets -->
-            <a href="<?php echo e(route('home.index')); ?>"
+            <a href="<?php echo e(route('home.filter', ['section' => 'assets', 'sort' => 'latest'])); ?>"
                 class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                 <i class="fas fa-box text-lg"></i>
-                <span class="text-sm tracking-wide flex items-center gap-1">Assets <i
-                        class="fas fa-chevron-down text-[7px] mt-px"></i></span>
+                <span class="text-sm tracking-wide flex items-center gap-1">Assets </span>
             </a>
 
             <!-- Brand Assets -->
-            <a href="<?php echo e(route('home.index')); ?>"
+            <a href="<?php echo e(route('brand.index')); ?>"
                 class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                 <i class="fas fa-palette text-lg"></i>
                 <span class="text-sm tracking-wide">Brand Assets</span>
-            </a>
-
-            <!-- Tools -->
-            <a href="<?php echo e(route('home.index')); ?>"
-                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
-                <i class="fa-solid fa-screwdriver-wrench text-lg"></i>
-                <span class="text-sm tracking-wide flex items-center gap-1">Tools <i
-                        class="fas fa-chevron-down text-[7px] mt-px"></i></span>
             </a>
         </nav>
         <nav class="hidden lg:flex items-stretch gap-0">
 
             <?php if(auth()->guard()->guest()): ?>
-                <!-- ১. যদি লগইন না করা থাকে (Guest) -->
                 <a href="<?php echo e(route('frontend.signin')); ?>"
                     class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                     <i class="fas fa-sign-in-alt text-lg"></i>
@@ -95,19 +84,24 @@
                     <span class="text-sm tracking-wide">Logout</span>
                 </a>
             <?php endif; ?>
-
             <a href="#"
                 class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
-                <i class="fa-solid fa-globe text-lg"></i>
-                <span class="text-sm tracking-wide flex items-center gap-1">English <i
-                        class="fas fa-chevron-down text-[7px] mt-px"></i></span>
-            </a>
+                <div class="relative">
+                    <i class="fa-regular fa-bookmark text-lg"></i>
+                    <?php if($bookmarkCount > 0): ?>
+                        <span
+                            class="absolute -top-2 -right-2 bg-white text-[#003b7a] text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                            <?php echo e($bookmarkCount > 99 ? '99+' : $bookmarkCount); ?>
 
+                        </span>
+                    <?php endif; ?>
+                </div>
+                <span class="text-sm tracking-wide flex items-center gap-1">Bookmark</span>
+            </a>
             <a href="#"
                 class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                 <i class="fa-regular fa-circle-question text-lg"></i>
-                <span class="text-sm tracking-wide flex items-center gap-1">Help <i
-                        class="fas fa-chevron-down text-[7px] mt-px"></i></span>
+                <span class="text-sm tracking-wide flex items-center gap-1">Help </span>
             </a>
         </nav>
     </div>

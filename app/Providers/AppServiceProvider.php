@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use App\Models\Bookmark;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,5 +27,12 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('endpermission', function () {
             return "<?php endif; ?>";
         });
+        View::composer('frontend.partials.header', function ($view) {
+        $count = 0;
+        if (auth()->check()) {
+            $count = Bookmark::where('user_id', auth()->id())->count();
+        }
+        $view->with('bookmarkCount', $count);
+    });
     }
 }

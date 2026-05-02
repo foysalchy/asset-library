@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('model');      // Campaign, Asset
             $table->string('model_id');
-            $table->integer('count')->default(1);
+            $table->integer('count')->default(0);
             $table->string('ip_address')->nullable();
             $table->timestamps();
 

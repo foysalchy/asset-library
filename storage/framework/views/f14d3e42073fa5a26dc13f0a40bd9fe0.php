@@ -5,13 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
-     <meta name="description" content="Explore our Asset">
+    <meta name="description" content="Explore our Asset">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
     <title><?php echo e($setup->title ?? 'Intel'); ?></title>
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="">
-     <!-- Outfit Font -->
+    <!-- Outfit Font -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
         media="print" onload="this.media='all' rel="stylesheet" />
     <!-- FontAwesome -->
@@ -25,7 +25,7 @@
 </head>
 
 <body>
-     <?php echo $__env->make('frontend.partials.header', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+    <?php echo $__env->make('frontend.partials.header', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
     <!-- Page Content Area -->
     <main class="bg-[#f9f9fb]  ">
@@ -34,10 +34,58 @@
 
     <!-- FOOTER -->
     <?php echo $__env->make('frontend.partials.footer', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-
+    <?php if (isset($component)) { $__componentOriginal288ba0d330d72022cbaf3ec444d02e1b = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal288ba0d330d72022cbaf3ec444d02e1b = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.frontend.share-modal','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('frontend.share-modal'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal288ba0d330d72022cbaf3ec444d02e1b)): ?>
+<?php $attributes = $__attributesOriginal288ba0d330d72022cbaf3ec444d02e1b; ?>
+<?php unset($__attributesOriginal288ba0d330d72022cbaf3ec444d02e1b); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal288ba0d330d72022cbaf3ec444d02e1b)): ?>
+<?php $component = $__componentOriginal288ba0d330d72022cbaf3ec444d02e1b; ?>
+<?php unset($__componentOriginal288ba0d330d72022cbaf3ec444d02e1b); ?>
+<?php endif; ?>
+    <?php echo $__env->yieldPushContent('scripts'); ?>
+    <script>
+        function toggleBookmark(btn, type, id) {
+            fetch('/bookmark', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        type,
+                        id
+                    })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    const icon = btn.querySelector('i');
+                    if (data.bookmarked) {
+                        icon.className = 'fa-solid fa-bookmark text-2xl';
+                        btn.classList.remove('text-[#00aeef]');
+                        btn.classList.add('text-[#0071c5]');
+                    } else {
+                        icon.className = 'fa-regular fa-bookmark text-2xl';
+                        btn.classList.remove('text-[#0071c5]');
+                        btn.classList.add('text-[#00aeef]');
+                    }
+                });
+        }
+    </script>
 </body>
 
-<?php echo $__env->yieldPushContent('scripts'); ?>
+
 
 </html>
 <?php /**PATH C:\laragon\www\asset-library\resources\views/frontend/layouts/font.blade.php ENDPATH**/ ?>

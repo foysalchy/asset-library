@@ -33,8 +33,7 @@
                 <a href="#" class="text-[#757575] text-sm underline hover:text-[#0071c5] block">See legal disclaimers</a>
 
                 <!-- Download Campaign Guide (Dynamic File Link) -->
-                @if($campaign->file)
-                <a href="{{ $campaign->file_url }}" target="_blank" class="flex items-center gap-4 py-2 group cursor-pointer border-none bg-transparent">
+                <a href="{{ route('drive.file.stream', ['type' => 'campaign', 'id' => $campaign->id]) }}" target="_blank" class="flex items-center gap-4 py-2 group cursor-pointer border-none bg-transparent">
                     <div class="w-12 h-12 border-[1.5px] border-[#0071c5] flex items-center justify-center rounded-sm group-hover:bg-blue-50 transition-colors shrink-0">
                         <i class="fa-solid fa-book-open-reader text-[#0071c5] text-2xl"></i>
                     </div>
@@ -45,7 +44,6 @@
                         <p class="text-gray-500 text-xs italic">for execution details</p>
                     </div>
                 </a>
-                @endif
 
                 <!-- Language Selector -->
                 <div class="pt-4">
@@ -58,7 +56,7 @@
                                 <i class="fas fa-chevron-down text-[#0071c5] text-xs"></i>
                             </div>
                         </div>
-                        <button class="bg-[#0071c5] text-white px-8 py-2.5 flex items-center gap-3 font-bold text-[15px] hover:bg-[#005ea3] transition-all">
+                        <button onclick="openGlobalShareModal(window.location.href, 'Check out this Campaign')" class="bg-[#0071c5] text-white px-8 py-2.5 flex items-center gap-3 font-bold text-[15px] hover:bg-[#005ea3] transition-all">
                             <i class="fa-solid fa-share-nodes"></i> Share
                         </button>
                     </div>

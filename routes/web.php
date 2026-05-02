@@ -5,6 +5,7 @@ use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AssetTypeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CampaignController;
+use App\Http\Controllers\Frontend\BookmarkController;
 use App\Http\Controllers\Frontend\HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
@@ -120,10 +121,14 @@ Route::prefix('')->group(function () {
         Route::get('/', [HomeController::class, 'index'])->name('home.index');
         Route::get('/campaign/{slug}', [HomeController::class, 'campaignDetails'])->name('campaign.details');
         Route::get('/asset/{slug}', [HomeController::class, 'assetdetails'])->name('asset.details');
-        Route::get('filter', [HomeController::class, 'filter'])->name('home.filter');
+        Route::get('/filter', [HomeController::class, 'filter'])->name('home.filter');
         Route::post('frontend/logout', [FrontendAuthController::class, 'logout'])->name('frontend.logout');
         Route::get('/drive/file/{type}/{id}', [FileController::class, 'stream'])
             ->name('drive.file.stream');
+        Route::post('/drive/bulk-download', [FileController::class, 'bulkDownload'])->name('drive.bulkDownload');
+        Route::get('/brand', [HomeController::class, 'brand'])->name('brand.index');
+        Route::post('/bookmark', [BookmarkController::class, 'toggle'])->name('bookmark.toggle');
+
     });
 
     Route::get('settings', [SiteSettingController::class, 'index'])->name('settings.index');
