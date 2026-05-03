@@ -1,9 +1,14 @@
+@php
+    $siteSetting = \App\Models\SiteSetting::first();
+
+@endphp
+
 <header class="w-full bg-[#003b7a] text-white sticky top-0 z-30 shadow-md">
     <div class="container mx-auto mx-auto flex justify-between items-center py-2">
         <!-- ── LOGO ── -->
         <div class="flex items-center gap-3 shrink-0">
             <a href="{{ route('home.index') }}" class="bg-white px-2 py-2 flex items-center">
-                <img src="" alt="Intel" class="h-[22px] w-auto block" />
+                <img src="{{ $siteSetting->logo_url }}" alt="Intel" class="h-[22px] w-auto block" />
             </a>
             <div class="flex flex-col justify-center leading-[0.9] text-white">
                 <p class="text-xs uppercase tracking-[1.2px] mb-0.5 opacity-90">
@@ -84,7 +89,7 @@
                     <span class="text-sm tracking-wide">Logout</span>
                 </a>
             @endauth
-            <a href="#"
+            <a href="{{ route('bookmark.list') }}"
                 class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                 <div class="relative">
                     <i class="fa-regular fa-bookmark text-lg"></i>

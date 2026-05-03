@@ -128,6 +128,7 @@ Route::prefix('')->group(function () {
         Route::post('/drive/bulk-download', [FileController::class, 'bulkDownload'])->name('drive.bulkDownload');
         Route::get('/brand', [HomeController::class, 'brand'])->name('brand.index');
         Route::post('/bookmark', [BookmarkController::class, 'toggle'])->name('bookmark.toggle');
+        Route::get('/bookmark-list', [BookmarkController::class, 'list'])->name('bookmark.list');
 
     });
 

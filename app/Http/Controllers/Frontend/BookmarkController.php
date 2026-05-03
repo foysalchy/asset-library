@@ -8,6 +8,18 @@ use Illuminate\Http\Request;
 
 class BookmarkController extends Controller
 {
+    public function list()
+    {
+        $assets = \App\Models\Asset::whereHas('bookmarks', function ($q) {
+            $q->where('user_id', auth()->id());
+        })->with('media')->latest()->get();
+
+        $campaigns = \App\Models\Campaign::whereHas('bookmarks', function ($q) {
+            $q->where('user_id', auth()->id());
+        })->with('project')->latest()->get();
+
+        return view('frontend.bookmarks', compact('assets', 'campaigns'));
+    }
     public function toggle(Request $request)
     {
         $request->validate([

@@ -137,8 +137,9 @@ class HomeController extends Controller
     }
     public function brand()
     {
-        $projects = Project::orderBy('name', 'asc')->paginate(12);
-
+        $projects = Project::orderBy('name', 'asc')
+        ->get()
+        ->groupBy('concern');
         return view('frontend.brandAsset', compact('projects'));
     }
 }
