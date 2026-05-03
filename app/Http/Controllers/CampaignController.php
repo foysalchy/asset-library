@@ -6,6 +6,7 @@ use App\Helpers\FileUploadHelper;
 use App\Models\Campaign;
 use App\Models\Project;
 use App\Services\ActivityLogService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -70,6 +71,7 @@ class CampaignController extends Controller
         $campaign = Campaign::create($validated);
         $this->activityLog->log('created', $campaign, "Created campaign: {$campaign->title}");
 
+        NotificationService::notifyAll('campaign', $campaign->id, $campaign->title, $campaign->slug);
 
         return redirect()->route('campaigns.index')->with('success', 'Campaign created successfully.');
     }

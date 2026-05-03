@@ -82,6 +82,70 @@
                     }
                 });
         }
+
+        // ── Notification ──
+        function toggleNotifDropdown() {
+            document.getElementById('notifDropdown').classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', function(e) {
+            const wrapper = document.getElementById('notifWrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                document.getElementById('notifDropdown').classList.add('hidden');
+            }
+        });
+
+        function markRead(e, id, url) {
+    e.preventDefault();
+    const el = document.getElementById(`notif-${id}`);
+
+    fetch(`/notification/${id}/read`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    }).then(() => {
+        if (el) {
+            // ১. আনরিড ক্লাসেস রিমুভ করা
+            el.classList.remove('bg-blue-50/50', 'border-l-4', 'border-[#0071c5]');
+            // ২. রিড ক্লাসেস অ্যাড করা
+            el.classList.add('opacity-60', 'bg-white');
+
+            const title = el.querySelector('p');
+            if(title) title.classList.replace('font-bold', 'font-normal');
+
+            const dot = el.querySelector('.unread-dot');
+            if (dot) dot.remove();
+        }
+        window.location.href = url;
+    });
+}
+
+function markAllRead() {
+    fetch('/notification/read-all', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    }).then(() => {
+        // সব নোটিফিকেশনকে রিড স্টাইলে নিয়ে আসা
+        document.querySelectorAll('[id^="notif-"]').forEach(el => {
+            el.classList.remove('bg-blue-50/50', 'border-l-4', 'border-[#0071c5]');
+            el.classList.add('opacity-60', 'bg-white');
+
+            const title = el.querySelector('p');
+            if(title) title.classList.replace('font-bold', 'font-normal');
+
+            const dot = el.querySelector('.unread-dot');
+            if (dot) dot.remove();
+        });
+
+        const badge = document.getElementById('notifBadge');
+        if (badge) badge.remove();
+    });
+}
     </script>
 </body>
 

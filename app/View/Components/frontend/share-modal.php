@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class share-modal extends Component
+class shareModal extends Component
 {
     /**
      * Create a new component instance.

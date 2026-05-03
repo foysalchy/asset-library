@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\Bookmark;
+use App\Models\Notification;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,11 +29,20 @@ class AppServiceProvider extends ServiceProvider
             return "<?php endif; ?>";
         });
         View::composer('frontend.partials.header', function ($view) {
-        $count = 0;
-        if (auth()->check()) {
-            $count = Bookmark::where('user_id', auth()->id())->count();
-        }
-        $view->with('bookmarkCount', $count);
-    });
+            $bookmarkCount = 0;
+            $notifications = collect();
+            $unreadCount   = 0;
+
+            if (auth()->check()) {
+                $userId = auth()->id();
+                $bookmarkCount = Bookmark::where('user_id', $userId)->count();
+
+                // সব notification যেগুলো এই user পড়েনি
+                $notifications = Notification::latest()->take(10)->get();
+                $unreadCount   = $notifications->filter(fn($n) => !$n->isReadBy($userId))->count();
+            }
+
+            $view->with(compact('bookmarkCount', 'notifications', 'unreadCount'));
+        });
     }
 }

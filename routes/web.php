@@ -12,6 +12,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DriveUploadController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\Frontend\FrontendAuthController;
+use App\Http\Controllers\Frontend\NotificationController;
+use App\Http\Controllers\Frontend\TicketController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SiteSettingController;
@@ -107,6 +109,11 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('activity-logs', [ActivityLogController::class, 'index'])
         ->name('activity-logs.index')
         ->middleware('permission:activity_logs.view');
+
+    Route::get('tickets', [TicketController::class, 'list'])->name('ticket.admin');
+    Route::get('tickets/{ticket}', [TicketController::class, 'showAdmin'])->name('admin.tickets.show');
+    Route::post('tickets/{ticket}/reply', [TicketController::class, 'adminReply'])->name('admin.tickets.reply'); 
+    Route::delete('tickets/{ticket}', [TicketController::class, 'destroy'])->name('admin.tickets.destroy');
 });
 Route::prefix('')->group(function () {
 
@@ -129,7 +136,15 @@ Route::prefix('')->group(function () {
         Route::get('/brand', [HomeController::class, 'brand'])->name('brand.index');
         Route::post('/bookmark', [BookmarkController::class, 'toggle'])->name('bookmark.toggle');
         Route::get('/bookmark-list', [BookmarkController::class, 'list'])->name('bookmark.list');
+        Route::post('/notification/{notification}/read', [NotificationController::class, 'markRead'])->name('notification.read');
+        Route::post('/notification/read-all', [NotificationController::class, 'markAllRead'])->name('notification.readAll');
 
+        Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
+        Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
+        Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
+        Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
+        Route::post('/tickets/{ticket}/reply', [TicketController::class, 'reply'])->name('tickets.reply');
+        Route::post('/tickets/{ticket}/close', [TicketController::class, 'close'])->name('tickets.close');
     });
 
     Route::get('settings', [SiteSettingController::class, 'index'])->name('settings.index');

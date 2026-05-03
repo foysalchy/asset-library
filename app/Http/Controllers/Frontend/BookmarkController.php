@@ -20,6 +20,7 @@ class BookmarkController extends Controller
 
         return view('frontend.bookmarks', compact('assets', 'campaigns'));
     }
+
     public function toggle(Request $request)
     {
         $request->validate([

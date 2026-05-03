@@ -103,7 +103,85 @@
                 </div>
                 <span class="text-sm tracking-wide flex items-center gap-1">Bookmark</span>
             </a>
-            <a href="#"
+            <div class="relative" id="notifWrapper">
+                <button onclick="toggleNotifDropdown()"
+                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
+                    <div class="relative">
+                        <i class="fa-regular fa-bell text-lg"></i>
+                        <?php if($unreadCount > 0): ?>
+                            <span id="notifBadge"
+                                class="absolute -top-2 -right-2 bg-white text-[#003b7a] text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                                <?php echo e($unreadCount > 99 ? '99+' : $unreadCount); ?>
+
+                            </span>
+                        <?php endif; ?>
+                    </div>
+                    <span class="text-sm tracking-wide">Notification</span>
+                </button>
+
+                <!-- Dropdown -->
+                <div id="notifDropdown"
+                    class="hidden absolute right-0 top-full mt-1 w-80 bg-white shadow-xl border border-gray-100 rounded-sm z-50">
+
+                    <!-- Header -->
+                    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                        <span class="text-sm font-semibold text-gray-700">Notifications</span>
+                        <?php if($unreadCount > 0): ?>
+                            <button onclick="markAllRead()"
+                                class="text-[11px] text-[#0071c5] font-semibold hover:underline">
+                                Mark all as read
+                            </button>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- List -->
+                    <div class="max-h-80 overflow-y-auto divide-y divide-gray-50">
+                        <?php $__empty_1 = true; $__currentLoopData = $notifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notif): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <?php
+                                // check notification by user
+                                $userId = auth()->id();
+                                $readBy = $notif->read_by ?? []; //
+                                $isRead = in_array($userId, $readBy);
+                            ?>
+
+                            <a href="<?php echo e($notif->url); ?>"
+                                onclick="markRead(event, <?php echo e($notif->id); ?>, '<?php echo e($notif->url); ?>')"
+                                id="notif-<?php echo e($notif->id); ?>" 
+                                class="flex items-start gap-3 px-4 py-4 transition-all border-b border-gray-100
+                                <?php echo e(!$isRead ? 'bg-[#f0f7ff] border-l-4 border-l-[#0071c5]' : 'bg-white opacity-50'); ?> hover:bg-gray-50">
+
+                                    <div
+                                    class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5
+                                    <?php echo e($notif->type === 'asset' ? 'bg-blue-100 text-blue-600' : 'bg-teal-100 text-teal-600'); ?>">
+                                    <i
+                                        class="fa-solid <?php echo e($notif->type === 'asset' ? 'fa-file' : 'fa-bullhorn'); ?> text-xs"></i>
+                                </div>
+
+                                <div class="flex-1 min-w-0">
+                                    <p
+                                        class="text-[13px] leading-snug <?php echo e(!$isRead ? 'font-bold text-gray-900' : 'font-normal text-gray-500'); ?>">
+                                        <?php echo e($notif->title); ?>
+
+                                    </p>
+                                    <p class="text-[11px] text-gray-400 mt-1">
+                                        <?php echo e($notif->created_at->diffForHumans()); ?>
+
+                                    </p>
+                                </div>
+
+                                <?php if(!$isRead): ?>
+                                    <div class="unread-dot w-2.5 h-2.5 bg-[#0071c5] rounded-full shrink-0 mt-2"></div>
+                                <?php endif; ?>
+                            </a>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <div class="px-4 py-10 text-center text-sm text-gray-400">
+                                No notifications yet
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <a href="<?php echo e(route('tickets.index')); ?>"
                 class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                 <i class="fa-regular fa-circle-question text-lg"></i>
                 <span class="text-sm tracking-wide flex items-center gap-1">Help </span>

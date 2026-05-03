@@ -77,6 +77,12 @@ class MenuHelper
                 'path'       => route('settings.index'),
                 'permission' => 'settings.manage',
             ],
+            [
+                'icon'       => 'settings',
+                'name'       => 'Support Ticket',
+                'path'       => route('ticket.admin'),
+                'permission' => 'settings.manage',
+            ],
         ];
 
         // Permission filter

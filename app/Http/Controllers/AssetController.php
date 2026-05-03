@@ -8,6 +8,7 @@ use App\Models\AssetMedia;
 use App\Models\AssetType;
 use App\Models\Project;
 use App\Services\ActivityLogService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -73,6 +74,7 @@ class AssetController extends Controller
         $this->syncMedia($request, $asset);
         $this->activityLog->log('created', $asset, "Created asset: {$asset->title}");
 
+        NotificationService::notifyAll('asset', $asset->id, $asset->title, $asset->slug);
         return redirect()->route('assets.show', $asset)->with('success', 'Asset created successfully.');
     }
 
