@@ -7,16 +7,10 @@
     <div class="container mx-auto px-4 lg:px-6 flex justify-between items-center py-2">
         <!-- ── LOGO ── -->
         <div class="flex items-center gap-3 shrink-0">
-            <a href="<?php echo e(route('home.index')); ?>" class="bg-white px-2 py-2 flex items-center">
-                <img src="<?php echo e($siteSetting->logo_url); ?>" alt="Intel" class="h-[22px] w-auto block" />
+            <a href="<?php echo e(route('home.index')); ?>" class=" px-2 py-2 flex items-center">
+                <img src="<?php echo e($siteSetting->logo_url); ?>" alt="Bhaiya Asset" class="  w-auto h-[40px] block" />
             </a>
-            <div class="flex flex-col justify-center leading-[0.9] text-white">
-                <p class="text-xs uppercase tracking-[1.2px] mb-0.5 opacity-90">
-                    partner <br />
-                    marketing <br />
-                    studio
-                </p>
-            </div>
+            
         </div>
         <button @click="mobileMenu = !mobileMenu" class="lg:hidden text-2xl p-2 focus:outline-none" aria-label="Toggle navigation menu" >
             <i class="fa-solid" :class="mobileMenu ? 'fa-xmark' : 'fa-bars'"></i>
@@ -73,7 +67,7 @@
                     class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
 
 
-                    <img src="<?php echo e(Auth::user()->avatar_url ?? asset('./images/user/user-36.jpg')); ?>" alt="Profile"
+                    <img src="<?php echo e(Auth::user()->avatar_url ?? asset('./images/user/images.png')); ?>" alt="Profile"
                         class="w-6 h-6 rounded-full object-cover border border-white/50">
 
                     <span class="text-sm tracking-wide"><?php echo e(Auth::user()->name); ?></span>

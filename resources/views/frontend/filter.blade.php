@@ -288,7 +288,7 @@
             const shareLink = `${window.location.origin}${window.location.pathname}?share_ids=${ids}&types=${types}`;
 
             // সরাসরি গ্লোবাল ফাংশন কল করা (যা আপনি কম্পোনেন্টে লিখেছেন)
-            openGlobalShareModal(shareLink, 'Shared Intel Assets');
+            openGlobalShareModal(shareLink, 'Shared  Assets');
         }
 
         function closeShareModal() {

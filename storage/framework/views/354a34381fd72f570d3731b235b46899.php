@@ -86,7 +86,7 @@
 
                             </p>
                             <p class="leading-relaxed"><span class="font-bold text-gray-700">Product:</span>
-                                <?php echo e($asset->project->title ?? 'Intel Processors'); ?></p>
+                                <?php echo e($asset->project->title ?? 'Bhaiya Asset Library'); ?></p>
                         </div>
 
                         <div class="mt-10 flex justify-end">

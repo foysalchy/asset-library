@@ -76,7 +76,7 @@ unset($__defined_vars, $__key, $__value); ?>
             <span class="font-normal text-gray-500"><?php echo e($asset->project->name ?? 'General'); ?></span>
         </p>
 
-        <div class="mb-8 flex flex-wrap gap-2">
+        <div class="mb-8 flex flex-wrap gap-2 mt-2">
             <?php if($asset->available_formats): ?>
                 <?php $__currentLoopData = json_decode($asset->available_formats); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $format): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <span class="border border-[#005da4] text-[#005da4] px-3 py-0.5 rounded-full text-xs font-medium uppercase">

@@ -41,7 +41,7 @@
             <span class="font-normal text-gray-500">{{ $campaign->project->name ?? 'General' }}</span>
         </p>
 
-        <div class="mb-8 flex flex-wrap gap-2">
+        <div class="mb-8 flex flex-wrap gap-2 mt-2">
             @if ($campaign->languages)
                 @foreach (array_slice($campaign->languages, 0, 3) as $lang)
                     <span class="border border-[#005da4] text-[#005da4] px-3 py-0.5 rounded-full text-xs font-medium uppercase">

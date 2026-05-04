@@ -7,8 +7,8 @@
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <meta name="description" content="Explore our Asset">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-
-    <title><?php echo e($setup->title ?? 'Intel'); ?></title>
+    <meta name="robots" content="noindex, nofollow">
+    <title><?php echo e($setup->title ?? 'Bhaiya Asset Library'); ?></title>
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="">
     <!-- Outfit Font -->

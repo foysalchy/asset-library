@@ -6,9 +6,9 @@
             <div
                 class="flex flex-col md:flex-row items-center lg:items-start gap-4 lg:gap-8 text-center lg:text-left mb-24 lg:mb-0">
                 <div class="flex flex-col gap-5 shrink-0">
-                    <!-- Intel Badge -->
+                    <!-- Bhaiya Asset Library Badge -->
                     <div
-                        class="relative w-[85px] h-[85px] lg:w-[105px] lg:h-[105px] flex items-center justify-center shrink-0">
+                        class="relative w-[85px] h-[85px] lg:w-[115px] lg:h-[115px] flex items-center justify-center shrink-0">
                         <div class="absolute top-0 right-0 w-[90%] h-[7.5px] bg-[#3293e3]"></div>
                         <div class="absolute top-0 right-0 w-[7.5px] h-[90%] bg-[#3293e3]"></div>
 
@@ -16,21 +16,25 @@
                         <div class="absolute bottom-0 left-0 w-[7.5px] h-[90%] bg-[#48b5e6]"></div>
                         <div class="absolute bottom-[-11px] left-[-11px] w-[12px] h-[12px] bg-[#3293e3] z-20"></div>
                         <div class="relative z-10 flex flex-col items-center justify-center">
-                            <span class="text-3xl text-white font-bold italic leading-none tracking-tighter">intel</span>
+                            <span class="text-3xl text-white font-bold italic leading-none tracking-tighter">Bhaiya</span>
                             <p class="text-sm text-blue-300 leading-none mt-1 opacity-95">
-                                partner
+                                Asset Library
                             </p>
                         </div>
                     </div>
 
                 </div>
+<?php
+    $siteSetting = \App\Models\SiteSetting::first();
 
+?>
                 <div class="pt-0 lg:pt-4">
                     <h1 class="text-2xl lg:text-4xl text-white font-bold leading-tight">
                         Welcome <?php echo e($user->name ?? ''); ?> !
                     </h1>
                     <p class="text-xs lg:text-sm text-white/75 font-bold uppercase tracking-[2px] mt-1">
-                        PARTNER | BUILDER
+                       <?php echo e($siteSetting->slogan); ?>
+
                     </p>
                 </div>
             </div>
@@ -176,6 +180,12 @@
             </a>
         </div>
         <div class="relative group container mx-auto px-6">
+             <div class="absolute -left-5 top-1/2 -translate-y-1/2 z-30 hidden lg:flex">
+                <div
+                    class="swiper-button-prev-custom w-11 h-11 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-[#0071c5] cursor-pointer transition-all">
+                    <i class="fa-solid fa-chevron-left text-lg"></i>
+                </div>
+            </div>
             <div class="swiper mySwiper overflow-hidden">
                 <div class="swiper-wrapper">
                     <?php $__currentLoopData = $latestAssets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asset): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -220,6 +230,12 @@
             </h2>
         </div>
         <div class="relative group container mx-auto px-6">
+            <div class="absolute -left-5 top-1/2 -translate-y-1/2 z-30 hidden lg:flex">
+                <div
+                    class="swiper-button-prev-recommend w-11 h-11 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-[#0071c5] cursor-pointer transition-all">
+                    <i class="fa-solid fa-chevron-left text-lg"></i>
+                </div>
+            </div>
             <div class="swiper recommendSwiper overflow-hidden">
                 <div class="swiper-wrapper">
                     <?php $__currentLoopData = $recommendedAssets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asset): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>

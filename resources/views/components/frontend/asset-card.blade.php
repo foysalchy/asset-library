@@ -48,7 +48,7 @@
             <span class="font-normal text-gray-500">{{ $asset->project->name ?? 'General' }}</span>
         </p>
 
-        <div class="mb-8 flex flex-wrap gap-2">
+        <div class="mb-8 flex flex-wrap gap-2 mt-2">
             @if ($asset->available_formats)
                 @foreach (json_decode($asset->available_formats) as $format)
                     <span class="border border-[#005da4] text-[#005da4] px-3 py-0.5 rounded-full text-xs font-medium uppercase">

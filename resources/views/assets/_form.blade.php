@@ -12,7 +12,7 @@
             </label>
             <input type="text" name="title" id="title" required
                 value="{{ old('title', $isEdit ? $asset->title : '') }}"
-                placeholder="e.g. Static Banners: Intel® Arc™ B580 Graphics"
+                placeholder="e.g. Static Banners:"
                 class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('title') border-red-400 @enderror" />
             @error('title')<p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>@enderror
         </div>
@@ -24,7 +24,7 @@
             </label>
             <input type="text" name="slug" id="slug"
                 value="{{ old('slug', $isEdit ? $asset->slug : '') }}"
-                placeholder="static-banners-intel-arc-b580"
+                placeholder="static-banners-bhaiya-asset-library-arc-b580"
                 class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('slug') border-red-400 @enderror" />
             @error('slug')<p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>@enderror
         </div>

@@ -83,7 +83,7 @@
                                 {{ is_array($asset->dimensions) ? implode('x', $asset->dimensions) : $asset->dimensions }}
                             </p>
                             <p class="leading-relaxed"><span class="font-bold text-gray-700">Product:</span>
-                                {{ $asset->project->title ?? 'Intel Processors' }}</p>
+                                {{ $asset->project->title ?? 'Bhaiya Asset Library' }}</p>
                         </div>
 
                         <div class="mt-10 flex justify-end">

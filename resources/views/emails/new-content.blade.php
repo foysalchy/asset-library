@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
 <style>
     body { font-family: Arial, sans-serif; background: #f3f4f6; margin: 0; padding: 0; }
     .wrapper { max-width: 600px; margin: 40px auto; background: white; border-radius: 4px; overflow: hidden; }
@@ -17,7 +18,7 @@
 <body>
     <div class="wrapper">
         <div class="header">
-            <span style="color:white;font-size:18px;font-weight:800;font-style:italic;">intel</span>
+            <span style="color:white;font-size:18px;font-weight:800;font-style:italic;">Bhaiya Asset Library</span>
             <span style="color:rgba(255,255,255,0.7);font-size:11px;display:block;letter-spacing:2px;text-transform:uppercase;">partner marketing studio</span>
         </div>
         <div class="body">
@@ -27,7 +28,7 @@
             <a href="{{ $url }}" class="btn">View {{ $type }}</a>
         </div>
         <div class="footer">
-            You received this email because you are a registered partner. &copy; {{ date('Y') }} Intel.
+            You received this email because you are a registered partner. &copy; {{ date('Y') }} Bhaiya Asset Library.
         </div>
     </div>
 </body>

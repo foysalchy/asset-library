@@ -7,8 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="Explore our Asset">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-
-    <title>{{ $setup->title ?? 'Intel' }}</title>
+    <meta name="robots" content="noindex, nofollow">
+    <title>{{ $setup->title ?? 'Bhaiya Asset Library' }}</title>
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="">
     <!-- Outfit Font -->

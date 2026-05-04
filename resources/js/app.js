@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             spaceBetween: 24,
             navigation: {
                 nextEl: ".swiper-button-next-custom",
+                 prevEl: ".swiper-button-prev-custom",
             },
             breakpoints: {
                 640: { slidesPerView: 2 },
@@ -71,6 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
             spaceBetween: 24,
             navigation: {
                 nextEl: ".swiper-button-next-recommend",
+                 prevEl: ".swiper-button-prev-recommend",
+
             },
             breakpoints: {
                 640: { slidesPerView: 2 },

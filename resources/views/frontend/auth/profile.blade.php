@@ -24,7 +24,7 @@
                         <div class="mb-8 flex flex-col items-center">
                             <div class="relative group">
                                 <img id="avatarPreview"
-                                    src="{{ Auth::user()->avatar_url ?? asset('./images/user/user-36.jpg') }}"
+                                    src="{{ Auth::user()->avatar_url ?? asset('./images/user/images.png') }}"
                                     alt="avatar"
                                     class="w-32 h-32 rounded-full object-cover border-4 border-gray-100 shadow-md">
                                 <label for="avatarInput"
@@ -38,7 +38,7 @@
                         </div>
 
                         <!-- Name -->
-                        <<div>
+                        <div>
                             <label for="name" class="block text-xs font-bold text-gray-500 uppercase mb-2">Full
                                 Name</label>
                             <input id="name" type="text" name="name" value="{{ Auth::user()->name }}"
@@ -58,7 +58,7 @@
                 </div>
 
                 <button type="submit"
-                    class="w-full bg-[#0071c5] text-white py-3 font-bold uppercase text-xs tracking-widest hover:bg-[#003b7a] transition-all shadow-md">
+                    class="w-full mt-5 bg-[#0071c5] text-white py-3 font-bold uppercase text-xs tracking-widest hover:bg-[#003b7a] transition-all shadow-md">
                     Update Profile
                 </button>
                 </form>
