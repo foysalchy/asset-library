@@ -29,7 +29,7 @@
             </div>
         @endif
 
-        <div class="rounded-2xl border border-gray-200 bg-white pt-4 dark:border-gray-800 dark:bg-white/[0.03]"
+        <div class="rounded-xl border border-gray-100 bg-white pt-4 dark:border-gray-800 dark:bg-white/[0.03]"
             x-data="{
                 deleteModal: false,
                 deleteId: null,
@@ -110,6 +110,9 @@
                                     Media</th>
                                 <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
                                     File</th>
+                                       
+                                    <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                                    Download</th>
                                 <th class="relative px-4 py-3"><span class="sr-only">Actions</span></th>
                             </tr>
                         </thead>
@@ -155,6 +158,7 @@
                                             class="text-sm text-gray-500 dark:text-gray-400">{{ $asset->media->count() }}
                                             file(s)</span>
                                     </td>
+                                    
                                     <td class="px-4 py-4 whitespace-nowrap">
                                         @if ($asset->file_path)
                                             <span
@@ -162,6 +166,10 @@
                                         @else
                                             <span class="text-gray-300 dark:text-gray-600">—</span>
                                         @endif
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        <span
+                                            class="text-sm text-gray-500 dark:text-gray-400">{{ $asset->getTotalDownloadsAttribute() }} </span>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
                                         <div class="flex items-center justify-end gap-2">

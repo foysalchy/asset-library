@@ -216,7 +216,7 @@
     <div class="space-y-5">
 
         {{-- Asset Settings --}}
-        <div class="rounded-xl border border-gray-200 bg-gray-50/50 p-4 dark:border-gray-700 dark:bg-gray-800/40 space-y-4">
+        <div class="rounded-xl border border-gray-100 bg-gray-50/50 p-4 dark:border-gray-700 dark:bg-gray-800/40 space-y-4">
             <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Asset Settings</h4>
 
             {{-- Campaign --}}

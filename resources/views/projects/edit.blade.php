@@ -18,7 +18,7 @@
         <form action="{{ route('projects.update', $project) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
-            <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+            <div class="rounded-xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
                 @include('projects._form', ['project' => $project])
             </div>
 

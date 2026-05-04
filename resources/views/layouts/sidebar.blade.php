@@ -20,26 +20,19 @@
             {{-- Expanded: full logo --}}
             <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
                 class="flex items-center gap-2">
-                @if ($siteSetting?->logo_url)
-                    <img src="{{ $siteSetting->logo_url }}" alt="{{ $siteSetting->site_name }}"
-                        class="h-7 w-7 object-contain rounded" />
-                @endif
-                <span class="text-sm font-bold text-gray-800 dark:text-white whitespace-nowrap">
-                    {{ $siteSetting->site_name }}
-                </span>
+                 
+                    <img src="/logo.png" alt="{{ $siteSetting->site_name }}"
+                        class="h-[50px]  " />
+                
+               
             </span>
 
             {{-- Collapsed: icon / first letter --}}
             <span x-show="!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen">
-                @if ($siteSetting->logo_url)
-                    <img src="{{ $siteSetting->logo_url }}" alt="{{ $siteSetting->site_name }}"
+                
+                    <img src="/favicon.ico" alt="{{ $siteSetting->site_name }}"
                         class="w-8 h-8 object-contain" />
-                @else
-                    <span
-                        class="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white font-bold text-sm">
-                        {{ strtoupper(substr($siteSetting->site_name, 0, 1)) }}
-                    </span>
-                @endif
+                 
             </span>
 
         </a>

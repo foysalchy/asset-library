@@ -38,7 +38,7 @@
         x-transition:leave="transition ease-in duration-75"
         x-transition:leave-start="transform opacity-100 scale-100"
         x-transition:leave-end="transform opacity-0 scale-95"
-        class="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark z-50"
+        class="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-xl border border-gray-100 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark z-50"
         style="display: none;">
         <!-- User Info -->
         <div>

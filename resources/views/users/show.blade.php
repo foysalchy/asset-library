@@ -12,7 +12,7 @@
 
         {{-- Profile Card --}}
         <div class="space-y-5">
-            <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] flex flex-col items-center text-center gap-4">
+            <div class="rounded-xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] flex flex-col items-center text-center gap-4">
                 <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}"
                      class="w-20 h-20 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700">
                 <div>
@@ -42,7 +42,7 @@
             </div>
 
             {{-- Meta --}}
-            <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] space-y-3 text-sm">
+            <div class="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] space-y-3 text-sm">
                 
                 <div class="flex justify-between gap-2">
                     <span class="text-gray-500 dark:text-gray-400">Joined</span>
@@ -57,7 +57,7 @@
             </div>
 
             {{-- Roles --}}
-            <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
+            <div class="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
                 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Roles</h3>
                 <div class="flex flex-wrap gap-2">
                     @forelse($user->roles as $role)
@@ -76,7 +76,7 @@
 
             {{-- Permissions --}}
             @if(!$user->isSuperAdmin() && $user->roles->count())
-                <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
+                <div class="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
                     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Permissions</h3>
                     @php
                         $groupedPermissions = $user->roles
@@ -100,7 +100,7 @@
                     </div>
                 </div>
             @elseif($user->isSuperAdmin())
-                <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-800 dark:bg-amber-900/10">
+                <div class="rounded-xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-800 dark:bg-amber-900/10">
                     <p class="text-sm font-medium text-amber-700 dark:text-amber-400">
                         Super admin has access to all permissions.
                     </p>
@@ -109,7 +109,7 @@
 
             {{-- Activity Log --}}
             @permission('activity_logs.view')
-            <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
+            <div class="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
                 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Recent Activity</h3>
                 @if($logs->count())
                     <div class="space-y-3">

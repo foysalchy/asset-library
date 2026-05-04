@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <div class="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+        <div class="rounded-xl border border-gray-100 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="mb-6">
                 <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">Create Account</h1>
                 <p class="text-lg text-gray-500 dark:text-gray-400 mt-1">Join us today! Please enter your details.</p>

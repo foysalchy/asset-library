@@ -33,7 +33,7 @@
 
         <!-- ── Chat window ── -->
         <div>
-            <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-white/[0.03] overflow-hidden flex flex-col" style="height:620px;">
+            <div class="rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-white/[0.03] overflow-hidden flex flex-col" style="height:620px;">
 
                 <!-- Top bar -->
                 <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-white/[0.03] shrink-0">
@@ -98,7 +98,7 @@
                                 </div>
                                 @if($ticket->image)
                                     <img src="{{ asset('storage/' . $ticket->image) }}" alt="attachment"
-                                        class="mt-2 max-w-[200px] rounded-xl border border-gray-200 dark:border-gray-700">
+                                        class="mt-2 max-w-[200px] rounded-xl border border-gray-100 dark:border-gray-700">
                                 @endif
                             </div>
                         </div>
@@ -136,7 +136,7 @@
                                     </div>
                                     @if($reply->image)
                                         <img src="{{ asset('storage/' . $reply->image) }}" alt="attachment"
-                                            class="mt-2 max-w-[200px] rounded-xl border border-gray-200 dark:border-gray-700">
+                                            class="mt-2 max-w-[200px] rounded-xl border border-gray-100 dark:border-gray-700">
                                     @endif
                                 </div>
                             </div>
@@ -163,7 +163,7 @@
                         <div class="flex-1">
                             <textarea name="message" id="replyMsg" rows="1"
                                 placeholder="Write a reply..."
-                                class="w-full border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-2.5 text-sm text-gray-800 dark:text-white/90 bg-gray-50 dark:bg-white/5 outline-none resize-none leading-relaxed focus:border-blue-300 dark:focus:border-blue-600 transition-colors"
+                                class="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-800 dark:text-white/90 bg-gray-50 dark:bg-white/5 outline-none resize-none leading-relaxed focus:border-blue-300 dark:focus:border-blue-600 transition-colors"
                                 oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'">{{ old('message') }}</textarea>
                             <p id="fileName" class="hidden text-xs text-gray-400 mt-1 px-1"></p>
                         </div>

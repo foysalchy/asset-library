@@ -6,7 +6,7 @@
     <div class="lg:col-span-2 space-y-5">
 
         {{-- Basic Info --}}
-        <div class="rounded-xl border border-gray-200 bg-gray-50/50 p-5 dark:border-gray-700 dark:bg-gray-800/40 space-y-4">
+        <div class="rounded-xl border border-gray-100 bg-gray-50/50 p-5 dark:border-gray-700 dark:bg-gray-800/40 space-y-4">
             <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Basic Info</h4>
 
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -41,7 +41,7 @@
         </div>
 
         {{-- Password --}}
-        <div class="rounded-xl border border-gray-200 bg-gray-50/50 p-5 dark:border-gray-700 dark:bg-gray-800/40 space-y-4">
+        <div class="rounded-xl border border-gray-100 bg-gray-50/50 p-5 dark:border-gray-700 dark:bg-gray-800/40 space-y-4">
             <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Password
                 @if($isEdit)
@@ -71,7 +71,7 @@
 
         {{-- Roles --}}
 @if(!$user->roles->contains('name', 'super_admin'))
-        <div class="rounded-xl border border-gray-200 bg-gray-50/50 p-5 dark:border-gray-700 dark:bg-gray-800/40">
+        <div class="rounded-xl border border-gray-100 bg-gray-50/50 p-5 dark:border-gray-700 dark:bg-gray-800/40">
             <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Assign Roles</h4>
 
             <div class="space-y-2">
@@ -104,7 +104,7 @@
     <div class="space-y-5">
 
         {{-- Avatar --}}
-        <div class="rounded-xl border border-gray-200 bg-gray-50/50 p-5 dark:border-gray-700 dark:bg-gray-800/40"
+        <div class="rounded-xl border border-gray-100 bg-gray-50/50 p-5 dark:border-gray-700 dark:bg-gray-800/40"
             x-data="{
                 preview: '{{ $isEdit && $user->avatar ? $user->avatar_url : '' }}',
                 removed: false,
@@ -144,7 +144,7 @@
         </div>
 
         {{-- Status --}}
-        <div class="rounded-xl border border-gray-200 bg-gray-50/50 p-5 dark:border-gray-700 dark:bg-gray-800/40">
+        <div class="rounded-xl border border-gray-100 bg-gray-50/50 p-5 dark:border-gray-700 dark:bg-gray-800/40">
             <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Status</h4>
             <div class="space-y-2">
                 @foreach(['active' => 'Active', 'inactive' => 'Inactive'] as $value => $label)

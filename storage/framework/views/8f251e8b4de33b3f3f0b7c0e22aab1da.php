@@ -1,17 +1,24 @@
-@php $isEdit = isset($project); @endphp
+<?php $isEdit = isset($project); ?>
 
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
     <div class="lg:col-span-2 space-y-5">
-        {{-- Name --}}
+        
         <div>
             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Project Name <span class="text-red-500">*</span></label>
-            <input type="text" name="name" value="{{ old('name', $isEdit ? $project->name : '') }}" 
+            <input type="text" name="name" value="<?php echo e(old('name', $isEdit ? $project->name : '')); ?>" 
                 class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 dark:border-gray-700 dark:bg-gray-900 dark:text-white" required>
-            @error('name')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+            <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="mt-1 text-xs text-red-500"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
         </div>
 
-        {{-- Logo Upload (Alpine.js logic same as Campaign) --}}
-        <div x-data="{ preview: '{{ $isEdit && $project->logo ? $project->logoUrl : '' }}', removed: false }">
+        
+        <div x-data="{ preview: '<?php echo e($isEdit && $project->logo ? $project->logoUrl : ''); ?>', removed: false }">
             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Logo</label>
             <input type="hidden" name="remove_logo" :value="removed ? '1' : '0'">
             
@@ -36,24 +43,24 @@
 
     <div class="space-y-5">
         <div class="rounded-xl border border-gray-100 bg-gray-50/50 p-4 dark:border-gray-700 dark:bg-gray-800/40 space-y-4">
-            {{-- Concern --}}
+            
             <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Concern</label>
                 <select name="concern" class="w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:bg-gray-900 dark:text-white">
-                    @foreach(\App\Models\Project::CONCERNS as $key => $label)
-                        <option value="{{ $key }}" {{ old('concern', $isEdit ? $project->concern : '') == $key ? 'selected' : '' }}>{{ $label }}</option>
-                    @endforeach
+                    <?php $__currentLoopData = \App\Models\Project::CONCERNS; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($key); ?>" <?php echo e(old('concern', $isEdit ? $project->concern : '') == $key ? 'selected' : ''); ?>><?php echo e($label); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
             </div>
 
-            {{-- Status --}}
+            
             <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Status</label>
                 <select name="status" class="w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 dark:border-gray-700 dark:bg-gray-900 dark:text-white">
-                    <option value="active" {{ old('status', $isEdit ? $project->status : '') == 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="inactive" {{ old('status', $isEdit ? $project->status : '') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                    <option value="active" <?php echo e(old('status', $isEdit ? $project->status : '') == 'active' ? 'selected' : ''); ?>>Active</option>
+                    <option value="inactive" <?php echo e(old('status', $isEdit ? $project->status : '') == 'inactive' ? 'selected' : ''); ?>>Inactive</option>
                 </select>
             </div>
         </div>
     </div>
-</div>
+</div><?php /**PATH C:\laragon\www\asset-library\resources\views/projects/_form.blade.php ENDPATH**/ ?>

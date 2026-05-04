@@ -20,7 +20,7 @@
             <div class="lg:col-span-2 space-y-5">
 
                 {{-- Role Info --}}
-                <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] space-y-4">
+                <div class="rounded-xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] space-y-4">
                     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Role Info</h3>
                     <div>
                         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Name</label>
@@ -39,7 +39,7 @@
                 </div>
 
                 {{-- Permissions --}}
-                <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+                <div class="rounded-xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
                     <div class="flex items-center justify-between mb-5">
                         <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Permissions</h3>
                         <button type="button" onclick="toggleAll()"
@@ -75,7 +75,7 @@
                 </div>
 
                 {{-- Assign Users --}}
-                <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+                <div class="rounded-xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
                     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-5">Assigned Users</h3>
                     <div class="space-y-2 max-h-72 overflow-y-auto pr-1">
                         @foreach($users as $user)
@@ -105,7 +105,7 @@
 
             {{-- Right: summary --}}
             <div>
-                <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sticky top-6">
+                <div class="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sticky top-6">
                     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Summary</h3>
                     <div class="space-y-3 text-sm">
                         <div class="flex justify-between">

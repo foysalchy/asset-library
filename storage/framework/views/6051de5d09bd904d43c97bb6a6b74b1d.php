@@ -50,7 +50,7 @@
 
             
             <?php if($asset->media->count()): ?>
-            <div class="rounded-2xl border border-gray-200 bg-white overflow-hidden dark:border-gray-800 dark:bg-white/[0.03]"
+            <div class="rounded-xl border border-gray-100 bg-white overflow-hidden dark:border-gray-800 dark:bg-white/[0.03]"
                 x-data="{ active: 0, total: <?php echo e($asset->media->count()); ?> }">
 
                 
@@ -126,7 +126,7 @@
 
             
             <?php if($asset->description): ?>
-            <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
+            <div class="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
                 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Description</h3>
                 <div class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     <?php echo nl2br(e($asset->description)); ?>
@@ -134,13 +134,53 @@
                 </div>
             </div>
             <?php endif; ?>
+           <table class="w-full border border-gray-200 text-sm">
+    <thead class="bg-gray-100 text-left">
+        <tr>
+            <th class="p-2 border">User</th>
+            <th class="p-2 border">Total Downloads</th>
+            <th class="p-2 border">IP Address</th>
+            <th class="p-2 border">Last Download</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <?php $__currentLoopData = $asset->downloadLogs->groupBy('user_id'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $userId => $logs): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php
+                $user = $logs->first()->user;
+            ?>
+
+            <tr class="border-t">
+                <td class="p-2 border">
+                    <?php echo e($user->name ?? 'Guest'); ?>
+
+                </td>
+
+                <td class="p-2 border">
+                    <?php echo e($logs->sum('count')); ?>
+
+                </td>
+
+                <td class="p-2 border">
+                    <?php echo e($logs->last()->ip_address); ?>
+
+                </td>
+
+                <td class="p-2 border">
+                    <?php echo e($logs->max('created_at')->format('Y-m-d H:i')); ?>
+
+                </td>
+            </tr>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </tbody>
+</table>
         </div>
 
         
         <div class="space-y-5">
 
             
-            <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
+            <div class="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
                 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Asset Details</h3>
 
                 <div class="space-y-3 text-sm">
@@ -239,7 +279,7 @@
 
             
             <?php if($asset->media->count()): ?>
-            <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
+            <div class="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
                 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Media Files</h3>
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">

@@ -9,7 +9,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         
-        <div class="h-fit rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
+        <div class="h-fit rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
             <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Create New Type</h3>
 
             <form action="<?php echo e(route('asset-types.store')); ?>" method="POST">
@@ -50,7 +50,7 @@ unset($__errorArgs, $__bag); ?>
         </div>
 
         
-        <div class="lg:col-span-2 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden">
+        <div class="lg:col-span-2 rounded-xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden">
             <table class="min-w-full">
                 <thead class="bg-gray-50/50 dark:bg-white/[0.02] border-b border-gray-200 dark:border-gray-700">
                     <tr>

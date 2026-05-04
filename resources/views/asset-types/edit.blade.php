@@ -8,7 +8,7 @@
         <span class="text-gray-700 dark:text-gray-300 font-medium">Edit Type</span>
     </nav>
 
-    <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+    <div class="rounded-xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
         <h3 class="text-lg font-semibold dark:text-white mb-6">Edit Asset Type</h3>
         
         <form action="{{ route('asset-types.update', $assetType) }}" method="POST">

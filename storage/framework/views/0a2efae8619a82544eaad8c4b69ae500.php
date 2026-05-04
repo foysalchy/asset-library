@@ -20,28 +20,19 @@
             
             <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
                 class="flex items-center gap-2">
-                <?php if($siteSetting?->logo_url): ?>
-                    <img src="<?php echo e($siteSetting->logo_url); ?>" alt="<?php echo e($siteSetting->site_name); ?>"
-                        class="h-7 w-7 object-contain rounded" />
-                <?php endif; ?>
-                <span class="text-sm font-bold text-gray-800 dark:text-white whitespace-nowrap">
-                    <?php echo e($siteSetting->site_name); ?>
-
-                </span>
+                 
+                    <img src="/logo.png" alt="<?php echo e($siteSetting->site_name); ?>"
+                        class="h-[50px]  " />
+                
+               
             </span>
 
             
             <span x-show="!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen">
-                <?php if($siteSetting->logo_url): ?>
-                    <img src="<?php echo e($siteSetting->logo_url); ?>" alt="<?php echo e($siteSetting->site_name); ?>"
+                
+                    <img src="/favicon.ico" alt="<?php echo e($siteSetting->site_name); ?>"
                         class="w-8 h-8 object-contain" />
-                <?php else: ?>
-                    <span
-                        class="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white font-bold text-sm">
-                        <?php echo e(strtoupper(substr($siteSetting->site_name, 0, 1))); ?>
-
-                    </span>
-                <?php endif; ?>
+                 
             </span>
 
         </a>

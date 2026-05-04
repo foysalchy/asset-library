@@ -25,7 +25,7 @@
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100 scale-100"
          x-transition:leave-end="opacity-0 scale-95"
-         class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900">
+         class="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-gray-900">
         
         <div class="flex flex-col items-center text-center gap-4">
             <div class="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center dark:bg-red-900/30">

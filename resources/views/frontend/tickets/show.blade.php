@@ -29,7 +29,7 @@
             <!-- ── LEFT: Chat Window (Designing like Admin) ── -->
             <div class="lg:col-span-2">
                 <div
-                    class="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden flex flex-col h-[550px] lg:h-[650px]">
+                    class="rounded-xl border border-gray-100 bg-white shadow-sm overflow-hidden flex flex-col h-[550px] lg:h-[650px]">
 
                     <!-- Messages Area -->
                     <div class="flex-1 overflow-y-auto px-3 lg:px-4 py-6 space-y-6 bg-gray-50/50" id="chatBox">
@@ -51,7 +51,7 @@
                                 </div>
                                 @if ($ticket->image)
                                     <img src="{{ $ticket->image_url }}" alt="attachment"
-                                        class="mt-2 w-full max-w-[200px] sm:max-w-[250px] rounded-xl border border-gray-100">
+                                        class="mt-2 w-full max-w-[200px] sm:max-w-[250px] rounded-xl border border-gray-100 ">
                                 @endif
                             </div>
                         </div>
@@ -106,7 +106,7 @@
                             <!-- Textarea -->
                             <div class="flex-1">
                                 <textarea name="message" id="replyMsg" rows="1" required placeholder="Type your response here..."
-                                    class="w-full border border-gray-200 rounded-2xl px-4 lg:px-5 py-2 lg:py-2.5 text-sm text-gray-700 bg-gray-50 outline-none resize-none leading-relaxed focus:border-[#0071c5] transition-all"
+                                    class="w-full border border-gray-200 rounded-xl px-4 lg:px-5 py-2 lg:py-2.5 text-sm text-gray-700 bg-gray-50 outline-none resize-none leading-relaxed focus:border-[#0071c5] transition-all"
                                     oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,150)+'px'">{{ old('message') }}</textarea>
                                 <p id="fileName" class="hidden text-[10px] text-blue-600 mt-1 px-2 font-bold uppercase">
                                 </p>

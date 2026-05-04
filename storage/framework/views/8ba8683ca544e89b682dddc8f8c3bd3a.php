@@ -5,7 +5,7 @@
         <a href="<?php echo e(route('projects.create')); ?>" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium">New Project</a>
     </div>
 
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+    <div class="rounded-xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div class="overflow-x-auto">
             <table class="w-full text-left">
                 <thead class="border-b border-gray-200 dark:border-gray-700">

@@ -19,7 +19,7 @@
             </div>
         <?php endif; ?>
 
-        <div class="rounded-2xl border border-gray-200 bg-white pt-4 dark:border-gray-800 dark:bg-white/[0.03]"
+        <div class="rounded-xl border border-gray-100 bg-white pt-4 dark:border-gray-800 dark:bg-white/[0.03]"
             x-data="{
                 deleteModal: false,
                 deleteId: null,
@@ -204,7 +204,7 @@
             <div x-show="deleteModal" x-cloak
                 class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
                 <div @click.outside="deleteModal = false"
-                    class="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 w-full max-w-sm mx-4">
+                    class="bg-white dark:bg-gray-900 rounded-xl shadow-xl p-6 w-full max-w-sm mx-4">
                     <div class="flex items-center gap-4 mb-4">
                         <div
                             class="w-12 h-12 rounded-full bg-red-50 dark:bg-red-900/30 flex items-center justify-center shrink-0">

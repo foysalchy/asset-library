@@ -13,7 +13,7 @@
     </div>
     <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+        <div class="rounded-xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
             @include('users._form', ['roles' => $roles, 'assignedRoles' => []])
         </div>
         <div class="flex items-center justify-end gap-3 mt-5">

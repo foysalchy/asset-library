@@ -37,7 +37,7 @@
     </div>
     <?php endif; ?>
 
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+    <div class="rounded-xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
         x-data="{ deleteModal: false, deleteId: null, deleteTitle: '',
             openDelete(id, title) { this.deleteId = id; this.deleteTitle = title; this.deleteModal = true; } }">
 
@@ -130,7 +130,7 @@
         
         <div x-show="deleteModal" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display:none;">
             <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" @click="deleteModal = false"></div>
-            <div class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900"
+            <div class="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-gray-900"
                 x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
                 <div class="flex flex-col items-center text-center gap-4">
                     <div class="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center dark:bg-red-900/30">

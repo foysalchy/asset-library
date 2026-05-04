@@ -21,7 +21,7 @@
             <div class="lg:col-span-2 space-y-5">
 
                 {{-- Name & Label --}}
-                <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] space-y-5">
+                <div class="rounded-xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] space-y-5">
                     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Role Info</h3>
 
                     <div>
@@ -47,7 +47,7 @@
                 </div>
 
                 {{-- Permissions --}}
-                <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+                <div class="rounded-xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
                     <div class="flex items-center justify-between mb-5">
                         <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Permissions</h3>
                         <button type="button" onclick="toggleAll()"
@@ -91,7 +91,7 @@
 
             {{-- Right: summary --}}
             <div>
-                <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sticky top-6">
+                <div class="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sticky top-6">
                     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Summary</h3>
                     <p class="text-xs text-gray-400 dark:text-gray-500">
                         Selected permissions will be assigned to this role. Users with this role will inherit all selected permissions.

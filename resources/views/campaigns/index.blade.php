@@ -32,7 +32,7 @@
         @endif
 
         {{-- Table Card --}}
-        <div class="rounded-2xl border border-gray-200 bg-white pt-4 dark:border-gray-800 dark:bg-white/[0.03]"
+        <div class="rounded-xl border border-gray-100 bg-white pt-4 dark:border-gray-800 dark:bg-white/[0.03]"
              x-data="{
                 search: '{{ request('search') }}',
                 statusFilter: '{{ request('status') }}',
@@ -95,6 +95,7 @@
                                 <th scope="col" class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Languages</th>
                                 <th scope="col" class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Published</th>
                                 <th scope="col" class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Expires</th>
+                                <th scope="col" class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Download</th>
                                 <th scope="col" class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Status</th>
                                 <th scope="col" class="relative px-4 py-3"><span class="sr-only">Actions</span></th>
                             </tr>
@@ -154,6 +155,11 @@
                                         <div class="text-sm text-gray-500 dark:text-gray-400">
                                             {{ $campaign->expired_at ? $campaign->expired_at->format('M d, Y') : '—' }}
                                         </div>
+                                    </td>
+                                    <td class="px-4 py-4 whitespace-nowrap">
+                                        <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize {{ $campaign->statusBadgeClass }}">
+                                            {{ $campaign->getTotalDownloadsAttribute() }}
+                                        </span>
                                     </td>
 
                                     {{-- Status --}}
@@ -279,7 +285,7 @@
                  class="fixed inset-0 z-50 flex items-center justify-center p-4"
                  style="display:none;">
                 <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" @click="deleteModal = false"></div>
-                <div class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-900"
+                <div class="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-gray-900"
                      x-transition:enter="transition ease-out duration-200"
                      x-transition:enter-start="opacity-0 scale-95"
                      x-transition:enter-end="opacity-100 scale-100">
