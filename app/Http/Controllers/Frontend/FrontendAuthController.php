@@ -19,7 +19,7 @@ class FrontendAuthController extends Controller
         $downloadLogs = DownloadLog::where('user_id', auth()->id())
             ->orderBy('updated_at', 'desc')
             ->get();
-        return view('frontend.auth.profile',compact('downloadLogs'));
+        return view('frontend.auth.profile', compact('downloadLogs'));
     }
     //profile update
     public function update(Request $request)
@@ -49,7 +49,7 @@ class FrontendAuthController extends Controller
     }
     public function showSignup()
     {
-        if (Auth::check()) return redirect()->route('frontend.dashboard');
+        if (Auth::check()) return redirect()->back();
         return view('frontend.auth.signup');
     }
 
@@ -79,7 +79,7 @@ class FrontendAuthController extends Controller
 
     public function showSignin()
     {
-        if (Auth::check()) return redirect()->route('frontend.dashboard');
+        if (Auth::check()) return redirect()->back();
         return view('frontend.auth.signin');
     }
 

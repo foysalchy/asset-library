@@ -26,7 +26,7 @@ class MenuHelper
                 'icon'       => 'dashboard',
                 'name'       => 'Dashboard',
                 'path'       => route('dashboard'),
-                'permission' => null, // সবাই দেখতে পাবে
+                'permission' => 'dashboard.view',
             ],
             [
                 'icon'       => 'project',

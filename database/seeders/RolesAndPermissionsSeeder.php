@@ -46,6 +46,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
             ['name' => 'activity_logs.view', 'label' => 'View Activity Logs', 'group' => 'Logs'],
             ['name' => 'settings.manage',    'label' => 'Manage Settings',    'group' => 'Settings'],
+            ['name' => 'dashboard.view',    'label' => 'Dashboard',    'group' => 'dashboard'],
         ];
 
         foreach ($permissions as $permission) {
