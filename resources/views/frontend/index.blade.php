@@ -5,7 +5,7 @@
         <div class="container mx-auto mx-auto flex flex-col md:flex-row justify-between items-start md:items-center">
             <!-- Welcome Info Section -->
             <div
-                class="flex flex-col md:flex-row items-center lg:items-start gap-4 lg:gap-8 text-center lg:text-left mb-24 lg:mb-0">
+                class="flex flex-col md:flex-row items-center lg:items-start gap-4 lg:gap-8 text-center lg:text-left mb-24 lg:mb-0 w-full">
                 <div class="flex flex-col gap-5 shrink-0">
                     <!-- Bhaiya Asset Library Badge -->
                     <div
@@ -149,7 +149,7 @@
     <section class="container mx-auto px-6 py-12">
         <div class="flex items-center gap-3 mb-8">
             <a href="{{ route('home.filter', ['section' => 'assets', 'sort' => 'latest']) }}">
-                <h2 class="text-3xl text-[#0071c5] underline cursor-pointer">
+                <h2 class="text-xl lg:text-3xl text-[#0071c5] underline ">
                     Latest Marketing Assets
                 </h2>
             </a>
@@ -160,7 +160,7 @@
             </a>
         </div>
         <div class="relative group container mx-auto px-6">
-             <div class="absolute -left-5 top-1/2 -translate-y-1/2 z-30 hidden lg:flex">
+             <div class="absolute -left-5 top-1/2 -translate-y-1/2 z-30   lg:flex">
                 <div
                     class="swiper-button-prev-custom w-11 h-11 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-[#0071c5] cursor-pointer transition-all">
                     <i class="fa-solid fa-chevron-left text-lg"></i>
@@ -175,7 +175,7 @@
             </div>
 
             <!-- Swiper Next Button -->
-            <div class="absolute -right-5 top-1/2 -translate-y-1/2 z-30 hidden lg:flex">
+            <div class="absolute -right-5 top-1/2 -translate-y-1/2 z-30   lg:flex">
                 <div
                     class="swiper-button-next-custom w-11 h-11 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-[#0071c5] cursor-pointer transition-all">
                     <i class="fa-solid fa-chevron-right text-lg"></i>
@@ -186,12 +186,12 @@
     <!-- ── recommended ── -->
     <section class="container mx-auto px-6 py-12">
         <div class="flex items-center gap-3 mb-8">
-            <h2 class="text-3xl text-gray-800 font-light cursor-pointer">
+            <h2 class="text-xl lg:text-3xl text-[#0071c5] underline">
                 Recommended Assets for You
             </h2>
         </div>
         <div class="relative group container mx-auto px-6">
-            <div class="absolute -left-5 top-1/2 -translate-y-1/2 z-30 hidden lg:flex">
+            <div class="absolute -left-5 top-1/2 -translate-y-1/2 z-30   lg:flex">
                 <div
                     class="swiper-button-prev-recommend w-11 h-11 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-[#0071c5] cursor-pointer transition-all">
                     <i class="fa-solid fa-chevron-left text-lg"></i>
@@ -206,7 +206,7 @@
             </div>
 
             <!-- Next Button -->
-            <div class="absolute -right-5 top-1/2 -translate-y-1/2 z-30 hidden lg:flex">
+            <div class="absolute -right-5 top-1/2 -translate-y-1/2 z-30   lg:flex">
                 <div
                     class="swiper-button-next-recommend w-11 h-11 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-[#0071c5] cursor-pointer transition-all">
                     <i class="fa-solid fa-chevron-right text-lg"></i>
