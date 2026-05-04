@@ -1,7 +1,7 @@
 {{-- create.blade.php --}}
 @extends('layouts.app')
 @section('content')
-<div class="p-4 mx-auto max-w-screen-2xl md:p-6">
+<div class="p-4 mx-auto w-full  md:p-6">
     <nav class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
         <a href="{{ route('users.index') }}" class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">Users</a>
         <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/></svg>

@@ -882,3 +882,11 @@ pre[class*='language-'] {
     margin-right: -60px !important;
   }
 }
+.menu-item{
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+.menu-item svg{
+  width: 25px !important;
+  height: 25px !important;
+}

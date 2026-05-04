@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="p-4 mx-auto w-full  md:p-6">
 
         <div class="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
@@ -8,7 +6,7 @@
                 <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">Assets</h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Manage all project assets</p>
             </div>
-            <a href="{{ route('assets.create') }}"
+            <a href="<?php echo e(route('assets.create')); ?>"
                 class="inline-flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs hover:bg-blue-600 transition-colors">
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -18,16 +16,16 @@
             </a>
         </div>
 
-        @if (session('success'))
+        <?php if(session('success')): ?>
             <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
                 class="mb-5 flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 px-4 py-3 dark:border-green-800 dark:bg-green-900/20">
                 <svg class="shrink-0 text-green-500" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" clip-rule="evenodd"
                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
                 </svg>
-                <p class="text-sm font-medium text-green-700 dark:text-green-400">{{ session('success') }}</p>
+                <p class="text-sm font-medium text-green-700 dark:text-green-400"><?php echo e(session('success')); ?></p>
             </div>
-        @endif
+        <?php endif; ?>
 
         <div class="rounded-2xl border border-gray-200 bg-white pt-4 dark:border-gray-800 dark:bg-white/[0.03]"
             x-data="{
@@ -39,45 +37,47 @@
                     this.deleteModal = true; }
             }">
 
-            {{-- Filters --}}
+            
             <div class="flex flex-col gap-3 px-5 mb-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                 <div>
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">All Assets</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $assets->total() }} total assets</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($assets->total()); ?> total assets</p>
                 </div>
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-                    <form method="GET" action="{{ route('assets.index') }}" id="filterForm" class="flex gap-2">
+                    <form method="GET" action="<?php echo e(route('assets.index')); ?>" id="filterForm" class="flex gap-2">
                         <select name="project_id" onchange="document.getElementById('filterForm').submit()"
                             class="h-[42px] rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs focus:border-blue-300 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
                             <option value="">All Projects</option>
-                            @foreach ($projects as $project)
-                                <option value="{{ $project->id }}"
-                                    {{ request('project_id') == $project->id ? 'selected' : '' }}>
-                                    {{ $project->name }}
+                            <?php $__currentLoopData = $projects; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $project): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($project->id); ?>"
+                                    <?php echo e(request('project_id') == $project->id ? 'selected' : ''); ?>>
+                                    <?php echo e($project->name); ?>
+
                                 </option>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
                         <select name="asset_type_id" onchange="document.getElementById('filterForm').submit()"
                             class="h-[42px] rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs focus:border-blue-300 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
                             <option value="">All Types</option>
-                            @foreach ($assetTypes as $type)
-                                <option value="{{ $type->id }}"
-                                    {{ request('asset_type_id') == $type->id ? 'selected' : '' }}>
-                                    {{ $type->name }}
+                            <?php $__currentLoopData = $assetTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($type->id); ?>"
+                                    <?php echo e(request('asset_type_id') == $type->id ? 'selected' : ''); ?>>
+                                    <?php echo e($type->name); ?>
+
                                 </option>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
-                        @if (request('search'))
-                            <input type="hidden" name="search" value="{{ request('search') }}">
-                        @endif
+                        <?php if(request('search')): ?>
+                            <input type="hidden" name="search" value="<?php echo e(request('search')); ?>">
+                        <?php endif; ?>
                     </form>
-                    <form method="GET" action="{{ route('assets.index') }}">
-                        @if (request('project_id'))
-                            <input type="hidden" name="project_id" value="{{ request('project_id') }}">
-                        @endif
-                        @if (request('asset_type_id'))
-                            <input type="hidden" name="asset_type_id" value="{{ request('asset_type_id') }}">
-                        @endif
+                    <form method="GET" action="<?php echo e(route('assets.index')); ?>">
+                        <?php if(request('project_id')): ?>
+                            <input type="hidden" name="project_id" value="<?php echo e(request('project_id')); ?>">
+                        <?php endif; ?>
+                        <?php if(request('asset_type_id')): ?>
+                            <input type="hidden" name="asset_type_id" value="<?php echo e(request('asset_type_id')); ?>">
+                        <?php endif; ?>
                         <div class="relative">
                             <button type="submit" class="absolute -translate-y-1/2 left-4 top-1/2">
                                 <svg class="fill-gray-500 dark:fill-gray-400" width="20" height="20"
@@ -86,7 +86,7 @@
                                         d="M3.04199 9.37381C3.04199 5.87712 5.87735 3.04218 9.37533 3.04218C12.8733 3.04218 15.7087 5.87712 15.7087 9.37381C15.7087 12.8705 12.8733 15.7055 9.37533 15.7055C5.87735 15.7055 3.04199 12.8705 3.04199 9.37381ZM9.37533 1.54218C5.04926 1.54218 1.54199 5.04835 1.54199 9.37381C1.54199 13.6993 5.04926 17.2055 9.37533 17.2055C11.2676 17.2055 13.0032 16.5346 14.3572 15.4178L17.1773 18.2381C17.4702 18.531 17.945 18.5311 18.2379 18.2382C18.5308 17.9453 18.5309 17.4704 18.238 17.1775L15.4182 14.3575C16.5367 13.0035 17.2087 11.2671 17.2087 9.37381C17.2087 5.04835 13.7014 1.54218 9.37533 1.54218Z" />
                                 </svg>
                             </button>
-                            <input type="text" name="search" value="{{ request('search') }}"
+                            <input type="text" name="search" value="<?php echo e(request('search')); ?>"
                                 placeholder="Search assets..."
                                 class="h-[42px] w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-[42px] pr-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 xl:w-[240px]" />
                         </div>
@@ -94,7 +94,7 @@
                 </div>
             </div>
 
-            {{-- Table --}}
+            
             <div class="overflow-hidden">
                 <div class="max-w-full px-5 overflow-x-auto">
                     <table class="min-w-full">
@@ -114,14 +114,14 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                            @forelse($assets as $asset)
+                            <?php $__empty_1 = true; $__currentLoopData = $assets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asset): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                 <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
                                     <td class="px-4 py-4 whitespace-nowrap">
                                         <div class="flex items-center gap-3">
-                                            @if ($asset->media->first()?->media_type === 'image')
-                                                <img src="{{ $asset->media->first()->url }}" alt="{{ $asset->title }}"
+                                            <?php if($asset->media->first()?->media_type === 'image'): ?>
+                                                <img src="<?php echo e($asset->media->first()->url); ?>" alt="<?php echo e($asset->title); ?>"
                                                     class="w-10 h-10 rounded-lg object-cover shrink-0 border border-gray-200 dark:border-gray-700">
-                                            @else
+                                            <?php else: ?>
                                                 <div
                                                     class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center shrink-0">
                                                     <svg class="text-purple-500" width="18" height="18"
@@ -130,45 +130,47 @@
                                                             d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
                                                     </svg>
                                                 </div>
-                                            @endif
+                                            <?php endif; ?>
                                             <div>
                                                 <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                                    {{ $asset->title }}</p>
-                                                @if ($asset->asset_id_code)
-                                                    <p class="text-xs text-gray-400 mt-0.5">{{ $asset->asset_id_code }}</p>
-                                                @endif
+                                                    <?php echo e($asset->title); ?></p>
+                                                <?php if($asset->asset_id_code): ?>
+                                                    <p class="text-xs text-gray-400 mt-0.5"><?php echo e($asset->asset_id_code); ?></p>
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
                                         <span
-                                            class="text-sm text-gray-600 dark:text-gray-400">{{ $asset->project->name }}</span>
+                                            class="text-sm text-gray-600 dark:text-gray-400"><?php echo e($asset->project->name); ?></span>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
                                         <span
                                             class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                                            {{ $asset->assetType->name }}
+                                            <?php echo e($asset->assetType->name); ?>
+
                                         </span>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
                                         <span
-                                            class="text-sm text-gray-500 dark:text-gray-400">{{ $asset->media->count() }}
+                                            class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($asset->media->count()); ?>
+
                                             file(s)</span>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
-                                        @if ($asset->file_path)
+                                        <?php if($asset->file_path): ?>
                                             <span
-                                                class="text-sm text-gray-500 dark:text-gray-400">{{ $asset->file_size_formatted }}</span>
-                                        @else
+                                                class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($asset->file_size_formatted); ?></span>
+                                        <?php else: ?>
                                             <span class="text-gray-300 dark:text-gray-600">—</span>
-                                        @endif
+                                        <?php endif; ?>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
                                         <div class="flex items-center justify-end gap-2">
 
-                                            {{-- View --}}
-                                            @permission('assets.view')
-                                                <a href="{{ route('assets.show', $asset) }}"
+                                            
+                                            <?php if(auth()->check() && auth()->user()->hasPermission('assets.view')): ?>
+                                                <a href="<?php echo e(route('assets.show', $asset)); ?>"
                                                     class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/10 transition-colors">
                                                     <svg width="16" height="16" viewBox="0 0 20 20"
                                                         fill="currentColor">
@@ -177,11 +179,11 @@
                                                             d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
                                                     </svg>
                                                 </a>
-                                            @endpermission
+                                            <?php endif; ?>
 
-                                            {{-- Edit --}}
-                                            @permission('assets.edit')
-                                                <a href="{{ route('assets.edit', $asset) }}"
+                                            
+                                            <?php if(auth()->check() && auth()->user()->hasPermission('assets.edit')): ?>
+                                                <a href="<?php echo e(route('assets.edit', $asset)); ?>"
                                                     class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-blue-900/20 transition-colors">
                                                     <svg width="16" height="16" viewBox="0 0 20 20"
                                                         fill="currentColor">
@@ -189,14 +191,14 @@
                                                             d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                                     </svg>
                                                 </a>
-                                            @endpermission
+                                            <?php endif; ?>
 
-                                            {{-- Delete --}}
-                                            @permission('assets.delete')
+                                            
+                                            <?php if(auth()->check() && auth()->user()->hasPermission('assets.delete')): ?>
                                                 <button type="button"
                                                     @click="$dispatch('open-delete-modal', {
-                url: '{{ route('assets.destroy', $asset->id) }}',
-                title: '{{ addslashes($asset->title) }}'
+                url: '<?php echo e(route('assets.destroy', $asset->id)); ?>',
+                title: '<?php echo e(addslashes($asset->title)); ?>'
             })"
                                                     class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20 transition-colors">
                                                     <svg width="16" height="16" viewBox="0 0 20 20"
@@ -205,12 +207,12 @@
                                                             d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" />
                                                     </svg>
                                                 </button>
-                                            @endpermission
+                                            <?php endif; ?>
 
                                         </div>
                                     </td>
                                 </tr>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                 <tr>
                                     <td colspan="6" class="px-4 py-16 text-center">
                                         <div class="flex flex-col items-center gap-3">
@@ -228,21 +230,21 @@
                                                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Get started by
                                                     creating a new asset.</p>
                                             </div>
-                                            <a href="{{ route('assets.create') }}"
+                                            <a href="<?php echo e(route('assets.create')); ?>"
                                                 class="inline-flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 transition-colors">
                                                 Create Asset
                                             </a>
                                         </div>
                                     </td>
                                 </tr>
-                            @endforelse
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {{-- Pagination --}}
-            @include('partials.pagination', ['items' => $assets])
+            
+            <?php echo $__env->make('partials.pagination', ['items' => $assets], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 
 
@@ -250,4 +252,6 @@
 
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\asset-library\resources\views/assets/index.blade.php ENDPATH**/ ?>

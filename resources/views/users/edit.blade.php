@@ -1,7 +1,7 @@
 {{-- edit.blade.php --}}
 @extends('layouts.app')
 @section('content')
-<div class="p-4 mx-auto max-w-screen-2xl md:p-6">
+<div class="p-4 mx-auto w-full  md:p-6">
     <nav class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
         <a href="{{ route('users.index') }}" class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">Users</a>
         <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
