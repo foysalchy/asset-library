@@ -1,6 +1,4 @@
-@extends('frontend.layouts.font')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <section class="container mx-auto px-4 lg:px-8 py-12 font-['Outfit']">
 
         <div class="mb-10">
@@ -16,15 +14,15 @@
                     <h2 class="text-lg font-bold text-gray-800 mb-6 border-b pb-2 uppercase tracking-wider">Personal Info
                     </h2>
 
-                    <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
+                    <form action="<?php echo e(route('profile.update')); ?>" method="POST" enctype="multipart/form-data">
+                        <?php echo csrf_field(); ?>
+                        <?php echo method_field('PUT'); ?>
 
                         <!-- Avatar Upload -->
                         <div class="mb-8 flex flex-col items-center">
                             <div class="relative group">
                                 <img id="avatarPreview"
-                                    src="{{ Auth::user()->avatar_url ?? asset('./images/user/user-36.jpg') }}"
+                                    src="<?php echo e(Auth::user()->avatar_url ?? asset('./images/user/user-36.jpg')); ?>"
                                     alt="avatar"
                                     class="w-32 h-32 rounded-full object-cover border-4 border-gray-100 shadow-md">
                                 <label for="avatarInput"
@@ -41,19 +39,19 @@
                         <<div>
                             <label for="name" class="block text-xs font-bold text-gray-500 uppercase mb-2">Full
                                 Name</label>
-                            <input id="name" type="text" name="name" value="{{ Auth::user()->name }}"
+                            <input id="name" type="text" name="name" value="<?php echo e(Auth::user()->name); ?>"
                                 class="w-full border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-[#0071c5] transition-all">
                 </div>
                 <div class="mb-5">
                     <label for="phone" class="block text-xs font-bold text-gray-500 uppercase mb-2">Phone</label>
-                    <input id="phone" type="text" name="phone" value="{{ Auth::user()->phone }}"
+                    <input id="phone" type="text" name="phone" value="<?php echo e(Auth::user()->phone); ?>"
                         class="w-full border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-[#0071c5] transition-all">
                 </div>
 
                 <!-- Email -->
                 <div>
                     <label for="email" class="block text-xs font-bold text-gray-500 uppercase mb-2">Email Address</label>
-                    <input id="email" type="email" value="{{ Auth::user()->email }}" disabled
+                    <input id="email" type="email" value="<?php echo e(Auth::user()->email); ?>" disabled
                         class="w-full border border-gray-100 bg-gray-50 px-4 py-2.5 text-sm text-gray-600 cursor-not-allowed">
                 </div>
 
@@ -71,7 +69,8 @@
                 <div class="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
                     <h2 class="text-lg font-bold text-gray-800 uppercase tracking-wider">Download History</h2>
                     <span
-                        class="bg-blue-100 text-blue-800 text-[10px] font-black px-2 py-1 rounded">{{ $downloadLogs->count() }}
+                        class="bg-blue-100 text-blue-800 text-[10px] font-black px-2 py-1 rounded"><?php echo e($downloadLogs->count()); ?>
+
                         Total</span>
                 </div>
 
@@ -85,38 +84,41 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50">
-                            @forelse($downloadLogs as $log)
-                                @php
+                            <?php $__empty_1 = true; $__currentLoopData = $downloadLogs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $log): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                <?php
                                     $item =
                                         $log->model === 'asset'
                                             ? \App\Models\Asset::find($log->model_id)
                                             : \App\Models\Campaign::find($log->model_id);
-                                @endphp
-                                @if ($item)
+                                ?>
+                                <?php if($item): ?>
                                     <tr class="hover:bg-gray-50/50 transition-colors">
                                         <td class="px-6 py-4">
-                                            <a href="{{ route($log->model . '.details', $item->slug) }}"
+                                            <a href="<?php echo e(route($log->model . '.details', $item->slug)); ?>"
                                                 class="text-sm font-semibold text-[#0071c5] hover:underline">
-                                                {{ $item->title }}
+                                                <?php echo e($item->title); ?>
+
                                             </a>
                                         </td>
                                         <td class="px-6 py-4">
                                             <span
-                                                class="text-[10px] font-bold uppercase px-2 py-0.5 rounded {{ $log->model === 'asset' ? 'bg-blue-100 text-blue-800' : 'bg-teal-100 text-teal-800' }}">
-                                                {{ $log->model }}
+                                                class="text-[10px] font-bold uppercase px-2 py-0.5 rounded <?php echo e($log->model === 'asset' ? 'bg-blue-100 text-blue-800' : 'bg-teal-100 text-teal-800'); ?>">
+                                                <?php echo e($log->model); ?>
+
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 text-right text-xs text-gray-600">
-                                            {{ $log->updated_at->format('d M Y, h:i A') }}
+                                            <?php echo e($log->updated_at->format('d M Y, h:i A')); ?>
+
                                         </td>
                                     </tr>
-                                @endif
-                            @empty
+                                <?php endif; ?>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                 <tr>
                                     <td colspan="3" class="px-6 py-12 text-center text-gray-600 italic">No download
                                         history found.</td>
                                 </tr>
-                            @endforelse
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -137,4 +139,6 @@
             }
         }
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('frontend.layouts.font', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\asset-library\resources\views/frontend/auth/profile.blade.php ENDPATH**/ ?>

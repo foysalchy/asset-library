@@ -27,7 +27,7 @@
 
         @php $bookmarked = $asset->isBookmarkedBy(auth()->id()); @endphp
         <button onclick="toggleBookmark(this, 'asset', {{ $asset->id }})"
-            class="absolute top-2 right-4 hover:scale-110 transition-transform {{ $bookmarked ? 'text-[#0071c5]' : 'text-[#00aeef]' }}">
+            class="absolute top-2 right-4 hover:scale-110 transition-transform {{ $bookmarked ? 'text-[#0071c5]' : 'text-[#00aeef]' }}" aria-label="Save to bookmarks">
             <i class="{{ $bookmarked ? 'fa-solid' : 'fa-regular' }} fa-bookmark text-2xl"></i>
         </button>
 

@@ -1,11 +1,10 @@
-@extends('frontend.layouts.font')
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="bg-[#f3f3f3] pb-20 font-['Outfit']">
         <section class="container mx-auto">
             <!-- 1. Sub-header Navigation -->
             <div class="flex items-center justify-between py-6 px-6 text-[#0071c5]">
                 <div class="flex items-center gap-6">
-                    <a href="{{ url()->previous() }}" class="hover:opacity-70"><i class="fas fa-arrow-left text-xl"></i></a>
+                    <a href="<?php echo e(url()->previous()); ?>" class="hover:opacity-70"><i class="fas fa-arrow-left text-xl"></i></a>
                     <p class="text-sm">
                         <span class="text-[#757575] font-semibold">Preview this content in a different language:</span>
                         <span class="font-bold cursor-pointer ml-1">English <i
@@ -23,18 +22,18 @@
 
                     <!-- Thumbnail Rail (বাম পাশের ছোট ইমেজগুলো) -->
                     <div class="w-20 shrink-0 flex flex-col gap-4">
-                        @foreach ($asset->media as $index => $media)
+                        <?php $__currentLoopData = $asset->media; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $media): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div
-                                class="thumb-item border-2 {{ $index == 0 ? 'border-[#0071c5]' : 'border-transparent' }} p-1 cursor-pointer transition-all hover:border-gray-300">
-                                <img src="{{ $media->url }}" class="w-full h-auto block object-cover aspect-square"
+                                class="thumb-item border-2 <?php echo e($index == 0 ? 'border-[#0071c5]' : 'border-transparent'); ?> p-1 cursor-pointer transition-all hover:border-gray-300">
+                                <img src="<?php echo e($media->url); ?>" class="w-full h-auto block object-cover aspect-square"
                                     alt="thumbnail">
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
 
                     <div class="flex-1 flex items-center justify-center bg-gray-50/50 overflow-hidden rounded-sm">
                         <img id="main-preview"
-                            src="{{ $asset->media->first()->url ?? asset('assets/images/placeholder.jpg') }}"
+                            src="<?php echo e($asset->media->first()->url ?? asset('assets/images/placeholder.jpg')); ?>"
                             alt="Main Asset"
                             class="w-full h-auto max-h-[750px] object-contain transition-opacity duration-300 transform scale-100 hover:scale-105 cursor-zoom-in">
                     </div>
@@ -44,7 +43,7 @@
                 <div class="lg:col-span-5 bg-white shadow-sm border border-gray-200 flex flex-col">
                     <!-- Buttons Top Area -->
                     <div class="p-6 border-b border-gray-100 flex gap-3">
-                        <a href="{{ route('drive.file.stream', ['type' => 'asset', 'id' => $asset->id]) }}" download
+                        <a href="<?php echo e(route('drive.file.stream', ['type' => 'asset', 'id' => $asset->id])); ?>" download
                             class="flex-1 bg-[#0071c5] text-white font-bold py-3 px-6 flex items-center justify-center gap-2 hover:bg-[#005ea3] transition-all">
                             <i class="fa-solid fa-download"></i> Download
                         </a>
@@ -57,33 +56,37 @@
                     <!-- Meta Info Area -->
                     <div class="p-8 flex-grow">
                         <h2 class="text-[#0071c5] text-[22px] font-medium leading-snug mb-4">
-                            {{ $asset->title }}
+                            <?php echo e($asset->title); ?>
+
                         </h2>
                         <p class="text-gray-600 text-[14px] mb-8">
-                            {{ $asset->description }}
+                            <?php echo e($asset->description); ?>
+
                         </p>
 
                         <div class="space-y-3 text-[14px]">
-                            <p><span class="font-bold text-gray-700">ID#</span> {{ $asset->asset_id_code ?? 'N/A' }}</p>
+                            <p><span class="font-bold text-gray-700">ID#</span> <?php echo e($asset->asset_id_code ?? 'N/A'); ?></p>
                             <p><span class="font-bold text-gray-700">Upload date:</span>
-                                {{ $asset->uploaded_at?->format('d/m/Y') ?? $asset->created_at->format('d/m/Y') }}</p>
+                                <?php echo e($asset->uploaded_at?->format('d/m/Y') ?? $asset->created_at->format('d/m/Y')); ?></p>
                             <p><span class="font-bold text-gray-700">Topics:</span>
                                 <span
-                                    class="text-[#0071c5] cursor-pointer hover:underline">{{ $asset->project->title ?? 'General' }}</span>
+                                    class="text-[#0071c5] cursor-pointer hover:underline"><?php echo e($asset->project->title ?? 'General'); ?></span>
                             </p>
                             <p><span class="font-bold text-gray-700">Asset Type:</span>
-                                {{ $asset->assetType->name ?? 'Online Asset' }}</p>
+                                <?php echo e($asset->assetType->name ?? 'Online Asset'); ?></p>
                             <p><span class="font-bold text-gray-700">Available File Format:</span>
                                 <span
-                                    class="capitalize">{{ is_array($asset->available_formats) ? implode(', ', $asset->available_formats) : $asset->available_formats }}</span>
+                                    class="capitalize"><?php echo e(is_array($asset->available_formats) ? implode(', ', $asset->available_formats) : $asset->available_formats); ?></span>
                             </p>
-                            <p><span class="font-bold text-gray-700">File Size:</span> {{ $asset->file_size_formatted }}
+                            <p><span class="font-bold text-gray-700">File Size:</span> <?php echo e($asset->file_size_formatted); ?>
+
                             </p>
                             <p><span class="font-bold text-gray-700">Asset Dimensions:</span>
-                                {{ is_array($asset->dimensions) ? implode('x', $asset->dimensions) : $asset->dimensions }}
+                                <?php echo e(is_array($asset->dimensions) ? implode('x', $asset->dimensions) : $asset->dimensions); ?>
+
                             </p>
                             <p class="leading-relaxed"><span class="font-bold text-gray-700">Product:</span>
-                                {{ $asset->project->title ?? 'Intel Processors' }}</p>
+                                <?php echo e($asset->project->title ?? 'Intel Processors'); ?></p>
                         </div>
 
                         <div class="mt-10 flex justify-end">
@@ -97,7 +100,7 @@
             </div>
         </section>
         <!-- RELATED CAMPAIGN SECTION -->
-        @if ($asset->project)
+        <?php if($asset->project): ?>
             <section class="container mx-auto mt-16 px-6 font-['Outfit']">
                 <h2 class="text-[#757575] text-[28px] font-light mb-8">
                     Find this asset in the following campaign(s):
@@ -108,45 +111,48 @@
 
                     <div class="flex-1 p-10">
                         <h3 class="text-[#0071c5] text-[26px] font-medium leading-tight mb-4">
-                            {{ $asset->project->name }}
+                            <?php echo e($asset->project->name); ?>
+
                         </h3>
 
                         <p class="text-gray-600 text-sm leading-relaxed mb-6">
-                            {{ $asset->project->description ?? 'Explore the latest updates and assets for ' . $asset->project->name . '. Part of our ' . ($asset->project->concern ?? 'General') . ' initiative.' }}
+                            <?php echo e($asset->project->description ?? 'Explore the latest updates and assets for ' . $asset->project->name . '. Part of our ' . ($asset->project->concern ?? 'General') . ' initiative.'); ?>
+
                         </p>
 
                         <p class="text-gray-500 text-[13px] mb-4 font-bold">
                             Concern:
-                            {{ \App\Models\Project::CONCERNS[$asset->project->concern] ?? $asset->project->concern }}
+                            <?php echo e(\App\Models\Project::CONCERNS[$asset->project->concern] ?? $asset->project->concern); ?>
+
                         </p>
 
                         <div class="flex gap-2">
-                            @if (isset($asset->project->languages) && is_array($asset->project->languages))
-                                @foreach ($asset->project->languages as $lang)
+                            <?php if(isset($asset->project->languages) && is_array($asset->project->languages)): ?>
+                                <?php $__currentLoopData = $asset->project->languages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <span
-                                        class="border border-[#0071c5] text-[#0071c5] text-[11px] px-3 py-1 rounded-full uppercase">{{ $lang }}</span>
-                                @endforeach
-                            @else
+                                        class="border border-[#0071c5] text-[#0071c5] text-[11px] px-3 py-1 rounded-full uppercase"><?php echo e($lang); ?></span>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <?php else: ?>
                                 <span
                                     class="border border-[#0071c5] text-[#0071c5] text-[11px] px-3 py-1 rounded-full uppercase">English</span>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="md:w-2/5 bg-[#001e3e] relative flex items-center justify-center overflow-hidden p-8">
-                        <img src="{{ $asset->project->logo_url ?? asset('./images/brand/brand-02.svg') }}"
-                            alt="{{ $asset->project->name }}"
+                        <img src="<?php echo e($asset->project->logo_url ?? asset('./images/brand/brand-02.svg')); ?>"
+                            alt="<?php echo e($asset->project->name); ?>"
                             class="w-full h-auto max-h-[200px] object-contain shadow-2xl transition-transform duration-500 group-hover:scale-105" />
 
                         <i class="fa-regular fa-bookmark absolute top-4 right-4 text-[#00aeef] text-2xl"></i>
                     </div>
                 </div>
             </section>
-        @endif
+        <?php endif; ?>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
     <script>
         const thumbnails = document.querySelectorAll('.thumb-item');
         const mainImg = document.getElementById('main-preview');
@@ -169,4 +175,6 @@
             });
         });
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('frontend.layouts.font', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\asset-library\resources\views/frontend/assetDetails.blade.php ENDPATH**/ ?>

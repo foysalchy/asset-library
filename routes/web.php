@@ -120,11 +120,11 @@ Route::middleware('auth')->prefix('admin')->group(function () {
 Route::prefix('')->group(function () {
 
     // Guest only
+    Route::get('/', [FrontendAuthController::class, 'showSignin'])->name('signin');
+    Route::post('/', [FrontendAuthController::class, 'signin']);
     Route::middleware('guest')->group(function () {
         Route::get('/signup', [FrontendAuthController::class, 'showSignup'])->name('signup');
         Route::post('/signup', [FrontendAuthController::class, 'signup'])->name('signup');
-        Route::get('/', [FrontendAuthController::class, 'showSignin'])->name('signin');
-        Route::post('/', [FrontendAuthController::class, 'signin']);
     });
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [FrontendAuthController::class, 'index'])->name('profile.index');

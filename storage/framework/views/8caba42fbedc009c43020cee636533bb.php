@@ -1,5 +1,4 @@
-@extends('frontend.layouts.font')
-@section('content')
+<?php $__env->startSection('content'); ?>
     <section
         class="relative w-full bg-gradient-to-br from-[#003b7a] via-[#0090a8] to-[#00c7b1] pt-8 pb-40 md:pb-30 lg:pt-10 lg:pb-28 px-4 lg:px-6">
         <div class="container mx-auto mx-auto flex flex-col md:flex-row justify-between items-start md:items-center">
@@ -28,7 +27,7 @@
 
                 <div class="pt-0 lg:pt-4">
                     <h1 class="text-2xl lg:text-4xl text-white font-bold leading-tight">
-                        Welcome {{ $user->name ?? '' }} !
+                        Welcome <?php echo e($user->name ?? ''); ?> !
                     </h1>
                     <p class="text-xs lg:text-sm text-white/75 font-bold uppercase tracking-[2px] mt-1">
                         PARTNER | BUILDER
@@ -38,13 +37,13 @@
 
             <!-- SEARCH BAR — overlapping bottom -->
             <div class="absolute bottom-0 left-0 right-0 px-4 lg:px-6 mb-4 lg:mb-6">
-                <form action="{{ route('home.filter') }}" method="GET"
+                <form action="<?php echo e(route('home.filter')); ?>" method="GET"
                     class="container mx-auto bg-white border border-gray-200 flex flex-col lg:flex-row items-stretch lg:items-center shadow-lg">
 
                     <!-- Search Input: border-b (mobile) lg:border-r (desktop) -->
                     <div class="flex-1 flex items-center px-4 border-b lg:border-b-0 lg:border-r border-gray-200">
                         <i class="fas fa-search text-[#3293e3] mr-3"></i>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search..."
+                        <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Search..."
                             class="w-full py-3 lg:py-4 outline-none text-sm text-gray-600 bg-transparent" />
                     </div>
 
@@ -56,10 +55,10 @@
                             <select name="concern" aria-label="Filter by Concern"
                                 class="w-full outline-none text-[12px] lg:text-sm font-medium text-gray-600 bg-transparent py-3 lg:py-4">
                                 <option value="">Concern</option>
-                                @foreach ($concerns as $key => $name)
-                                    <option value="{{ $key }}" {{ request('concern') == $key ? 'selected' : '' }}>
-                                        {{ $name }}</option>
-                                @endforeach
+                                <?php $__currentLoopData = $concerns; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $name): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($key); ?>" <?php echo e(request('concern') == $key ? 'selected' : ''); ?>>
+                                        <?php echo e($name); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
 
@@ -69,11 +68,12 @@
                             <select name="project" aria-label="Filter by projetc"
                                 class="outline-none text-sm font-medium text-gray-600 bg-transparent cursor-pointer py-4 min-w-[90px]">
                                 <option value="">Project</option>
-                                @foreach ($projects as $project)
-                                    <option value="{{ $project->id }}"
-                                        {{ request('project') == $project->id ? 'selected' : '' }}>{{ $project->name }}
+                                <?php $__currentLoopData = $projects; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $project): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($project->id); ?>"
+                                        <?php echo e(request('project') == $project->id ? 'selected' : ''); ?>><?php echo e($project->name); ?>
+
                                     </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
 
@@ -83,11 +83,11 @@
                             <select name="type" aria-label="Filter by type"
                                 class="outline-none text-sm font-medium text-gray-600 bg-transparent cursor-pointer py-4 min-w-[100px]">
                                 <option value="">Asset Type</option>
-                                @foreach ($assetTypes as $type)
-                                    <option value="{{ $type->id }}"
-                                        {{ request('type') == $type->id ? 'selected' : '' }}>
-                                        {{ $type->name }}</option>
-                                @endforeach
+                                <?php $__currentLoopData = $assetTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($type->id); ?>"
+                                        <?php echo e(request('type') == $type->id ? 'selected' : ''); ?>>
+                                        <?php echo e($type->name); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
 
@@ -97,10 +97,10 @@
                             <select name="lang" aria-label="Filter by language"
                                 class="outline-none text-sm font-medium text-gray-600 bg-transparent cursor-pointer py-4 min-w-[90px]">
                                 <option value="">Language</option>
-                                @foreach ($allLanguages as $lang)
-                                    <option value="{{ $lang }}" {{ request('lang') == $lang ? 'selected' : '' }}>
-                                        {{ strtoupper($lang) }}</option>
-                                @endforeach
+                                <?php $__currentLoopData = $allLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($lang); ?>" <?php echo e(request('lang') == $lang ? 'selected' : ''); ?>>
+                                        <?php echo e(strtoupper($lang)); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                     </div>
@@ -111,7 +111,7 @@
                             class="flex-1 bg-[#0071c5] text-white px-4 lg:px-8 py-2 lg:py-2.5 text-xs lg:text-sm font-bold">
                             Search
                         </button>
-                        <a href="{{ route('home.index') }}"
+                        <a href="<?php echo e(route('home.index')); ?>"
                             class="text-[#0071c5] text-[10px] lg:text-sm font-semibold whitespace-nowrap">
                             Reset
                         </a>
@@ -124,11 +124,11 @@
     <!-- ── PAGE  Campaigns ── -->
     <section class="container mx-auto mx-auto px-6 py-10">
         <div class="flex items-center gap-3 mb-6">
-            <a href="{{ route('home.filter', ['section' => 'campaigns']) }}"
+            <a href="<?php echo e(route('home.filter', ['section' => 'campaigns'])); ?>"
                 class="text-2xl md:text-3xl text-[#0071c5] underline">
                 <h2 class="text-xl lg:text-3xl text-[#0071c5] underline">Campaigns to Sell the Latest Products</h2>
             </a>
-            <a href="{{ route('home.filter', ['section' => 'campaigns']) }}"
+            <a href="<?php echo e(route('home.filter', ['section' => 'campaigns'])); ?>"
                 class="bg-[#3293e3] text-white w-8 h-8 flex items-center justify-center shrink-0"  aria-label="View all campaigns">
                 <i class="fas fa-arrow-right text-sm"></i>
             </a>
@@ -136,22 +136,41 @@
 
         <!-- Cards Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-            @foreach ($featuredCampaigns as $campaign)
-                <x-frontend.campaign-card :campaign="$campaign" />
-            @endforeach
+            <?php $__currentLoopData = $featuredCampaigns; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $campaign): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php if (isset($component)) { $__componentOriginal0f89098fc988976a319558d2a570c936 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal0f89098fc988976a319558d2a570c936 = $attributes; } ?>
+<?php $component = App\View\Components\Frontend\CampaignCard::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('frontend.campaign-card'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\Frontend\CampaignCard::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['campaign' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($campaign)]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal0f89098fc988976a319558d2a570c936)): ?>
+<?php $attributes = $__attributesOriginal0f89098fc988976a319558d2a570c936; ?>
+<?php unset($__attributesOriginal0f89098fc988976a319558d2a570c936); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal0f89098fc988976a319558d2a570c936)): ?>
+<?php $component = $__componentOriginal0f89098fc988976a319558d2a570c936; ?>
+<?php unset($__componentOriginal0f89098fc988976a319558d2a570c936); ?>
+<?php endif; ?>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </section>
 
     <!-- ── Latest Marketing Assets Section ── -->
     <section class="container mx-auto px-6 py-12">
         <div class="flex items-center gap-3 mb-8">
-            <a href="{{ route('home.filter', ['section' => 'assets', 'sort' => 'latest']) }}">
+            <a href="<?php echo e(route('home.filter', ['section' => 'assets', 'sort' => 'latest'])); ?>">
                 <h2 class="text-3xl text-[#0071c5] underline cursor-pointer">
                     Latest Marketing Assets
                 </h2>
             </a>
 
-            <a href="{{ route('home.filter', ['section' => 'assets', 'sort' => 'latest']) }}"  aria-label="View all assets"
+            <a href="<?php echo e(route('home.filter', ['section' => 'assets', 'sort' => 'latest'])); ?>"  aria-label="View all assets"
                 class="bg-[#00aeef] text-white w-7 h-7 flex items-center justify-center">
                 <i class="fas fa-arrow-right text-xs"></i>
             </a>
@@ -159,9 +178,28 @@
         <div class="relative group container mx-auto px-6">
             <div class="swiper mySwiper overflow-hidden">
                 <div class="swiper-wrapper">
-                    @foreach ($latestAssets as $asset)
-                        <x-frontend.asset-card :asset="$asset" :swiper="true" />
-                    @endforeach
+                    <?php $__currentLoopData = $latestAssets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asset): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php if (isset($component)) { $__componentOriginal895cdfb360c88ca78237e9e20ebefe47 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal895cdfb360c88ca78237e9e20ebefe47 = $attributes; } ?>
+<?php $component = App\View\Components\Frontend\AssetCard::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('frontend.asset-card'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\Frontend\AssetCard::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['asset' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($asset),'swiper' => true]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal895cdfb360c88ca78237e9e20ebefe47)): ?>
+<?php $attributes = $__attributesOriginal895cdfb360c88ca78237e9e20ebefe47; ?>
+<?php unset($__attributesOriginal895cdfb360c88ca78237e9e20ebefe47); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal895cdfb360c88ca78237e9e20ebefe47)): ?>
+<?php $component = $__componentOriginal895cdfb360c88ca78237e9e20ebefe47; ?>
+<?php unset($__componentOriginal895cdfb360c88ca78237e9e20ebefe47); ?>
+<?php endif; ?>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
 
@@ -184,9 +222,28 @@
         <div class="relative group container mx-auto px-6">
             <div class="swiper recommendSwiper overflow-hidden">
                 <div class="swiper-wrapper">
-                    @foreach ($recommendedAssets as $asset)
-                        <x-frontend.asset-card :asset="$asset" :swiper="true" />
-                    @endforeach
+                    <?php $__currentLoopData = $recommendedAssets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asset): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php if (isset($component)) { $__componentOriginal895cdfb360c88ca78237e9e20ebefe47 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal895cdfb360c88ca78237e9e20ebefe47 = $attributes; } ?>
+<?php $component = App\View\Components\Frontend\AssetCard::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('frontend.asset-card'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\Frontend\AssetCard::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['asset' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($asset),'swiper' => true]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal895cdfb360c88ca78237e9e20ebefe47)): ?>
+<?php $attributes = $__attributesOriginal895cdfb360c88ca78237e9e20ebefe47; ?>
+<?php unset($__attributesOriginal895cdfb360c88ca78237e9e20ebefe47); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal895cdfb360c88ca78237e9e20ebefe47)): ?>
+<?php $component = $__componentOriginal895cdfb360c88ca78237e9e20ebefe47; ?>
+<?php unset($__componentOriginal895cdfb360c88ca78237e9e20ebefe47); ?>
+<?php endif; ?>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
 
@@ -199,4 +256,6 @@
             </div>
         </div>
     </section>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('frontend.layouts.font', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\asset-library\resources\views/frontend/index.blade.php ENDPATH**/ ?>

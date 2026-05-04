@@ -1,15 +1,15 @@
-@extends('frontend.layouts.font')
-@section('content')
+<?php $__env->startSection('content'); ?>
     <section class="container mx-auto py-6 lg:py-10 px-4 lg:px-8">
         <div class="flex items-start justify-between mb-10 px-4 lg:px-0">
             <div class="flex items-start gap-5">
                 <!-- Back Button -->
-                <a href="{{ url('/') }}" class="mt-2 text-[#0071c5] hover:opacity-70 transition-all shrink-0">
+                <a href="<?php echo e(url('/')); ?>" class="mt-2 text-[#0071c5] hover:opacity-70 transition-all shrink-0">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </a>
                 <!-- Dynamic Title -->
                 <h1 class="text-[#0071c5] text-2xl md:text-3xl lg:text-4xl font-light leading-tight max-w-2xl">
-                    {{ $campaign->title }}
+                    <?php echo e($campaign->title); ?>
+
                 </h1>
             </div>
             
@@ -22,7 +22,8 @@
                 <section>
                     <h2 class="text-[#757575] text-2xl font-normal mb-4">Description</h2>
                     <div class="text-[#333] text-sm leading-relaxed space-y-4">
-                        {!! $campaign->description !!}
+                        <?php echo $campaign->description; ?>
+
                     </div>
                 </section>
 
@@ -30,7 +31,7 @@
                 <a href="#" class="text-[#757575] text-sm underline hover:text-[#0071c5] block">See legal disclaimers</a>
 
                 <!-- Download Campaign Guide (Dynamic File Link) -->
-                <a href="{{ route('drive.file.stream', ['type' => 'campaign', 'id' => $campaign->id]) }}" target="_blank" class="flex items-center gap-4 py-2 group cursor-pointer border-none bg-transparent">
+                <a href="<?php echo e(route('drive.file.stream', ['type' => 'campaign', 'id' => $campaign->id])); ?>" target="_blank" class="flex items-center gap-4 py-2 group cursor-pointer border-none bg-transparent">
                     <div class="w-12 h-12 border-[1.5px] border-[#0071c5] flex items-center justify-center rounded-sm group-hover:bg-blue-50 transition-colors shrink-0">
                         <i class="fa-solid fa-book-open-reader text-[#0071c5] text-2xl"></i>
                     </div>
@@ -47,7 +48,8 @@
                     <div class="flex items-center gap-4">
                         <div class="relative w-[280px] border border-[#0071c5] flex items-center cursor-pointer">
                             <div class="flex-1 px-4 py-2.5 text-[#0071c5] font-bold text-sm border-r border-[#0071c5] uppercase">
-                                {{ collect($campaign->languages)->first() ?? 'English' }}
+                                <?php echo e(collect($campaign->languages)->first() ?? 'English'); ?>
+
                             </div>
                             <div class="px-4 py-2.5 flex items-center justify-center">
                                 <i class="fas fa-chevron-down text-[#0071c5] text-xs"></i>
@@ -64,10 +66,12 @@
             <!-- ── RIGHT COLUMN: Poster Image ── -->
             <div class="flex justify-end">
                 <div class="w-full relative shadow-2xl">
-                    <img src="{{ $campaign->thumbnail_url }}" alt="{{ $campaign->title }}"
+                    <img src="<?php echo e($campaign->thumbnail_url); ?>" alt="<?php echo e($campaign->title); ?>"
                         class="w-full h-auto block object-contain" />
                 </div>
             </div>
         </div>
     </section>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('frontend.layouts.font', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\asset-library\resources\views/frontend/campaignDetails.blade.php ENDPATH**/ ?>

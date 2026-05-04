@@ -3,7 +3,7 @@
     <!-- Banner Area -->
     <div class="relative h-[200px] bg-[#001e3e] flex items-center justify-center overflow-visible p-4">
         @if($selectable)
-            <input type="checkbox"
+            <input type="checkbox" aria-label="checkbox"
                 class="item-checkbox absolute top-3 left-4 z-30 w-5 h-5 cursor-pointer accent-[#0071c5]"
                 data-type="campaign"
                 data-id="{{ $campaign->id }}">
@@ -20,12 +20,12 @@
 
         @php $bookmarked = $campaign->isBookmarkedBy(auth()->id()); @endphp
         <button onclick="toggleBookmark(this, 'campaign', {{ $campaign->id }})"
-            class="absolute top-2 right-4 hover:scale-110 transition-transform {{ $bookmarked ? 'text-[#0071c5]' : 'text-[#00aeef]' }}">
+            class="absolute top-2 right-4 hover:scale-110 transition-transform {{ $bookmarked ? 'text-[#0071c5]' : 'text-[#00aeef]' }}" aria-label="Save to bookmarks">
             <i class="{{ $bookmarked ? 'fa-solid' : 'fa-regular' }} fa-bookmark text-2xl"></i>
         </button>
 
         @if ($campaign->is_featured)
-            <div class="absolute -bottom-3.5 left-4 bg-[#fdbb30] text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-md z-20">
+            <div class="absolute -bottom-3.5 left-4 bg-[#fdbb30] text-[#001e3e] px-4 py-1.5 rounded-full text-xs font-bold shadow-md z-20">
                 Featured
             </div>
         @endif

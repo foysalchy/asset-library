@@ -8,11 +8,13 @@ use App\Models\AssetType;
 use App\Models\Campaign;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
     public function index()
     {
+        $user = Auth::user();
         $featuredCampaigns = Campaign::with('project')->latest()->take(4)->get();
 
         $latestAssets = Asset::with('media')->latest()->get();
@@ -33,7 +35,8 @@ class HomeController extends Controller
             'concerns',
             'projects',
             'assetTypes',
-            'allLanguages'
+            'allLanguages',
+            'user'
         ));
     }
     public function campaignDetails($slug)
