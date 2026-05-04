@@ -96,7 +96,7 @@ class User extends Authenticatable
         $path = ltrim(str_replace('public/', '', $this->avatar), '/');
         return Storage::disk('public')->url($path);
     }
-    // User.php এর ভেতর
+    // User.php
     public function getIsAdminAttribute()
     {
         return $this->role === 'admin' || $this->is_admin == 1;

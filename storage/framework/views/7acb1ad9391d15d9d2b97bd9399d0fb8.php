@@ -1,161 +1,216 @@
 <?php $__env->startSection('content'); ?>
-<div class="p-6">
+<div class="p-4 mx-auto max-w-screen-2xl md:p-6">
 
-    <!-- Header -->
-    <div class="flex items-start justify-between mb-6">
-        <div class="flex items-center gap-4">
-            <a href="<?php echo e(route('ticket.admin')); ?>"
-                class="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 transition-colors">
-                <i class="fas fa-arrow-left text-sm"></i>
-            </a>
-            <div>
-                <h1 class="text-xl font-semibold text-gray-800"><?php echo e($ticket->subject); ?></h1>
-                <p class="text-sm text-gray-400 mt-0.5">#<?php echo e($ticket->id); ?> · <?php echo e($ticket->created_at->format('d M Y')); ?></p>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-3">
-            <?php
-                $statusConfig = [
-                    0 => ['label' => 'Open',        'class' => 'bg-green-100 text-green-700'],
-                    1 => ['label' => 'In Progress', 'class' => 'bg-yellow-100 text-yellow-700'],
-                    2 => ['label' => 'Closed',      'class' => 'bg-red-100 text-red-700'],
-                ];
-                $s = $statusConfig[$ticket->status];
-            ?>
-            <span class="px-3 py-1 rounded-full text-xs font-semibold <?php echo e($s['class']); ?>">
-                <?php echo e($s['label']); ?>
-
-            </span>
-
-            <?php if($ticket->status !== 2): ?>
-                <form action="<?php echo e(route('tickets.close', $ticket)); ?>" method="POST">
-                    <?php echo csrf_field(); ?>
-                    <button type="submit"
-                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 text-xs font-bold rounded transition-colors">
-                        Close Ticket
-                    </button>
-                </form>
-            <?php endif; ?>
+    <div class="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">Support Tickets</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Manage all user support tickets</p>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <?php if(session('success')): ?>
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
+            class="mb-5 flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 px-4 py-3 dark:border-green-800 dark:bg-green-900/20">
+            <svg class="shrink-0 text-green-500" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
+            </svg>
+            <p class="text-sm font-medium text-green-700 dark:text-green-400"><?php echo e(session('success')); ?></p>
+        </div>
+    <?php endif; ?>
 
-        <!-- LEFT: Conversation -->
-        <div class="lg:col-span-2 space-y-4">
+    <?php
+        $statusConfig = [
+            0 => ['label' => 'Open',        'class' => 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400'],
+            1 => ['label' => 'In Progress', 'class' => 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'],
+            2 => ['label' => 'Closed',      'class' => 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'],
+        ];
+        $s = $statusConfig[$ticket->status];
+    ?>
 
-            <!-- Original Message -->
-            <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold shrink-0">
+    <div class="grid grid-cols-1 gap-6">
+
+        <!-- ── Chat window ── -->
+        <div>
+            <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-white/[0.03] overflow-hidden flex flex-col" style="height:620px;">
+
+                <!-- Top bar -->
+                <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-white/[0.03] shrink-0">
+                    <a href="<?php echo e(route('ticket.admin')); ?>"
+                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors shrink-0">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/>
+                        </svg>
+                    </a>
+                    <div class="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium shrink-0">
                         <?php echo e(strtoupper(substr($ticket->user->name, 0, 1))); ?>
 
                     </div>
-                    <div>
-                        <p class="text-sm font-semibold text-gray-800"><?php echo e($ticket->user->name); ?></p>
-                        <p class="text-xs text-gray-400"><?php echo e($ticket->created_at->diffForHumans()); ?></p>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate"><?php echo e($ticket->subject); ?></p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500">#<?php echo e($ticket->id); ?> · <?php echo e($ticket->user->name); ?> · <?php echo e($ticket->created_at->format('d M Y')); ?></p>
                     </div>
-                    <span class="ml-auto text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-semibold uppercase">User</span>
-                </div>
-                <p class="text-sm text-gray-700 leading-relaxed"><?php echo e($ticket->description); ?></p>
-                <?php if($ticket->image): ?>
-                    <img src="<?php echo e(asset('storage/' . $ticket->image)); ?>" alt="attachment"
-                        class="mt-4 max-w-sm rounded-lg border border-gray-200">
-                <?php endif; ?>
-            </div>
+                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium <?php echo e($s['class']); ?> shrink-0">
+                        <?php echo e($s['label']); ?>
 
-            <!-- Replies -->
-            <?php $__currentLoopData = $ticket->replies; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $reply): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <div class="bg-white rounded-lg border shadow-sm p-6
-                    <?php echo e($reply->is_admin ? 'border-blue-200 bg-blue-50/30' : 'border-gray-200'); ?>">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0
-                            <?php echo e($reply->is_admin ? 'bg-[#001e3e]' : 'bg-blue-500'); ?>">
-                            <?php echo e(strtoupper(substr($reply->user->name, 0, 1))); ?>
-
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold text-gray-800"><?php echo e($reply->user->name); ?></p>
-                            <p class="text-xs text-gray-400"><?php echo e($reply->created_at->diffForHumans()); ?></p>
-                        </div>
-                        <?php if($reply->is_admin): ?>
-                            <span class="ml-auto text-[10px] bg-[#001e3e] text-white px-2 py-0.5 rounded-full font-semibold uppercase">Admin</span>
-                        <?php else: ?>
-                            <span class="ml-auto text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-semibold uppercase">User</span>
-                        <?php endif; ?>
-                    </div>
-                    <p class="text-sm text-gray-700 leading-relaxed"><?php echo e($reply->message); ?></p>
-                    <?php if($reply->image): ?>
-                        <img src="<?php echo e(asset('storage/' . $reply->image)); ?>" alt="attachment"
-                            class="mt-4 max-w-sm rounded-lg border border-gray-200">
+                    </span>
+                    <?php if($ticket->status !== 2): ?>
+                        <form action="<?php echo e(route('tickets.close', $ticket)); ?>" method="POST">
+                            <?php echo csrf_field(); ?>
+                            <button type="submit"
+                                class="inline-flex items-center gap-1.5 rounded-lg bg-red-500 hover:bg-red-600 px-3 py-1.5 text-xs font-medium text-white transition-colors shrink-0">
+                                Close
+                            </button>
+                        </form>
                     <?php endif; ?>
                 </div>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-            <!-- Reply Form -->
-            <?php if($ticket->status !== 2): ?>
-                <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-                    <h3 class="text-sm font-semibold text-gray-700 mb-4">Reply as Admin</h3>
-                    <form action="<?php echo e(route('admin.tickets.reply', $ticket->id)); ?>" method="POST" enctype="multipart/form-data">
-                        <?php echo csrf_field(); ?>
-                        <textarea name="message" rows="4"
-                            placeholder="Write your reply..."
-                            class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm outline-none focus:border-blue-400 transition-colors font-['Outfit'] resize-none mb-4"><?php echo e(old('message')); ?></textarea>
-                        <div class="flex items-center justify-between">
-                            <input type="file" name="image" accept="image/*"
-                                class="text-sm text-gray-500 font-['Outfit']">
-                            <button type="submit"
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 text-sm font-bold rounded transition-colors">
-                                Send Reply
-                            </button>
+                <!-- Messages -->
+                <div class="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-gray-50 dark:bg-white/[0.01]" id="chatBox">
+
+                    <!-- Original message -->
+                    <?php if($ticket->user_id === auth()->id()): ?>
+                        <!-- My ticket — right -->
+                        <div class="flex items-end gap-2 flex-row-reverse">
+                            <div class="w-7 h-7 rounded-full bg-[#001e3e] flex items-center justify-center text-white text-xs font-medium shrink-0">
+                                <?php echo e(strtoupper(substr($ticket->user->name, 0, 1))); ?>
+
+                            </div>
+                            <div class="max-w-[68%]">
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 mr-1 text-right"><?php echo e($ticket->user->name); ?> · <?php echo e($ticket->created_at->diffForHumans()); ?></p>
+                                <div class="bg-[#0071c5] px-4 py-2.5 rounded-tl-2xl rounded-bl-2xl rounded-br-2xl">
+                                    <p class="text-sm text-white leading-relaxed"><?php echo e($ticket->description); ?></p>
+                                </div>
+                                <?php if($ticket->image): ?>
+                                    <img src="<?php echo e(asset('storage/' . $ticket->image)); ?>" alt="attachment"
+                                        class="mt-2 max-w-[200px] rounded-xl ml-auto block">
+                                <?php endif; ?>
+                            </div>
                         </div>
+                    <?php else: ?>
+                        <!-- Other user ticket — left -->
+                        <div class="flex items-end gap-2">
+                            <div class="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-medium shrink-0">
+                                <?php echo e(strtoupper(substr($ticket->user->name, 0, 1))); ?>
+
+                            </div>
+                            <div class="max-w-[68%]">
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 ml-1"><?php echo e($ticket->user->name); ?> · <?php echo e($ticket->created_at->diffForHumans()); ?></p>
+                                <div class="bg-white dark:bg-white/10 border border-gray-200 dark:border-gray-700 px-4 py-2.5 rounded-tr-2xl rounded-br-2xl rounded-bl-2xl">
+                                    <p class="text-sm text-gray-800 dark:text-white/90 leading-relaxed"><?php echo e($ticket->description); ?></p>
+                                </div>
+                                <?php if($ticket->image): ?>
+                                    <img src="<?php echo e(asset('storage/' . $ticket->image)); ?>" alt="attachment"
+                                        class="mt-2 max-w-[200px] rounded-xl border border-gray-200 dark:border-gray-700">
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Replies -->
+                    <?php $__currentLoopData = $ticket->replies; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $reply): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php if($reply->user_id === auth()->id()): ?>
+                            <!-- My message — right -->
+                            <div class="flex items-end gap-2 flex-row-reverse">
+                                <div class="w-7 h-7 rounded-full bg-[#001e3e] flex items-center justify-center text-white text-xs font-medium shrink-0">
+                                    <?php echo e(strtoupper(substr($reply->user->name, 0, 1))); ?>
+
+                                </div>
+                                <div class="max-w-[68%]">
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 mr-1 text-right"><?php echo e($reply->user->name); ?> · <?php echo e($reply->created_at->diffForHumans()); ?></p>
+                                    <div class="bg-[#0071c5] px-4 py-2.5 rounded-tl-2xl rounded-bl-2xl rounded-br-2xl">
+                                        <p class="text-sm text-white leading-relaxed"><?php echo e($reply->message); ?></p>
+                                    </div>
+                                    <?php if($reply->image): ?>
+                                        <img src="<?php echo e(asset('storage/' . $reply->image)); ?>" alt="attachment"
+                                            class="mt-2 max-w-[200px] rounded-xl ml-auto block">
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <!-- Other message — left -->
+                            <div class="flex items-end gap-2">
+                                <div class="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-medium shrink-0">
+                                    <?php echo e(strtoupper(substr($reply->user->name, 0, 1))); ?>
+
+                                </div>
+                                <div class="max-w-[68%]">
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 ml-1"><?php echo e($reply->user->name); ?> · <?php echo e($reply->created_at->diffForHumans()); ?></p>
+                                    <div class="bg-white dark:bg-white/10 border border-gray-200 dark:border-gray-700 px-4 py-2.5 rounded-tr-2xl rounded-br-2xl rounded-bl-2xl">
+                                        <p class="text-sm text-gray-800 dark:text-white/90 leading-relaxed"><?php echo e($reply->message); ?></p>
+                                    </div>
+                                    <?php if($reply->image): ?>
+                                        <img src="<?php echo e(asset('storage/' . $reply->image)); ?>" alt="attachment"
+                                            class="mt-2 max-w-[200px] rounded-xl border border-gray-200 dark:border-gray-700">
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+                </div>
+
+                <!-- Input -->
+                <?php if($ticket->status !== 2): ?>
+                    <form action="<?php echo e(route('admin.tickets.reply', $ticket)); ?>" method="POST" enctype="multipart/form-data"
+                        class="shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-white/[0.03] px-3 py-3 flex items-end gap-2">
+                        <?php echo csrf_field(); ?>
+
+                        <!-- Attach image -->
+                        <label class="cursor-pointer inline-flex items-center justify-center w-9 h-9 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors shrink-0">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
+                            </svg>
+                            <input type="file" name="image" accept="image/*" class="hidden" onchange="showFile(this)">
+                        </label>
+
+                        <!-- Textarea -->
+                        <div class="flex-1">
+                            <textarea name="message" id="replyMsg" rows="1"
+                                placeholder="Write a reply..."
+                                class="w-full border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-2.5 text-sm text-gray-800 dark:text-white/90 bg-gray-50 dark:bg-white/5 outline-none resize-none leading-relaxed focus:border-blue-300 dark:focus:border-blue-600 transition-colors"
+                                oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"><?php echo e(old('message')); ?></textarea>
+                            <p id="fileName" class="hidden text-xs text-gray-400 mt-1 px-1"></p>
+                        </div>
+
+                        <!-- Send -->
+                        <button type="submit"
+                            class="w-9 h-9 rounded-full bg-[#0071c5] hover:bg-[#005ea3] flex items-center justify-center text-white transition-colors shrink-0">
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+                            </svg>
+                        </button>
                     </form>
-                </div>
-            <?php else: ?>
-                <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 text-sm text-center rounded-lg">
-                    This ticket is closed.
-                </div>
-            <?php endif; ?>
+                <?php else: ?>
+                    <div class="shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-white/[0.03] px-4 py-3 text-center text-xs text-red-500">
+                        This ticket is closed.
+                    </div>
+                <?php endif; ?>
 
-        </div>
-
-        <!-- RIGHT: Ticket Info -->
-        <div class="space-y-4">
-            <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-                <h3 class="text-sm font-semibold text-gray-700 mb-4 pb-3 border-b border-gray-100">Ticket Info</h3>
-                <div class="space-y-3 text-sm">
-                    <div class="flex justify-between">
-                        <span class="text-gray-500">Status</span>
-                        <span class="font-semibold <?php echo e($s['class']); ?> px-2 py-0.5 rounded-full text-xs"><?php echo e($s['label']); ?></span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-500">User</span>
-                        <span class="font-medium text-gray-700"><?php echo e($ticket->user->name); ?></span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-500">Email</span>
-                        <span class="font-medium text-gray-700 text-xs"><?php echo e($ticket->user->email); ?></span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-500">Created</span>
-                        <span class="font-medium text-gray-700"><?php echo e($ticket->created_at->format('d M Y')); ?></span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-500">Replies</span>
-                        <span class="font-medium text-gray-700"><?php echo e($ticket->replies->count()); ?></span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-500">Last Update</span>
-                        <span class="font-medium text-gray-700"><?php echo e($ticket->updated_at->diffForHumans()); ?></span>
-                    </div>
-                </div>
             </div>
         </div>
 
-    </div>
 
+
+    </div>
 </div>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+    const chatBox = document.getElementById('chatBox');
+    if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+
+    function showFile(input) {
+        const el = document.getElementById('fileName');
+        if (input.files.length > 0) {
+            el.textContent = 'Attached: ' + input.files[0].name;
+            el.classList.remove('hidden');
+        } else {
+            el.classList.add('hidden');
+        }
+    }
+</script>
+<?php $__env->stopPush(); ?>
+
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\asset-library\resources\views/support-ticket/show.blade.php ENDPATH**/ ?>

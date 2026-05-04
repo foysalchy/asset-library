@@ -18,6 +18,9 @@ class Ticket extends Model
         'status'
     ];
 
+    protected $casts = [
+        'status' => 'integer',
+    ];
     const STATUS_PENDING        = 0;
     const STATUS_OPEN = 1;
     const STATUS_CLOSED      = 2;

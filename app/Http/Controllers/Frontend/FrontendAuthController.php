@@ -3,20 +3,56 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\DownloadLog;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class FrontendAuthController extends Controller
 {
-     public function showSignup()
+    //profile
+    public function index()
+    {
+        $downloadLogs = DownloadLog::where('user_id', auth()->id())
+            ->orderBy('updated_at', 'desc')
+            ->get();
+        return view('frontend.auth.profile',compact('downloadLogs'));
+    }
+    //profile update
+    public function update(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:255',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ]);
+
+        $user->name = $request->name;
+        $user->phone = $request->phone;
+
+        if ($request->hasFile('avatar')) {
+            if ($user->getAttributes()['avatar']) {
+                Storage::disk('public')->delete($user->getAttributes()['avatar']);
+            }
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $path;
+        }
+
+        $user->save();
+
+        return back()->with('success', 'Profile updated successfully.');
+    }
+    public function showSignup()
     {
         if (Auth::check()) return redirect()->route('frontend.dashboard');
         return view('frontend.auth.signup');
     }
- 
+
     public function signup(Request $request)
     {
         $request->validate([
@@ -38,7 +74,7 @@ class FrontendAuthController extends Controller
 
         Auth::login($user);
 
-        return redirect('/');
+        return redirect('/home');
     }
 
     public function showSignin()
@@ -70,7 +106,7 @@ class FrontendAuthController extends Controller
 
         Auth::user()->update(['last_login_at' => now()]);
 
-        return redirect('/');
+        return redirect('/home');
     }
 
     public function logout(Request $request)

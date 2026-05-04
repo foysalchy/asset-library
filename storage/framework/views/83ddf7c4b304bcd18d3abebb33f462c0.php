@@ -42,9 +42,9 @@
                         <select name="status" onchange="document.getElementById('filterForm').submit()"
                             class="h-[42px] rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs focus:border-blue-300 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
                             <option value="">All Status</option>
-                            <option value="0" <?php echo e(request('status') === '0' ? 'selected' : ''); ?>>Open</option>
-                            <option value="1" <?php echo e(request('status') == '1' ? 'selected' : ''); ?>>In Progress</option>
-                            <option value="2" <?php echo e(request('status') == '2' ? 'selected' : ''); ?>>Closed</option>
+                            <option value="0" <?php echo e(request('status') === '0' ? 'selected' : ''); ?>>Pending</option>
+                            <option value="1" <?php echo e(request('status') === '1' ? 'selected' : ''); ?>>Open</option>
+                            <option value="2" <?php echo e(request('status') === '2' ? 'selected' : ''); ?>>Closed</option>
                         </select>
                         <?php if(request('search')): ?>
                             <input type="hidden" name="search" value="<?php echo e(request('search')); ?>">
@@ -56,7 +56,8 @@
                         <?php endif; ?>
                         <div class="relative">
                             <button type="submit" class="absolute -translate-y-1/2 left-4 top-1/2">
-                                <svg class="fill-gray-500 dark:fill-gray-400" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <svg class="fill-gray-500 dark:fill-gray-400" width="20" height="20"
+                                    viewBox="0 0 20 20" fill="none">
                                     <path fill-rule="evenodd" clip-rule="evenodd"
                                         d="M3.04199 9.37381C3.04199 5.87712 5.87735 3.04218 9.37533 3.04218C12.8733 3.04218 15.7087 5.87712 15.7087 9.37381C15.7087 12.8705 12.8733 15.7055 9.37533 15.7055C5.87735 15.7055 3.04199 12.8705 3.04199 9.37381ZM9.37533 1.54218C5.04926 1.54218 1.54199 5.04835 1.54199 9.37381C1.54199 13.6993 5.04926 17.2055 9.37533 17.2055C11.2676 17.2055 13.0032 16.5346 14.3572 15.4178L17.1773 18.2381C17.4702 18.531 17.945 18.5311 18.2379 18.2382C18.5308 17.9453 18.5309 17.4704 18.238 17.1775L15.4182 14.3575C16.5367 13.0035 17.2087 11.2671 17.2087 9.37381C17.2087 5.04835 13.7014 1.54218 9.37533 1.54218Z" />
                                 </svg>
@@ -75,36 +76,37 @@
                     <table class="min-w-full">
                         <thead>
                             <tr class="border-gray-200 border-y dark:border-gray-700">
-                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Ticket</th>
-                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">User</th>
-                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Status</th>
-                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Replies</th>
-                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Date</th>
+                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                                    Ticket</th>
+                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                                    User</th>
+                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                                    Status</th>
+                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                                    Replies</th>
+                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                                    Date</th>
                                 <th class="relative px-4 py-3"><span class="sr-only">Actions</span></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                             <?php $__empty_1 = true; $__currentLoopData = $tickets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ticket): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                <?php
-                                    $statusConfig = [
-                                        0 => ['label' => 'Open',        'class' => 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400'],
-                                        1 => ['label' => 'In Progress', 'class' => 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'],
-                                        2 => ['label' => 'Closed',      'class' => 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'],
-                                    ];
-                                    $s = $statusConfig[$ticket->status];
-                                ?>
                                 <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
 
                                     
                                     <td class="px-4 py-4 whitespace-nowrap">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-                                                <svg class="text-blue-500" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" />
+                                            <div
+                                                class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+                                                <svg class="text-blue-500" width="18" height="18" viewBox="0 0 20 20"
+                                                    fill="currentColor">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" />
                                                 </svg>
                                             </div>
                                             <div>
-                                                <p class="text-sm font-medium text-gray-900 dark:text-white"><?php echo e($ticket->subject); ?></p>
+                                                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                                    <?php echo e($ticket->subject); ?></p>
                                                 <p class="text-xs text-gray-400 mt-0.5">#<?php echo e($ticket->id); ?></p>
                                             </div>
                                         </div>
@@ -118,20 +120,26 @@
 
                                     
                                     <td class="px-4 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium <?php echo e($s['class']); ?>">
-                                            <?php echo e($s['label']); ?>
+                                        <span
+                                            class="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium
+                                                bg-<?php echo e($ticket->status_color); ?>-50 text-<?php echo e($ticket->status_color); ?>-700
+                                                dark:bg-<?php echo e($ticket->status_color); ?>-900/30 dark:text-<?php echo e($ticket->status_color); ?>-400 border border-<?php echo e($ticket->status_color); ?>-100 dark:border-<?php echo e($ticket->status_color); ?>-800/50">
+                                            <?php echo e($ticket->status_label); ?>
 
                                         </span>
                                     </td>
 
                                     
                                     <td class="px-4 py-4 whitespace-nowrap">
-                                        <span class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($ticket->replies_count); ?> replies</span>
+                                        <span class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($ticket->replies_count); ?>
+
+                                            replies</span>
                                     </td>
 
                                     
                                     <td class="px-4 py-4 whitespace-nowrap">
-                                        <span class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($ticket->created_at->format('d M Y')); ?></span>
+                                        <span
+                                            class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($ticket->created_at->format('d M Y')); ?></span>
                                     </td>
 
                                     
@@ -152,7 +160,8 @@
                                             <button type="button"
                                                 @click="openDelete(<?php echo e($ticket->id); ?>, '<?php echo e(addslashes($ticket->subject)); ?>')"
                                                 class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20 transition-colors">
-                                                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                                <svg width="16" height="16" viewBox="0 0 20 20"
+                                                    fill="currentColor">
                                                     <path fill-rule="evenodd" clip-rule="evenodd"
                                                         d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" />
                                                 </svg>
@@ -165,14 +174,19 @@
                                 <tr>
                                     <td colspan="6" class="px-4 py-16 text-center">
                                         <div class="flex flex-col items-center gap-3">
-                                            <div class="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                                                <svg class="text-gray-400" width="28" height="28" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" />
+                                            <div
+                                                class="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                                                <svg class="text-gray-400" width="28" height="28"
+                                                    viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" />
                                                 </svg>
                                             </div>
                                             <div>
-                                                <p class="text-sm font-medium text-gray-900 dark:text-white">No tickets found</p>
-                                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">No support tickets have been submitted yet.</p>
+                                                <p class="text-sm font-medium text-gray-900 dark:text-white">No tickets
+                                                    found</p>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">No support
+                                                    tickets have been submitted yet.</p>
                                             </div>
                                         </div>
                                     </td>
@@ -192,8 +206,10 @@
                 <div @click.outside="deleteModal = false"
                     class="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 w-full max-w-sm mx-4">
                     <div class="flex items-center gap-4 mb-4">
-                        <div class="w-12 h-12 rounded-full bg-red-50 dark:bg-red-900/30 flex items-center justify-center shrink-0">
-                            <svg class="text-red-500" width="22" height="22" viewBox="0 0 20 20" fill="currentColor">
+                        <div
+                            class="w-12 h-12 rounded-full bg-red-50 dark:bg-red-900/30 flex items-center justify-center shrink-0">
+                            <svg class="text-red-500" width="22" height="22" viewBox="0 0 20 20"
+                                fill="currentColor">
                                 <path fill-rule="evenodd" clip-rule="evenodd"
                                     d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" />
                             </svg>
@@ -204,7 +220,8 @@
                         </div>
                     </div>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                        Are you sure you want to delete <span class="font-semibold text-gray-800 dark:text-white" x-text="'#' + deleteId + ' - ' + deleteTitle"></span>?
+                        Are you sure you want to delete <span class="font-semibold text-gray-800 dark:text-white"
+                            x-text="'#' + deleteId + ' - ' + deleteTitle"></span>?
                     </p>
                     <div class="flex items-center justify-end gap-3">
                         <button @click="deleteModal = false"

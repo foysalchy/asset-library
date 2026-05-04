@@ -112,7 +112,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
 
     Route::get('tickets', [TicketController::class, 'list'])->name('ticket.admin');
     Route::get('tickets/{ticket}', [TicketController::class, 'showAdmin'])->name('admin.tickets.show');
-    Route::post('tickets/{ticket}/reply', [TicketController::class, 'adminReply'])->name('admin.tickets.reply'); 
+    Route::post('tickets/{ticket}/reply', [TicketController::class, 'adminReply'])->name('admin.tickets.reply');
     Route::delete('tickets/{ticket}', [TicketController::class, 'destroy'])->name('admin.tickets.destroy');
 });
 Route::prefix('')->group(function () {
@@ -121,11 +121,14 @@ Route::prefix('')->group(function () {
     Route::middleware('guest')->group(function () {
         Route::get('/signup', [FrontendAuthController::class, 'showSignup'])->name('signup');
         Route::post('/signup', [FrontendAuthController::class, 'signup'])->name('signup');
-        Route::get('/signin', [FrontendAuthController::class, 'showSignin'])->name('signin');
-        Route::post('/signin', [FrontendAuthController::class, 'signin']);
+        Route::get('/', [FrontendAuthController::class, 'showSignin'])->name('signin');
+        Route::post('/', [FrontendAuthController::class, 'signin']);
     });
     Route::middleware('auth')->group(function () {
-        Route::get('/', [HomeController::class, 'index'])->name('home.index');
+        Route::get('/profile', [FrontendAuthController::class, 'index'])->name('profile.index');
+        Route::put('/profile/update', [FrontendAuthController::class, 'update'])->name('profile.update');
+
+        Route::get('/home', [HomeController::class, 'index'])->name('home.index');
         Route::get('/campaign/{slug}', [HomeController::class, 'campaignDetails'])->name('campaign.details');
         Route::get('/asset/{slug}', [HomeController::class, 'assetdetails'])->name('asset.details');
         Route::get('/filter', [HomeController::class, 'filter'])->name('home.filter');

@@ -123,18 +123,29 @@ class TicketController extends Controller
     // Admin: ticket detail
     public function showAdmin(Ticket $ticket)
     {
-        $ticket->load('replies.user');
+        $ticket->load('replies.user', 'user');
         return view('support-ticket.show', compact('ticket'));
     }
     public function adminReply(Request $request, Ticket $ticket)
     {
-        $request->validate(['message' => 'required']);
-
-        $ticket->replies()->create([
-            'user_id' => auth()->id(),
-            'message' => $request->message,
+        $request->validate([
+            'message' => 'required|string',
+            'image'   => 'nullable|image|max:2048',
         ]);
 
+        $data = [
+            'user_id'  => auth()->id(),
+            'message'  => $request->message,
+            'is_admin' => true,
+        ];
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('tickets/replies', 'public');
+        }
+
+        $ticket->replies()->create($data);
+
+        // dd($ticket->image, $ticket->toArray());
         if ($ticket->status == 0) {
             $ticket->update(['status' => 1]);
         }

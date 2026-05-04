@@ -66,16 +66,12 @@
             @endguest
 
             @auth
-                <a href="#"
+                <a href="{{ route('profile.index') }}"
                     class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
 
-                    @if (Auth::user()->getAttributes()['avatar'])
-                        <img src="{{ Auth::user()->avatar }}" alt="Profile"
+
+                        <img src="{{ Auth::user()->avatar_url ?? asset('./images/user/user-36.jpg')}}" alt="Profile"
                             class="w-6 h-6 rounded-full object-cover border border-white/50">
-                    @else
-                        <img src="{{ asset('images/user/user-36.jpg') }}" alt="Profile"
-                            class="w-6 h-6 rounded-full object-cover border border-white/50">
-                    @endif
 
                     <span class="text-sm tracking-wide">{{ Auth::user()->name }}</span>
                 </a>
