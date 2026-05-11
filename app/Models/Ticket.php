@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Ticket extends Model
 {
-    use SoftDeletes;
+
 
     protected $fillable = [
         'user_id',

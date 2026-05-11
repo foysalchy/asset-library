@@ -28,6 +28,19 @@ Route::get('/test-drive', function () {
     return 'Upload success!';
 });
 
+Route::get('/create-storage-link', function () {
+
+    $target = storage_path('app/public');
+    $link = public_path('storage');
+
+    if (file_exists($link)) {
+        return "Storage link already exists.";
+    }
+
+    File::link($target, $link);
+
+    return "Storage link created successfully.";
+});
 Route::middleware('guest')->group(function () {
     Route::get('/admin-login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/admin-login', [AuthController::class, 'login']);

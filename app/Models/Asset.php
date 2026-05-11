@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 class Asset extends Model
 {
-    use SoftDeletes;
+
 
     protected $fillable = [
         'project_id',

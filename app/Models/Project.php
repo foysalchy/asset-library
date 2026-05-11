@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    use SoftDeletes;
+
     protected $fillable = ['name', 'logo', 'concern', 'status'];
 
     const CONCERNS = [
