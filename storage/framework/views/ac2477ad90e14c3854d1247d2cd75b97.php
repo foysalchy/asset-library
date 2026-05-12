@@ -223,7 +223,7 @@
         </div>
     </section>
     <!-- ── recommended ── -->
-    <section class="container mx-auto px-6 py-12">
+    <!-- <section class="container mx-auto px-6 py-12">
         <div class="flex items-center gap-3 mb-8">
             <h2 class="text-xl lg:text-3xl text-[#0071c5] underline">
                 Recommended Assets for You
@@ -263,7 +263,6 @@
                 </div>
             </div>
 
-            <!-- Next Button -->
             <div class="absolute -right-5 top-1/2 -translate-y-1/2 z-30   lg:flex">
                 <div
                     class="swiper-button-next-recommend w-11 h-11 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-[#0071c5] cursor-pointer transition-all">
@@ -271,7 +270,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> -->
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('frontend.layouts.font', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\asset-management\resources\views/frontend/index.blade.php ENDPATH**/ ?>

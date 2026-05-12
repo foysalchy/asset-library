@@ -6,7 +6,7 @@
 
     <div class="bg-white border border-gray-100 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col h-full group cursor-pointer">
         <!-- Banner Area -->
-        <div class="relative h-[200px] bg-gradient-to-br from-[#001e3e] to-[#003366] overflow-hidden">
+        <div class="relative min-h-[200px] bg-gradient-to-br from-[#001e3e] to-[#003366] overflow-hidden">
             @if($selectable)
             <input type="checkbox"
                 class="item-checkbox absolute top-3 left-4 z-30 w-5 h-5 cursor-pointer accent-[#0071c5]"
@@ -21,17 +21,17 @@
             {{-- Full cover image --}}
             @if ($asset->media->first()?->media_type === 'image')
             <img src="{{ $asset->media->first()->url }}" alt="{{ $asset->title }}"
-                class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                class=" inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
             @else
             <img src="{{ asset('./images/cards/card-01.png') }}" alt="default"
-                class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                class=" inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
             @endif
 
             @php $bookmarked = $asset->isBookmarkedBy(auth()->id()); @endphp
-            <button onclick="toggleBookmark(this, 'asset', {{ $asset->id }})"
-                class="absolute top-2 right-3 z-10 w-8 h-8 flex items-center justify-center bg-white/90 hover:bg-white rounded-full shadow-md hover:scale-110 transition-all duration-200 {{ $bookmarked ? 'text-[#0071c5]' : 'text-gray-400' }}" aria-label="Save to bookmarks">
-                <i class="{{ $bookmarked ? 'fa-solid' : 'fa-regular' }} fa-bookmark text-sm"></i>
-            </button>
+        <button onclick="toggleBookmark(this, 'asset', {{ $asset->id }})"
+    class="absolute top-2 right-3 z-10 w-8 h-8 flex items-center justify-center bg-white/90 hover:bg-white rounded-full shadow-md hover:scale-110 transition-all duration-200 {{ $bookmarked ? 'text-[#0071c5]' : 'text-gray-400' }}" aria-label="Save to bookmarks">
+    <i class="{{ $bookmarked ? 'fa-solid' : 'fa-regular' }} fa-bookmark text-sm"></i>
+</button>
 
             @if ($asset->sort_order > 0)
             <div class="absolute -bottom-3.5 left-4 bg-[#fdbb30] text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-md z-20">

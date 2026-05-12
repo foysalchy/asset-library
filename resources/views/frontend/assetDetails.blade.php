@@ -57,7 +57,7 @@
                 </div>
 
                 <!-- Meta Info Area -->
-                <div class="p-8 flex-grow">
+                <div class="p-8 pb-2 flex-grow">
                     <h2 class="text-[#0071c5] text-[22px] font-medium leading-snug mb-4">
                         {{ $asset->title }}
                     </h2>
@@ -65,7 +65,12 @@
                         {!! $asset->description !!}
                     </p>
 
-                    <div class="space-y-3 text-[14px]">
+                   
+                </div>
+                <div class="p-8 pt-4 flex-grow border-t border-gray-100">
+                   
+
+                    <div class="space-y-3 text-[14px] ">
                         <p><span class="font-bold text-gray-700">ID#</span> {{ $asset->asset_id_code ?? 'N/A' }}</p>
                         <p><span class="font-bold text-gray-700">Upload date:</span>
                             {{ $asset->uploaded_at?->format('d/m/Y') ?? $asset->created_at->format('d/m/Y') }}
@@ -91,12 +96,7 @@
                         </p>
                     </div>
 
-                    <div class="mt-10 flex justify-end">
-                        <a href="#"
-                            class="text-[#757575] font-bold text-sm flex items-center gap-2 hover:text-[#0071c5]">
-                            See less <i class="fas fa-arrow-right text-[#0071c5]"></i>
-                        </a>
-                    </div>
+                    
                 </div>
             </div>
         </div>

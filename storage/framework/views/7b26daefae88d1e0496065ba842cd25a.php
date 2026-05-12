@@ -286,7 +286,7 @@ unset($__errorArgs, $__bag); ?>
             }
         }">
             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                Media Files
+                Media Files (1080P x 1080P)
                 <span class="text-xs font-normal text-gray-400 ml-1">Images & Videos (multiple)</span>
             </label>
 
