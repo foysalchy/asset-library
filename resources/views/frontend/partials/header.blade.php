@@ -26,11 +26,11 @@
             </a>
 
             <!-- Campaigns -->
-            <a href="{{ route('home.filter', ['section' => 'campaigns']) }}"
+            <!-- <a href="{{ route('home.filter', ['section' => 'campaigns']) }}"
                 class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                 <i class="fas fa-bullhorn text-lg"></i>
                 <span class="text-sm tracking-wide flex items-center gap-1">Campaigns </span>
-            </a>
+            </a> -->
 
             <!-- Assets -->
             <a href="{{ route('home.filter', ['section' => 'assets', 'sort' => 'latest']) }}"

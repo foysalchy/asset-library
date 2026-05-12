@@ -196,9 +196,7 @@
             @error('slug')<p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>@enderror
         </div>
 
-        {{-- Description (CKEditor 5) --}}
-        {{-- Description (CKEditor 5) --}}
-        {{-- Description (CKEditor 5) --}}
+
         <div>
             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                 Description

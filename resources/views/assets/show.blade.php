@@ -127,7 +127,8 @@
             <div class="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
                 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Description</h3>
                 <div class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    {!! nl2br(e($asset->description)) !!}
+                                        {!! $asset->description !!}
+
                 </div>
             </div>
             @endif

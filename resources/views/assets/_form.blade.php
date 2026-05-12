@@ -1,5 +1,156 @@
 @php $isEdit = isset($asset) && $asset->exists; @endphp
+@push('head')
+<style>
+    /* ১. Editor-এর Height বাড়ানো হলো */
+    .ck-editor__editable_inline {
+        min-height: 300px !important;
 
+    }
+
+    /* ২. Fix Tailwind Preflight stripping list & heading styles */
+    .ck-content ul {
+        list-style-type: disc !important;
+        padding-left: 1.5rem !important;
+    }
+
+    .ck-content ol {
+        list-style-type: decimal !important;
+        padding-left: 1.5rem !important;
+    }
+
+    .ck-content h2 {
+        font-size: 1.5em !important;
+        font-weight: bold !important;
+        margin-bottom: 0.5em !important;
+    }
+
+    .ck-content h3 {
+        font-size: 1.25em !important;
+        font-weight: bold !important;
+        margin-bottom: 0.5em !important;
+    }
+
+    .ck-content p {
+        margin-bottom: 0.5em !important;
+    }
+
+    /* Validation Error Border */
+    .has-error .ck-editor__main>.ck-editor__editable,
+    .has-error .ck-toolbar {
+        border-color: #f87171 !important;
+    }
+
+    /* Tailwind Dark Mode Integration */
+    .dark .ck.ck-editor__main>.ck-editor__editable {
+        background-color: #111827 !important;
+        border-color: #374151 !important;
+        color: #f3f4f6 !important;
+    }
+
+    .dark .ck.ck-toolbar {
+        background-color: #1f2937 !important;
+        border-color: #374151 !important;
+    }
+
+    .dark .ck.ck-toolbar .ck.ck-button {
+        color: #e5e7eb !important;
+    }
+
+    .dark .ck.ck-toolbar .ck.ck-button:hover {
+        background-color: #374151 !important;
+    }
+
+    .dark .ck.ck-toolbar .ck.ck-button.ck-on {
+        background-color: #4b5563 !important;
+        color: #ffffff !important;
+    }
+
+    .dark .ck.ck-dropdown__panel {
+        background-color: #1f2937 !important;
+        border-color: #374151 !important;
+    }
+
+    .dark .ck.ck-list__item__button {
+        color: #e5e7eb !important;
+    }
+
+    .dark .ck.ck-list__item__button:hover {
+        background-color: #374151 !important;
+    }
+
+    /* Modal Focus Fix: Modal-এর ভেতর থাকলে যেন ড্রপডাউনগুলো কাজ করে */
+    :root {
+        --ck-z-default: 100;
+        --ck-z-modal: calc(var(--ck-z-default) + 9999);
+    }
+</style>
+@endpush
+
+@push('scripts')
+
+<script src="https://cdn.ckeditor.com/ckeditor5/41.2.1/super-build/ckeditor.js"></script>
+
+<script>
+    // ফাংশন তৈরি করে রাখলাম যেন যেকোনো সময় কল করা যায়
+    function initializeCKEditor() {
+        const editorElement = document.querySelector('#campaign-description');
+
+        if (!editorElement) return;
+
+        if (editorElement.classList.contains('ck-initialized')) return;
+        editorElement.classList.add('ck-initialized');
+
+        CKEDITOR.ClassicEditor.create(editorElement, {
+                toolbar: {
+                    items: [
+                        'undo', 'redo', '|',
+                        'heading', '|',
+                        'bold', 'italic', 'underline', 'strikethrough', '|',
+                        'fontSize', 'fontColor', 'fontBackgroundColor', '|',
+                        'alignment', '|',
+                        'bulletedList', 'numberedList', '|',
+                        'link', 'blockQuote', 'insertTable', 'horizontalLine'
+                    ],
+                    shouldNotGroupWhenFull: true
+                },
+                table: {
+                    contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
+                },
+
+                removePlugins: [
+                    'AIAssistant', 'OpenAITextAdapter', 'RealTimeCollaborativeComments',
+                    'RealTimeCollaborativeTrackChanges', 'RealTimeCollaborativeRevisionHistory',
+                    'PresenceList', 'Comments', 'TrackChanges', 'TrackChangesData', 'RevisionHistory',
+                    'Pagination', 'WProofreader', 'MathType', 'SlashCommand', 'Template',
+                    'DocumentOutline', 'FormatPainter', 'TableOfContents', 'PasteFromOfficeEnhanced',
+                    'ExportPdf', 'ExportWord', 'CKBox', 'CKFinder', 'EasyImage', 'Base64UploadAdapter',
+                    'CaseChange'
+                ],
+            })
+            .then(editor => {
+                editor.editing.view.change(writer => {
+                    writer.setStyle('min-height', '400px', editor.editing.view.document.getRoot());
+                });
+
+                window.campaignEditor = editor;
+
+                const form = editorElement.closest('form');
+                if (form) {
+                    form.addEventListener('submit', () => {
+                        editorElement.value = editor.getData();
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('CKEditor error:', error);
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', initializeCKEditor);
+    document.addEventListener('livewire:load', initializeCKEditor);
+    document.addEventListener('livewire:navigated', initializeCKEditor);
+</script>
+@endpush
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
 
     {{-- ── Left Column ──────────────────────────────────────────── --}}
@@ -29,12 +180,17 @@
             @error('slug')<p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>@enderror
         </div>
 
-        {{-- Description --}}
+        {{-- Description (CKEditor 5) --}}
         <div>
-            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Description</label>
-            <textarea name="description" rows="4"
-                placeholder="Describe this asset..."
-                class="shadow-theme-xs w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('description') border-red-400 @enderror">{{ old('description', $isEdit ? $asset->description : '') }}</textarea>
+            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                Description
+            </label>
+
+            <div class="text-gray-900 dark:text-white">
+                {{-- id এবং name ঠিক রাখুন --}}
+                <textarea name="description" id="campaign-description">{!! old('description', $isEdit ? $asset->description : '') !!}</textarea>
+            </div>
+
             @error('description')<p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>@enderror
         </div>
 
@@ -106,26 +262,30 @@
 
             {{-- Existing Media (edit mode) --}}
             @if($isEdit && $asset->media->count())
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
-                    @foreach($asset->media as $media)
-                        <div id="media-{{ $media->id }}" class="relative group rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 aspect-video">
-                            @if($media->media_type === 'image')
-                                <img src="{{ $media->url }}" alt="{{ $media->file_original_name }}"
-                                     class="w-full h-full object-cover">
-                            @else
-                                <video src="{{ $media->url }}" class="w-full h-full object-cover"></video>
-                                <div class="absolute inset-0 flex items-center justify-center bg-black/30">
-                                    <svg class="text-white" width="28" height="28" viewBox="0 0 20 20" fill="currentColor"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
-                                </div>
-                            @endif
-                            <button type="button"
-                                    @click="markDelete('{{ $media->id }}')"
-                                    class="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity shadow">
-                                <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/></svg>
-                            </button>
-                        </div>
-                    @endforeach
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
+                @foreach($asset->media as $media)
+                <div id="media-{{ $media->id }}" class="relative group rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 aspect-video">
+                    @if($media->media_type === 'image')
+                    <img src="{{ $media->url }}" alt="{{ $media->file_original_name }}"
+                        class="w-full h-full object-cover">
+                    @else
+                    <video src="{{ $media->url }}" class="w-full h-full object-cover"></video>
+                    <div class="absolute inset-0 flex items-center justify-center bg-black/30">
+                        <svg class="text-white" width="28" height="28" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                        </svg>
+                    </div>
+                    @endif
+                    <button type="button"
+                        @click="markDelete('{{ $media->id }}')"
+                        class="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity shadow">
+                        <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" />
+                        </svg>
+                    </button>
                 </div>
+                @endforeach
+            </div>
             @endif
 
             {{-- New Media Previews --}}
@@ -137,7 +297,9 @@
                         </template>
                         <template x-if="file.isVideo">
                             <div class="w-full h-full flex flex-col items-center justify-center gap-1">
-                                <svg class="text-blue-400" width="28" height="28" viewBox="0 0 20 20" fill="currentColor"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
+                                <svg class="text-blue-400" width="28" height="28" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                                </svg>
                                 <span class="text-xs text-blue-500 truncate px-2 w-full text-center" x-text="file.name"></span>
                             </div>
                         </template>
@@ -145,8 +307,10 @@
                             <p class="text-xs text-white truncate" x-text="file.size"></p>
                         </div>
                         <button type="button" @click="removeNew(index)"
-                                class="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity shadow">
-                            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/></svg>
+                            class="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity shadow">
+                            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" />
+                            </svg>
                         </button>
                     </div>
                 </template>
@@ -154,11 +318,11 @@
 
             {{-- Drop Zone --}}
             <div @click="$refs.mediaInput.click()"
-                 @dragover.prevent @drop.prevent="addFiles({ target: { files: $event.dataTransfer.files } })"
-                 class="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/50 p-6 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 dark:border-gray-700 dark:bg-gray-800/40 dark:hover:border-blue-600 transition-all">
+                @dragover.prevent @drop.prevent="addFiles({ target: { files: $event.dataTransfer.files } })"
+                class="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/50 p-6 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 dark:border-gray-700 dark:bg-gray-800/40 dark:hover:border-blue-600 transition-all">
                 <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center dark:bg-blue-900/30">
                     <svg class="text-blue-500" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"/>
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" />
                     </svg>
                 </div>
                 <div class="text-center">
@@ -195,15 +359,15 @@
                 <span class="text-xs font-normal text-gray-400 ml-1">ZIP, PDF, DOC, XLS · max 100MB</span>
             </label>
             <input type="hidden" name="remove_file" :value="removed ? '1' : '0'">
-             <x-drive-upload
-                    field-name="drive_file_id"
-                    :file-id="old('drive_file_id', $isEdit && $asset->file ? str_replace('drive:', '', $asset->file) : '')" />
+            <x-drive-upload
+                field-name="drive_file_id"
+                :file-id="old('drive_file_id', $isEdit && $asset->file ? str_replace('drive:', '', $asset->file) : '')" />
 
 
-                <input type="file" id="file_input" x-ref="fileInput" name="file"
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt,.csv"
-                    class="hidden" @change="handleFile($event)">
-                @error('file')<p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>@enderror
+            <input type="file" id="file_input" x-ref="fileInput" name="file"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt,.csv"
+                class="hidden" @change="handleFile($event)">
+            @error('file')<p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>@enderror
             <input type="file" id="asset_file_input" x-ref="fileInput" name="file"
                 accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt,.csv"
                 class="hidden" @change="handleFile($event)">
@@ -225,13 +389,13 @@
                     Project <span class="text-red-500">*</span>
                 </label>
                 <select name="project_id" required
-                        class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 @error('project_id') border-red-400 @enderror">
+                    class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 @error('project_id') border-red-400 @enderror">
                     <option value="">— Select Project —</option>
                     @foreach($projects as $project)
-                        <option value="{{ $project->id }}"
-                            {{ old('project_id', $isEdit ? $asset->project_id : ($selectedProject ?? '')) == $project->id ? 'selected' : '' }}>
-                            {{ $project->name }}
-                        </option>
+                    <option value="{{ $project->id }}"
+                        {{ old('project_id', $isEdit ? $asset->project_id : ($selectedProject ?? '')) == $project->id ? 'selected' : '' }}>
+                        {{ $project->name }}
+                    </option>
                     @endforeach
                 </select>
                 @error('project_id')<p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>@enderror
@@ -243,13 +407,13 @@
                     Asset Type <span class="text-red-500">*</span>
                 </label>
                 <select name="asset_type_id" required
-                        class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 @error('asset_type_id') border-red-400 @enderror">
+                    class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 @error('asset_type_id') border-red-400 @enderror">
                     <option value="">— Select Type —</option>
                     @foreach($assetTypes as $type)
-                        <option value="{{ $type->id }}"
-                            {{ old('asset_type_id', $isEdit ? $asset->asset_type_id : '') == $type->id ? 'selected' : '' }}>
-                            {{ $type->name }}
-                        </option>
+                    <option value="{{ $type->id }}"
+                        {{ old('asset_type_id', $isEdit ? $asset->asset_type_id : '') == $type->id ? 'selected' : '' }}>
+                        {{ $type->name }}
+                    </option>
                     @endforeach
                 </select>
                 @error('asset_type_id')<p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>@enderror
@@ -289,28 +453,32 @@
 
 {{-- Formats & Dimensions hidden array inputs (JS convert করবে) --}}
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.querySelector('form');
-    if (!form) return;
-    form.addEventListener('submit', function () {
-        // available_formats
-        const fmtInput = form.querySelector('[name="available_formats_input"]');
-        if (fmtInput) {
-            fmtInput.value.split(',').map(s => s.trim()).filter(Boolean).forEach(val => {
-                const input = document.createElement('input');
-                input.type = 'hidden'; input.name = 'available_formats[]'; input.value = val;
-                form.appendChild(input);
-            });
-        }
-        // dimensions
-        const dimInput = form.querySelector('[name="dimensions_input"]');
-        if (dimInput) {
-            dimInput.value.split(',').map(s => s.trim()).filter(Boolean).forEach(val => {
-                const input = document.createElement('input');
-                input.type = 'hidden'; input.name = 'dimensions[]'; input.value = val;
-                form.appendChild(input);
-            });
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        if (!form) return;
+        form.addEventListener('submit', function() {
+            // available_formats
+            const fmtInput = form.querySelector('[name="available_formats_input"]');
+            if (fmtInput) {
+                fmtInput.value.split(',').map(s => s.trim()).filter(Boolean).forEach(val => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'available_formats[]';
+                    input.value = val;
+                    form.appendChild(input);
+                });
+            }
+            // dimensions
+            const dimInput = form.querySelector('[name="dimensions_input"]');
+            if (dimInput) {
+                dimInput.value.split(',').map(s => s.trim()).filter(Boolean).forEach(val => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'dimensions[]';
+                    input.value = val;
+                    form.appendChild(input);
+                });
+            }
+        });
     });
-});
 </script>

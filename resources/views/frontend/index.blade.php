@@ -125,7 +125,7 @@
     <!-- END HERO -->
 
     <!-- ── PAGE  Campaigns ── -->
-    <section class="container mx-auto mx-auto px-6 py-10">
+    <!-- <section class="container mx-auto mx-auto px-6 py-10">
         <div class="flex items-center gap-3 mb-6">
             <a href="{{ route('home.filter', ['section' => 'campaigns']) }}"
                 class="text-2xl md:text-3xl text-[#0071c5] underline">
@@ -137,13 +137,13 @@
             </a>
         </div>
 
-        <!-- Cards Grid -->
+ 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
             @foreach ($featuredCampaigns as $campaign)
                 <x-frontend.campaign-card :campaign="$campaign" />
             @endforeach
         </div>
-    </section>
+    </section> -->
 
     <!-- ── Latest Marketing Assets Section ── -->
     <section class="container mx-auto px-6 py-12">
