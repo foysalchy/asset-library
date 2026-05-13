@@ -352,23 +352,61 @@ unset($__errorArgs, $__bag); ?>
             </div>
 
             
-            <div @click="$refs.mediaInput.click()"
-                @dragover.prevent @drop.prevent="addFiles({ target: { files: $event.dataTransfer.files } })"
-                class="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/50 p-6 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 dark:border-gray-700 dark:bg-gray-800/40 dark:hover:border-blue-600 transition-all">
-                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center dark:bg-blue-900/30">
-                    <svg class="text-blue-500" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" />
-                    </svg>
+            
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                    Images
+                    <span class="text-xs font-normal text-gray-400 ml-1">JPG, PNG, WEBP, GIF</span>
+                </label>
+
+                <div x-data="{
+        files: [],
+        addFiles(e) {
+            Array.from(e.target.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = ev => this.files.push({ name: file.name, preview: ev.target.result });
+                reader.readAsDataURL(file);
+            });
+        },
+        remove(index) { this.files.splice(index, 1); }
+    }">
+                    <div @click="$refs.imageInput.click()"
+                        @dragover.prevent
+                        @drop.prevent="addFiles({ target: { files: $event.dataTransfer.files } })"
+                        class="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/50 p-6 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 dark:border-gray-700 dark:bg-gray-800/40 transition-all">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center dark:bg-blue-900/30">
+                            <svg class="text-blue-500" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" />
+                            </svg>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Click or drag images here</p>
+                            <p class="text-xs text-gray-400 mt-0.5">JPG, PNG, WEBP, GIF</p>
+                        </div>
+                    </div>
+
+                    
+                    <template x-if="files.length > 0">
+                        <div class="mt-3 grid grid-cols-4 gap-2">
+                            <template x-for="(file, index) in files" :key="index">
+                                <div class="relative group rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                                    <img :src="file.preview" class="w-full h-20 object-cover">
+                                    <button type="button" @click="remove(index)"
+                                        class="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <svg width="10" height="10" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+
+                    <input type="file" x-ref="imageInput" name="media[]" multiple
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                        class="hidden" @change="addFiles($event)">
                 </div>
-                <div class="text-center">
-                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Click or drag media files here</p>
-                    <p class="text-xs text-gray-400 mt-0.5">JPG, PNG, WEBP, GIF, MP4, MOV, WEBM</p>
-                </div>
-            </div>
-            <input type="file" x-ref="mediaInput" name="media[]" multiple
-                accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm"
-                class="hidden" @change="addFiles($event)">
-            <?php $__errorArgs = ['media.*'];
+                <?php $__errorArgs = ['media.*'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -376,6 +414,278 @@ $message = $__bag->first($__errorArgs[0]); ?><p class="mt-1.5 text-xs text-red-5
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
+            </div>
+
+            
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                    Videos
+                    <span class="text-xs font-normal text-gray-400 ml-1">MP4, MOV, WEBM · Direct to Google Drive</span>
+                </label>
+
+                <div x-data="{
+        videos: [],
+        completedIds: [],
+
+      async addVideos(e) {
+    const newFiles = Array.from(e.target.files);
+    for (const file of newFiles) {
+        const video = {
+            file,
+            name:     file.name,
+            size:     this.formatSize(file.size),
+            status:   'idle',
+            progress: 0,
+            fileId:   '',
+            errorMsg: '',
+        };
+        this.videos.push(video);
+        // index দিয়ে track করো
+        const index = this.videos.length - 1;
+        await this.uploadVideo(index); // object এর বদলে index পাঠাও
+    }
+    e.target.value = '';
+},
+
+async uploadVideo(index) {
+    this.videos[index].status   = 'uploading';
+    this.videos[index].progress = 0;
+    this.$dispatch('drive-uploading', { uploading: true });
+
+    try {
+        const video = this.videos[index];
+        const sessionRes = await fetch('<?php echo e(route('drive.upload.session')); ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+            },
+            body: JSON.stringify({
+                filename:  video.file.name,
+                mime_type: video.file.type || 'video/mp4',
+                size:      video.file.size,
+            }),
+        });
+
+        if (!sessionRes.ok) throw new Error('Could not start upload session.');
+        const { upload_url, file_name } = await sessionRes.json();
+
+        await this.uploadToDrive(index, upload_url, file_name);
+
+    } catch (err) {
+        this.videos[index].status   = 'failed';
+        this.videos[index].errorMsg = err.message || 'Upload failed.';
+    }
+
+    const allDone = this.videos.every(v => v.status !== 'uploading');
+    if (allDone) this.$dispatch('drive-uploading', { uploading: false });
+},
+
+uploadToDrive(index, uploadUrl, fileName) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener('progress', (e) => {
+            if (e.lengthComputable) {
+                // ✅ index দিয়ে directly update — Alpine reactive ধরবে
+                this.videos[index].progress = Math.round((e.loaded / e.total) * 100);
+            }
+        });
+
+        xhr.addEventListener('load', async () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                try {
+                    await this.resolveFileId(index, fileName);
+                    this.videos[index].status   = 'completed';
+                    this.videos[index].progress = 100;
+                    resolve();
+                } catch(e) {
+                    this.videos[index].status   = 'failed';
+                    this.videos[index].errorMsg = 'Upload done but could not get file info.';
+                    reject(e);
+                }
+            } else {
+                reject(new Error('Drive upload failed: ' + xhr.status));
+            }
+        });
+
+        xhr.addEventListener('error', async () => {
+            if (this.videos[index].progress === 100) {
+                try {
+                    await this.resolveFileId(index, fileName);
+                    this.videos[index].status = 'completed';
+                    resolve();
+                } catch(e) {
+                    this.videos[index].status   = 'failed';
+                    this.videos[index].errorMsg = 'Upload done but could not get file info.';
+                    reject(e);
+                }
+            } else {
+                this.videos[index].status   = 'failed';
+                this.videos[index].errorMsg = 'Network error during upload.';
+                reject(new Error('Network error'));
+            }
+        });
+
+        xhr.open('PUT', uploadUrl);
+        xhr.setRequestHeader('Content-Type', this.videos[index].file.type || 'video/mp4');
+        xhr.send(this.videos[index].file);
+    });
+},
+
+async resolveFileId(index, fileName) {
+    const res = await fetch('<?php echo e(route('drive.upload.resolve')); ?>', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+        },
+        body: JSON.stringify({ file_name: fileName }),
+    });
+    if (!res.ok) throw new Error('Could not resolve file.');
+    const data = await res.json();
+    this.videos[index].fileId = data.file_id;
+    this.completedIds.push(data.file_id);
+},
+
+remove(index) {
+    const video = this.videos[index];
+    if (video.fileId) {
+        this.completedIds = this.completedIds.filter(id => id !== video.fileId);
+    }
+    this.videos.splice(index, 1);
+},
+
+retry(index) {
+    if (this.videos[index].fileId) {
+        this.completedIds = this.completedIds.filter(id => id !== this.videos[index].fileId);
+        this.videos[index].fileId = '';
+    }
+    this.uploadVideo(index);
+},
+
+        formatSize(bytes) {
+            const units = ['B','KB','MB','GB'];
+            let i = 0;
+            while (bytes >= 1024 && i < units.length - 1) { bytes /= 1024; i++; }
+            return Math.round(bytes * 10) / 10 + ' ' + units[i];
+        }
+    }">
+
+                    <template x-for="fileId in completedIds" :key="fileId">
+                        <input type="hidden" name="drive_video_ids[]" :value="fileId">
+                    </template>
+
+                    <div @click="$refs.videoInput.click()"
+                        @dragover.prevent
+                        @drop.prevent="addVideos({ target: { files: $event.dataTransfer.files } })"
+                        class="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/50 p-6 cursor-pointer hover:border-purple-400 hover:bg-purple-50/30 dark:border-gray-700 dark:bg-gray-800/40 dark:hover:border-purple-600 transition-all">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center dark:bg-purple-900/30">
+                            <svg class="text-purple-500" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm12.553 1.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                            </svg>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Click or drag videos here</p>
+                            <p class="text-xs text-gray-400 mt-0.5">MP4, MOV, WEBM · Uploads directly to Google Drive</p>
+                        </div>
+                    </div>
+
+                    <template x-if="videos.length > 0">
+                        <div class="mt-3 space-y-2">
+                            <template x-for="(video, index) in videos" :key="index">
+                                <div class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800">
+
+                                    
+                                    <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                                        :class="{
+                                'bg-purple-100 dark:bg-purple-900/30': video.status === 'idle' || video.status === 'uploading',
+                                'bg-green-100 dark:bg-green-900/30':   video.status === 'completed',
+                                'bg-red-100 dark:bg-red-900/30':       video.status === 'failed',
+                             }">
+                                        <svg class="w-4 h-4"
+                                            :class="{
+                                    'text-purple-500 animate-pulse': video.status === 'uploading',
+                                    'text-green-500':                video.status === 'completed',
+                                    'text-red-500':                  video.status === 'failed',
+                                    'text-gray-400':                 video.status === 'idle',
+                                 }"
+                                            viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm12.553 1.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                                        </svg>
+                                    </div>
+
+                                    
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300 truncate" x-text="video.name"></p>
+
+                                        
+                                        <template x-if="video.status === 'uploading'">
+                                            <div class="mt-1.5">
+                                                <div class="w-full h-1.5 bg-gray-200 rounded-full dark:bg-gray-700 overflow-hidden">
+                                                    <div class="h-1.5 bg-purple-500 rounded-full transition-all duration-300"
+                                                        :style="'width: ' + video.progress + '%'"></div>
+                                                </div>
+                                                <p class="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
+                                                    <svg class="animate-spin w-3 h-3 text-purple-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                                                    </svg>
+                                                    <span x-text="video.progress + '% · ' + video.size"></span>
+                                                </p>
+                                            </div>
+                                        </template>
+
+                                        
+                                        <template x-if="video.status === 'completed'">
+                                            <p class="text-xs text-green-600 dark:text-green-400 mt-0.5">
+                                                ✅ Uploaded to Google Drive
+                                            </p>
+                                        </template>
+
+                                        
+                                        <template x-if="video.status === 'failed'">
+                                            <p class="text-xs text-red-500 mt-0.5 truncate" x-text="video.errorMsg"></p>
+                                        </template>
+
+                                        
+                                        <template x-if="video.status === 'idle'">
+                                            <p class="text-xs text-gray-400 mt-0.5" x-text="video.size"></p>
+                                        </template>
+                                    </div>
+
+                                    
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        
+                                        <template x-if="video.status === 'failed'">
+                                            <button type="button" @click="retry(index)"> 
+                                                class="w-7 h-7 flex items-center justify-center rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                                                <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" />
+                                                </svg>
+                                            </button>
+                                        </template>
+
+                                        
+                                        <button type="button" @click="remove(index)"
+                                            :disabled="video.status === 'uploading'"
+                                            class="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 transition-colors"
+                                            :class="video.status === 'uploading' ? 'opacity-30 cursor-not-allowed' : ''">
+                                            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+
+                    <input type="file" x-ref="videoInput" multiple
+                        accept="video/mp4,video/quicktime,video/webm"
+                        class="hidden" @change="addVideos($event)">
+                </div>
+            </div>
         </div>
 
         
@@ -532,6 +842,34 @@ unset($__errorArgs, $__bag); ?>
                     value="<?php echo e(old('asset_id_code', $isEdit ? $asset->asset_id_code : '')); ?>"
                     placeholder="AS6748EN"
                     class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
+            </div>
+
+
+            <div>
+                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                    Status <span class="text-red-500">*</span>
+                </label>
+                <select name="status"
+                    class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 <?php $__errorArgs = ['status'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-400 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                    <option value="active" <?php echo e(old('status', $isEdit ? $asset->status : 'active')       === 'active'  ? 'selected' : ''); ?>>Active</option>
+                    <option value="draft" <?php echo e(old('status', $isEdit ? $asset->status : '') === 'draft'   ? 'selected' : ''); ?>>Draft</option>
+                    <option value="expired" <?php echo e(old('status', $isEdit ? $asset->status : '')       === 'expired' ? 'selected' : ''); ?>>Expired</option>
+                </select>
+                <?php $__errorArgs = ['status'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?><p class="mt-1.5 text-xs text-red-500"><?php echo e($message); ?></p><?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
             </div>
 
             

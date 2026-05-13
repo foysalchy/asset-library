@@ -31,6 +31,7 @@ return new class extends Migration
             $table->json('dimensions')->nullable();
             $table->integer('sort_order')->default(0);
             $table->date('uploaded_at')->nullable();
+            $table->enum('status', ['draft', 'active', 'expired'])->default('active');
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();

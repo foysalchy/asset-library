@@ -157,13 +157,17 @@ class AssetController extends Controller
 
     private function syncMedia(Request $request, Asset $asset): void
     {
-        // Delete marked existing media
+        \Log::info('syncMedia input', [
+            'has_media'       => $request->hasFile('media'),
+            'drive_video_ids' => $request->input('drive_video_ids'),
+        ]);
+        // Delete marked media
         if ($request->filled('delete_media')) {
             foreach ((array) $request->delete_media as $mediaId) {
                 $media = AssetMedia::find($mediaId);
-                if ($media && $media->asset_id === $asset->id) {
+                if ($media && (int) $media->asset_id === (int) $asset->id) {
                     $mime = $media->mime_type ?? '';
-                    str_starts_with($mime, 'video') || str_starts_with($mime, 'image')
+                    str_starts_with($mime, 'image')
                         ? FileUploadHelper::deleteImage($media->file_path)
                         : FileUploadHelper::deleteFile($media->file_path);
                     $media->delete();
@@ -171,25 +175,32 @@ class AssetController extends Controller
             }
         }
 
-        // Upload new media
+        // ✅ Image — local upload
         if ($request->hasFile('media')) {
             $order = $asset->media()->max('sort_order') ?? 0;
             foreach ($request->file('media') as $file) {
-                $mime      = $file->getMimeType();
-                $isLocal   = str_starts_with($mime, 'image') || str_starts_with($mime, 'video');
-                $mediaType = str_starts_with($mime, 'video') ? 'video' : 'image';
-
-
-                $path = $isLocal
-                    ? FileUploadHelper::uploadImage($file, 'assets/media')
-                    : FileUploadHelper::uploadFile($file, 'assets/media');
-
+                $mime = $file->getMimeType();
                 $asset->media()->create([
-                    'file_path'          => $path,
+                    'file_path'          => FileUploadHelper::uploadImage($file, 'assets/media'),
                     'file_original_name' => $file->getClientOriginalName(),
-                    'media_type'         => $mediaType,
+                    'media_type'         => 'image',
                     'mime_type'          => $mime,
                     'file_size'          => $file->getSize(),
+                    'sort_order'         => ++$order,
+                ]);
+            }
+        }
+
+        // ✅ Video — Google Drive (file ID থেকে)
+        if ($request->filled('drive_video_ids')) {
+            $order = $asset->media()->max('sort_order') ?? 0;
+            foreach ((array) $request->drive_video_ids as $fileId) {
+                $asset->media()->create([
+                    'file_path'          => 'drive:' . $fileId,
+                    'file_original_name' => 'video_' . $fileId,
+                    'media_type'         => 'video',
+                    'mime_type'          => 'video/mp4',
+                    'file_size'          => 0,
                     'sort_order'         => ++$order,
                 ]);
             }
@@ -198,8 +209,40 @@ class AssetController extends Controller
 
     private function validateAsset(Request $request, ?string $ignoreId = null): array
     {
+        $blockedExtensions = [
+            'exe',
+            'bat',
+            'cmd',
+            'com',
+            'scr',
+            'msi',
+            'ps1',
+            'vbs',
+            'js',
+            'jar',
+            'php',
+            'php3',
+            'php4',
+            'php5',
+            'phtml',
+            'asp',
+            'aspx',
+            'jsp',
+            'cgi',
+            'pl',
+            'py',
+            'rb',
+            'sh',
+            'bash',
+            'dll',
+            'so',
+            'bin',
+            'htaccess',
+            'htpasswd',
+        ];
+
         return $request->validate([
-            'drive_file_id' => ['nullable', 'string'],
+            'drive_file_id'       => ['nullable', 'string'],
             'project_id'          => ['required', 'exists:projects,id'],
             'asset_type_id'       => ['required', 'exists:asset_types,id'],
             'title'               => ['required', 'string', 'max:255'],
@@ -211,10 +254,28 @@ class AssetController extends Controller
             'dimensions'          => ['nullable', 'array'],
             'dimensions.*'        => ['string', 'max:50'],
             'sort_order'          => ['nullable', 'integer', 'min:0'],
+
+            'status'         =>      ['required'],
             'uploaded_at'         => ['nullable', 'date'],
-            'file'                => ['nullable', 'file', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,txt,csv', 'max:102400'],
+            'file'                => [
+                'nullable',
+                'file',
+                function ($attribute, $value, $fail) use ($blockedExtensions) {
+                    if (in_array(strtolower($value->getClientOriginalExtension()), $blockedExtensions)) {
+                        $fail("This file type is not allowed.");
+                    }
+                },
+            ],
             'media'               => ['nullable', 'array'],
-            'media.*'             => ['file', 'mimes:jpg,jpeg,png,webp,gif,mp4,mov,avi,webm', 'max:204800'],
+            'media.*'             => [
+                'file',
+                function ($attribute, $value, $fail) use ($blockedExtensions) {
+                    if (in_array(strtolower($value->getClientOriginalExtension()), $blockedExtensions)) {
+                        $fail("This file type is not allowed.");
+                    }
+                },
+            ],
+            'drive_video_ids'        => ['nullable', 'array'],
             'delete_media'        => ['nullable', 'array'],
             'delete_media.*'      => ['string'],
         ]);

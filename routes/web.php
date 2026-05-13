@@ -45,6 +45,24 @@ Route::middleware('guest')->group(function () {
     Route::get('/admin-login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/admin-login', [AuthController::class, 'login']);
 });
+Route::get('/fix-media-paths', function () {
+    $medias = \App\Models\AssetMedia::where('file_path', 'not like', 'drive:%')
+        ->where('file_path', 'not like', 'http%')
+        ->get();
+
+    foreach ($medias as $media) {
+        $mime    = $media->mime_type ?? '';
+        $isLocal = str_starts_with($mime, 'image');
+
+        // Video হলে drive: prefix যোগ করো
+        if (!$isLocal) {
+            $media->update(['file_path' => 'drive:' . $media->file_path]);
+            echo "Fixed: {$media->id} → drive:{$media->file_path} <br>";
+        }
+    }
+
+    return 'Done!';
+})->middleware('auth');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
@@ -150,6 +168,10 @@ Route::prefix('')->group(function () {
         Route::post('frontend/logout', [FrontendAuthController::class, 'logout'])->name('frontend.logout');
         Route::get('/drive/file/{type}/{id}', [FileController::class, 'stream'])
             ->name('drive.file.stream');
+        Route::get('/drive/media/{media}', [FileController::class, 'streamMedia'])
+            ->name('drive.media.stream');
+          
+
         Route::post('/drive/bulk-download', [FileController::class, 'bulkDownload'])->name('drive.bulkDownload');
         Route::get('/brand', [HomeController::class, 'brand'])->name('brand.index');
         Route::post('/bookmark', [BookmarkController::class, 'toggle'])->name('bookmark.toggle');

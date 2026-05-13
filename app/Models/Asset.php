@@ -26,6 +26,7 @@ class Asset extends Model
         'available_formats',
         'dimensions',
         'sort_order',
+        'status',
         'uploaded_at',
         'created_by',
     ];

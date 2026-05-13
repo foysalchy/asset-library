@@ -17,9 +17,9 @@ class HomeController extends Controller
         $user = Auth::user();
         $featuredCampaigns = Campaign::with('project')->latest()->take(4)->get();
 
-        $latestAssets = Asset::with('media')->latest()->get();
+        $latestAssets = Asset::with('media')->where('status', 'active')->latest()->get();
 
-        $recommendedAssets = Asset::with('media')->inRandomOrder()->take(8)->get();
+        $recommendedAssets = Asset::with('media')->where('status', 'active')->inRandomOrder()->take(8)->get();
 
         $concerns = Project::CONCERNS;
         $projects = Project::where('status', 'active')->get();
@@ -48,15 +48,25 @@ class HomeController extends Controller
     public function assetDetails($slug)
     {
         $asset = Asset::with(['media', 'project', 'assetType'])
+            ->where('status', 'active')
             ->where('slug', $slug)
             ->firstOrFail();
+
+    //          dd($asset->media->map(fn($m) => [
+    //     'id'         => $m->id,
+    //     'file_path'  => $m->file_path,
+    //     'media_type' => $m->media_type,
+    //     'url'        => $m->url,
+    //     'stream_url' => $m->stream_url,
+    //     'embed_url'  => $m->embed_url,
+    // ]));
 
         return view('frontend.assetDetails', compact('asset'));
     }
 
     public function filter(Request $request)
     {
-        $assetQuery = Asset::query();
+        $assetQuery = Asset::where('status', 'active');
         $campaignQuery = Campaign::query();
 
         if ($request->filled('share_ids') && $request->filled('types')) {
@@ -141,8 +151,8 @@ class HomeController extends Controller
     public function brand()
     {
         $projects = Project::orderBy('name', 'asc')
-        ->get()
-        ->groupBy('concern');
+            ->get()
+            ->groupBy('concern');
         return view('frontend.brandAsset', compact('projects'));
     }
 }

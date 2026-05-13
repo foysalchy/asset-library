@@ -29,10 +29,28 @@ class FileUploadHelper
         $path     = $folder . '/' . $filename;
 
         Storage::disk('google_drive')->put($path, file_get_contents($file));
-        Storage::disk('google_drive')->setVisibility($path, 'private');
 
-        // ✅ path return করো, URL না
-        return $path;
+        // ✅ File ID নাও Drive থেকে
+        $client = new \Google\Client();
+        $client->setClientId(config('filesystems.disks.google_drive.clientId'));
+        $client->setClientSecret(config('filesystems.disks.google_drive.clientSecret'));
+        $client->refreshToken(config('filesystems.disks.google_drive.refreshToken'));
+
+        $service = new \Google\Service\Drive($client);
+        $files   = $service->files->listFiles([
+            'q'      => "name = '{$filename}' and trashed = false",
+            'fields' => 'files(id)',
+        ]);
+
+        $fileId = $files->getFiles()[0]->getId() ?? null;
+
+        if (!$fileId) {
+            \Log::error('Drive file ID not found after upload', ['path' => $path]);
+            return 'drive:' . $path; // fallback
+        }
+
+        // ✅ path না, file ID store করো
+        return 'drive:' . $fileId;
     }
     // public static function uploadFile(UploadedFile $file, string $folder = 'campaigns/files'): string
     // {

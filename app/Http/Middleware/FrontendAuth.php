@@ -15,13 +15,16 @@ class FrontendAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-         if (!auth()->check()) {
-            return redirect()->route('frontend.signin');
+        if (!auth()->check()) {
+            return redirect()->route('signin');
         }
 
+        // Admin/super_admin → সব access আছে, allow করো
         if (auth()->user()->hasRole('super_admin') || auth()->user()->isSuperAdmin()) {
-            abort(403);
+            return $next($request); // ← 403 এর বদলে allow
         }
+
+        // Frontend user → allow
         return $next($request);
     }
 }
