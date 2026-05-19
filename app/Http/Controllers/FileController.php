@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\FileUploadHelper;
 use App\Models\Asset;
 use App\Models\Campaign;
 use App\Models\DownloadLog;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
 {
@@ -21,6 +21,9 @@ class FileController extends Controller
         ],
     ];
 
+    /**
+     * Download button calls this method
+     */
     public function stream(string $type, string $id)
     {
         if (!array_key_exists($type, $this->models)) {
@@ -35,124 +38,133 @@ class FileController extends Controller
             abort(404, 'No file attached.');
         }
 
+        // Log the download
         $this->logDownload($type, $id);
 
-        return FileUploadHelper::streamFile($model->$field);
-    }
-public function streamMedia(\App\Models\AssetMedia $media)
-{
-    \Log::info('streamMedia called', ['media_id' => $media->id, 'file_path' => $media->file_path]);
+        $filePath = $model->$field;
 
-    if (empty($media->file_path)) {
-        \Log::error('streamMedia: file_path empty');
-        abort(404);
-    }
-
-    if (!str_starts_with($media->file_path, 'drive:')) {
-        \Log::error('streamMedia: not a drive file', ['file_path' => $media->file_path]);
-        abort(404);
-    }
-
-    $fileId = str_replace('drive:', '', $media->file_path);
-    \Log::info('streamMedia: fileId', ['fileId' => $fileId]);
-
-    try {
-        $client = new \Google\Client();
-        $client->setClientId(config('filesystems.disks.google_drive.clientId'));
-        $client->setClientSecret(config('filesystems.disks.google_drive.clientSecret'));
-        $client->refreshToken(config('filesystems.disks.google_drive.refreshToken'));
-
-        $token = $client->getAccessToken();
-        \Log::info('streamMedia: token', ['token' => $token ? 'OK' : 'FAILED']);
-
-        if (!$token || empty($token['access_token'])) {
-            \Log::error('streamMedia: access token missing');
-            abort(500, 'Access token error');
+        // If it's a Google Drive file, stream it directly from here with the 403 API fix
+        if (str_starts_with($filePath, 'drive:')) {
+            $fileId = str_replace('drive:', '', $filePath);
+            return $this->streamGoogleDriveFile($fileId);
         }
 
-        $accessToken = $token['access_token'];
+        // If it's a normal local file, use Laravel's default storage stream
+        if (!Storage::disk('google_drive')->exists($filePath)) {
+            abort(404, 'File not found.');
+        }
 
-        $service = new \Google\Service\Drive($client);
-        $meta    = $service->files->get($fileId, ['fields' => 'name, mimeType, size']);
+        return Storage::disk('google_drive')->response($filePath);
+    }
 
-        \Log::info('streamMedia: file meta', [
-            'name'     => $meta->getName(),
-            'mimeType' => $meta->getMimeType(),
-            'size'     => $meta->getSize(),
-        ]);
+    /**
+     * Used for AssetMedia streams
+     */
+    public function streamMedia(\App\Models\AssetMedia $media)
+    {
+        if (empty($media->file_path)) {
+            abort(404, 'No file attached.');
+        }
 
-        $mimeType = $meta->getMimeType();
-        $fileSize = (int) $meta->getSize();
+        if (str_starts_with($media->file_path, 'drive:')) {
+            $fileId = str_replace('drive:', '', $media->file_path);
+            return $this->streamGoogleDriveFile($fileId);
+        }
 
-        $driveUrl    = "https://www.googleapis.com/drive/v3/files/{$fileId}?alt=media";
-        $curlHeaders = ["Authorization: Bearer {$accessToken}"];
+        abort(404, 'Not a valid drive file.');
+    }
 
-        $statusCode      = 200;
-        $responseHeaders = [
-            'Content-Type'  => $mimeType,
-            'Accept-Ranges' => 'bytes',
-            'Cache-Control' => 'no-cache',
-        ];
+    /**
+     * The Main Fix: Handles Drive Streaming with Chunking & Range Support
+     */
+   /**
+     * The Main Fix: Handles Drive Streaming with Chunking, Range Support & Abuse Bypass
+     */
+    private function streamGoogleDriveFile(string $fileId)
+    {
+        try {
+            $client = new \Google\Client();
+            $client->setClientId(config('filesystems.disks.google_drive.clientId'));
+            $client->setClientSecret(config('filesystems.disks.google_drive.clientSecret'));
+            
+            $refreshToken = config('filesystems.disks.google_drive.refreshToken');
+            $client->fetchAccessTokenWithRefreshToken($refreshToken);
 
-        if (request()->hasHeader('Range')) {
+            $token = $client->getAccessToken();
+            if (!$token || empty($token['access_token'])) {
+                Log::error('Drive Access Token missing');
+                abort(500, 'Access token error');
+            }
+
+            $service = new \Google\Service\Drive($client);
+            // মেটাডেটা ঠিকমতো পাচ্ছে কিনা চেক করা হচ্ছে
+            $meta = $service->files->get($fileId, ['fields' => 'name, mimeType, size']);
+
+            $mimeType = $meta->getMimeType();
+            $fileSize = (int) $meta->getSize();
+            $filename = $meta->getName();
+
+            // acknowledgeAbuse=true যুক্ত করা হলো (বড় ফাইলের জন্য বাধ্যতামূলক)
+            $driveUrl = "https://www.googleapis.com/drive/v3/files/{$fileId}?alt=media&acknowledgeAbuse=true";
+
+            $statusCode      = 200;
+            $responseHeaders = [
+                'Content-Type'        => $mimeType,
+                'Content-Disposition' => 'inline; filename="' . $filename . '"',
+                'Accept-Ranges'       => 'bytes',
+                'Cache-Control'       => 'no-cache',
+            ];
+
             $rangeHeader = request()->header('Range');
-            \Log::info('streamMedia: range request', ['range' => $rangeHeader]);
+            $requestHeaders = [
+                'Authorization' => 'Bearer ' . $token['access_token']
+            ];
 
-            preg_match('/bytes=(\d+)-(\d*)/', $rangeHeader, $matches);
-            $start = (int) $matches[1];
-            $end   = isset($matches[2]) && $matches[2] !== '' ? (int) $matches[2] : $fileSize - 1;
+            if ($rangeHeader) {
+                preg_match('/bytes=(\d+)-(\d*)/', $rangeHeader, $matches);
+                $start = (int) $matches[1];
+                $end   = isset($matches[2]) && $matches[2] !== '' ? (int) $matches[2] : $fileSize - 1;
 
-            $curlHeaders[]  = "Range: {$rangeHeader}";
-            $statusCode     = 206;
-            $responseHeaders['Content-Range']  = "bytes {$start}-{$end}/{$fileSize}";
-            $responseHeaders['Content-Length'] = $end - $start + 1;
+                $statusCode = 206;
+                $responseHeaders['Content-Range']  = "bytes {$start}-{$end}/{$fileSize}";
+                $responseHeaders['Content-Length'] = $end - $start + 1;
+                
+                $requestHeaders['Range'] = $rangeHeader;
+            } else {
+                $responseHeaders['Content-Length'] = $fileSize;
+            }
 
-            \Log::info('streamMedia: 206 response', [
-                'start'  => $start,
-                'end'    => $end,
-                'length' => $end - $start + 1,
+            // Guzzle রিকোয়েস্টটি স্ট্রিমের বাইরে করা হলো, যাতে Error সহজে ধরা যায়
+            $httpClient = new \GuzzleHttp\Client();
+            $response = $httpClient->request('GET', $driveUrl, [
+                'headers'         => $requestHeaders,
+                'stream'          => true,
+                'allow_redirects' => true, // Guzzle নিজে রিডাইরেক্ট সামলাবে এবং পরের ডোমেইনে হেডার ড্রপ করবে
             ]);
-        } else {
-            $responseHeaders['Content-Length'] = $fileSize;
-            \Log::info('streamMedia: 200 full response', ['size' => $fileSize]);
-        }
 
-        return response()->stream(function () use ($driveUrl, $curlHeaders, $fileId) {
-            \Log::info('streamMedia: stream started', ['fileId' => $fileId]);
+            $body = $response->getBody();
 
-            $ch = curl_init($driveUrl);
-            curl_setopt_array($ch, [
-                CURLOPT_HTTPHEADER     => $curlHeaders,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_RETURNTRANSFER => false,
-                CURLOPT_WRITEFUNCTION  => function ($ch, $data) {
-                    echo $data;
+            
+            return response()->stream(function () use ($body) {
+                while (!$body->eof()) {
+                    echo $body->read(8192); // 8KB chunks
                     flush();
-                    return strlen($data);
-                },
+                }
+            }, $statusCode, $responseHeaders);
+
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            // যদি গুগল ডাউনলোড রিজেক্ট করে, তার এক্স্যাক্ট মেসেজটি লগ করবে
+            $errorBody = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : $e->getMessage();
+            Log::error('Drive API Stream 403/400 Detail: ' . $errorBody);
+            abort(500, 'Google Drive Error: Check Laravel Log for details.');
+        } catch (\Exception $e) {
+            Log::error('streamGoogleDriveFile exception', [
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
             ]);
-
-            $result   = curl_exec($ch);
-            $curlInfo = curl_getinfo($ch);
-            $curlErr  = curl_error($ch);
-            curl_close($ch);
-
-            \Log::info('streamMedia: curl done', [
-                'http_code'    => $curlInfo['http_code'],
-                'total_bytes'  => $curlInfo['size_download'],
-                'curl_error'   => $curlErr ?: 'none',
-            ]);
-        }, $statusCode, $responseHeaders);
-
-    } catch (\Exception $e) {
-        \Log::error('streamMedia: exception', [
-            'message' => $e->getMessage(),
-            'trace'   => $e->getTraceAsString(),
-        ]);
-        abort(500, $e->getMessage());
+            abort(500, 'Error streaming file: ' . $e->getMessage());
+        }
     }
-}
-
     private function logDownload(string $type, string $id): void
     {
         try {
