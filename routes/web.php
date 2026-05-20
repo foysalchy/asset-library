@@ -18,6 +18,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DownloadLogController;
 use Google\Service\Storage;
 use Illuminate\Support\Facades\Storage as FacadesStorage;
 
@@ -127,7 +128,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
             'update'  => 'permission:roles.edit',
             'destroy' => 'permission:roles.delete',
         ]);
-
+Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::resource('users', UserController::class)
         ->middleware([
             'index'   => 'permission:users.view',
@@ -170,7 +171,7 @@ Route::prefix('')->group(function () {
             ->name('drive.file.stream');
         Route::get('/drive/media/{media}', [FileController::class, 'streamMedia'])
             ->name('drive.media.stream');
-          
+        Route::get('/download-logs', [DownloadLogController::class, 'index'])->name('download-logs.index');
 
         Route::post('/drive/bulk-download', [FileController::class, 'bulkDownload'])->name('drive.bulkDownload');
         Route::get('/brand', [HomeController::class, 'brand'])->name('brand.index');

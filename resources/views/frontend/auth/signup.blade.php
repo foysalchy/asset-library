@@ -19,7 +19,14 @@
                 </svg>
             </div>
         </div>
-
+      @if($errors->any())
+            <div class="mb-5 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 dark:border-red-800 dark:bg-red-900/20">
+                <svg class="shrink-0 text-red-500 mt-0.5" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" />
+                </svg>
+                <p class="text-sm text-red-700 dark:text-red-400">{{ $errors->first() }}</p>
+            </div>
+            @endif
         <div class="rounded-xl border border-gray-100 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="mb-6">
                 <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">Create Account</h1>
@@ -43,6 +50,12 @@
                         <input type="email" name="email" value="{{ old('email') }}" placeholder="test@gmail.com" required
                             class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white @error('email') border-red-500 @enderror" />
                         @error('email') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Employee Id</label>
+                        <input type="text" name="employee_id" value="{{ old('employee_id') }}" placeholder="Enter Employee Id" required
+                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white @error('employee_id') border-red-500 @enderror" />
+                        @error('employee_id') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Password --}}

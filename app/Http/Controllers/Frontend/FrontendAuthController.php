@@ -64,17 +64,16 @@ class FrontendAuthController extends Controller
         $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
+            'employee_id'    => $request->employee_id,
             'password' => Hash::make($request->password),
-            'status'   => 'active',
+            'status'   => 'inactive',
         ]);
 
         // Frontend user role assign
         $role = Role::where('name', 'frontend_user')->first();
         if ($role) $user->roles()->attach($role->id);
-
-        Auth::login($user);
-
-        return redirect('/home');
+        return redirect()->route('signin')
+            ->with('success', 'Your account has been created successfully! Please wait for admin approval before logging in.');
     }
 
     public function showSignin()
@@ -104,7 +103,6 @@ class FrontendAuthController extends Controller
             return back()->withErrors(['email' => 'Please use admin panel.']);
         }
 
-        Auth::user()->update(['last_login_at' => now()]);
 
         return redirect('/home');
     }

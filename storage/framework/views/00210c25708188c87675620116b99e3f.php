@@ -1,6 +1,5 @@
-
 <?php $__env->startSection('content'); ?>
-<div class="p-4 mx-auto max-w-screen-2xl md:p-6">
+<div class="p-4 mx-auto w-full  md:p-6">
 
     <div class="mb-6">
         <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">Site Settings</h1>
@@ -26,7 +25,7 @@
             <div class="lg:col-span-2 space-y-5">
 
                 
-                <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] space-y-5">
+                <div class="rounded-xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] space-y-5">
                     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Basic Info</h3>
 
                     <div>
@@ -81,7 +80,7 @@ unset($__errorArgs, $__bag); ?>
                 </div>
 
                 
-                <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]"
+                <div class="rounded-xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]"
                     x-data="{
                         preview: '<?php echo e($setting->logo_url); ?>',
                         removed: false,
@@ -145,7 +144,7 @@ unset($__errorArgs, $__bag); ?>
                 </div>
 
                 
-                <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]"
+                <div class="rounded-xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]"
                     x-data="{
                         preview: '<?php echo e($setting->favicon_url); ?>',
                         removed: false,
@@ -211,7 +210,7 @@ unset($__errorArgs, $__bag); ?>
 
             
             <div class="space-y-5">
-                <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sticky top-6">
+                <div class="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sticky top-6">
                     <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Current Settings</h3>
                     <div class="space-y-4 text-sm">
 
@@ -273,5 +272,7 @@ unset($__errorArgs, $__bag); ?>
         </div>
     </form>
 </div>
+
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\asset-management\resources\views/site-settings/index.blade.php ENDPATH**/ ?>
