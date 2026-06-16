@@ -12,8 +12,12 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="">
     <!-- Outfit Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
-        media="print" onload="this.media='all' rel="stylesheet" />
+    <link rel="stylesheet" media="print" onload="this.media='all'"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap">
+
+    <!-- Bangla Fonts -->
+    <link rel="stylesheet" media="print" onload="this.media='all'"
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=Baloo+Da+2:wght@400;500;600;700&family=Atma:wght@400;500;600;700&family=Galada&family=Tiro+Bangla:ital@0;1&display=swap">
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
         media="print" onload="this.media='all'">
@@ -77,56 +81,56 @@
         });
 
         function markRead(e, id, url) {
-    e.preventDefault();
-    const el = document.getElementById(`notif-${id}`);
+            e.preventDefault();
+            const el = document.getElementById(`notif-${id}`);
 
-    fetch(`/notification/${id}/read`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            fetch(`/notification/${id}/read`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            }).then(() => {
+                if (el) {
+                    // ১. আনরিড ক্লাসেস রিমুভ করা
+                    el.classList.remove('bg-blue-50/50', 'border-l-4', 'border-[#0071c5]');
+                    // ২. রিড ক্লাসেস অ্যাড করা
+                    el.classList.add('opacity-60', 'bg-white');
+
+                    const title = el.querySelector('p');
+                    if (title) title.classList.replace('font-bold', 'font-normal');
+
+                    const dot = el.querySelector('.unread-dot');
+                    if (dot) dot.remove();
+                }
+                window.location.href = url;
+            });
         }
-    }).then(() => {
-        if (el) {
-            // ১. আনরিড ক্লাসেস রিমুভ করা
-            el.classList.remove('bg-blue-50/50', 'border-l-4', 'border-[#0071c5]');
-            // ২. রিড ক্লাসেস অ্যাড করা
-            el.classList.add('opacity-60', 'bg-white');
 
-            const title = el.querySelector('p');
-            if(title) title.classList.replace('font-bold', 'font-normal');
+        function markAllRead() {
+            fetch('/notification/read-all', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            }).then(() => {
+                // সব নোটিফিকেশনকে রিড স্টাইলে নিয়ে আসা
+                document.querySelectorAll('[id^="notif-"]').forEach(el => {
+                    el.classList.remove('bg-blue-50/50', 'border-l-4', 'border-[#0071c5]');
+                    el.classList.add('opacity-60', 'bg-white');
 
-            const dot = el.querySelector('.unread-dot');
-            if (dot) dot.remove();
+                    const title = el.querySelector('p');
+                    if (title) title.classList.replace('font-bold', 'font-normal');
+
+                    const dot = el.querySelector('.unread-dot');
+                    if (dot) dot.remove();
+                });
+
+                const badge = document.getElementById('notifBadge');
+                if (badge) badge.remove();
+            });
         }
-        window.location.href = url;
-    });
-}
-
-function markAllRead() {
-    fetch('/notification/read-all', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        }
-    }).then(() => {
-        // সব নোটিফিকেশনকে রিড স্টাইলে নিয়ে আসা
-        document.querySelectorAll('[id^="notif-"]').forEach(el => {
-            el.classList.remove('bg-blue-50/50', 'border-l-4', 'border-[#0071c5]');
-            el.classList.add('opacity-60', 'bg-white');
-
-            const title = el.querySelector('p');
-            if(title) title.classList.replace('font-bold', 'font-normal');
-
-            const dot = el.querySelector('.unread-dot');
-            if (dot) dot.remove();
-        });
-
-        const badge = document.getElementById('notifBadge');
-        if (badge) badge.remove();
-    });
-}
     </script>
 </body>
 

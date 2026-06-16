@@ -5,6 +5,8 @@ namespace App\Helpers;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class FileUploadHelper
 {
@@ -67,6 +69,90 @@ class FileUploadHelper
     /**
      * Delete image from local
      */
+
+    /**
+     * Image compress করো — thumbnail এর জন্য
+     * Laravel এ GD/Imagick দিয়ে
+     */
+    public static function compressImage(UploadedFile $file, int $quality = 75, int $maxWidth = 500, int $maxHeight = 500): string
+    {
+        $manager = new ImageManager(new Driver());
+        $image   = $manager->read($file->getPathname());
+
+        if ($image->width() > $maxWidth || $image->height() > $maxHeight) {
+            $image->scaleDown(width: $maxWidth, height: $maxHeight);
+        }
+
+        $filename = Str::uuid() . '_thumb.' . $file->getClientOriginalExtension();
+        $tempPath = sys_get_temp_dir() . '/' . $filename;
+
+        $image->toJpeg($quality)->save($tempPath);
+
+        return $tempPath;
+    }
+
+    /**
+     * Image upload to Drive — original + compressed দুটোই
+     * Returns ['original' => 'drive:ID', 'compressed' => 'drive:ID']
+     */
+    public static function uploadImageToDriveWithCompressed(UploadedFile $file, string $folder = 'assets/media'): array
+    {
+        // ── Original upload ──────────────────────────────────────
+        $originalId = self::uploadImageToDrive($file, $folder);
+
+        // ── Compressed upload ────────────────────────────────────
+        $tempPath  = self::compressImage($file);
+        $filename  = Str::uuid() . '_thumb.' . $file->getClientOriginalExtension();
+        $drivePath = $folder . '/compressed/' . $filename;
+
+        Storage::disk('google_drive')->put($drivePath, file_get_contents($tempPath));
+        unlink($tempPath); // temp file মুছো
+
+        $client = new \Google\Client();
+        $client->setClientId(config('filesystems.disks.google_drive.clientId'));
+        $client->setClientSecret(config('filesystems.disks.google_drive.clientSecret'));
+        $client->refreshToken(config('filesystems.disks.google_drive.refreshToken'));
+
+        $service = new \Google\Service\Drive($client);
+        $files   = $service->files->listFiles([
+            'q'      => "name = '{$filename}' and trashed = false",
+            'fields' => 'files(id)',
+        ]);
+
+        $compressedId = $files->getFiles()[0]->getId() ?? null;
+
+        return [
+            'original'   => $originalId,
+            'compressed' => $compressedId ? 'drive:' . $compressedId : $originalId, // fallback original
+        ];
+    }
+    public static function uploadImageToDrive(UploadedFile $file, string $folder = 'assets/media'): string
+    {
+        $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+        $path     = $folder . '/' . $filename;
+
+        Storage::disk('google_drive')->put($path, file_get_contents($file));
+
+        $client = new \Google\Client();
+        $client->setClientId(config('filesystems.disks.google_drive.clientId'));
+        $client->setClientSecret(config('filesystems.disks.google_drive.clientSecret'));
+        $client->refreshToken(config('filesystems.disks.google_drive.refreshToken'));
+
+        $service = new \Google\Service\Drive($client);
+        $files   = $service->files->listFiles([
+            'q'      => "name = '{$filename}' and trashed = false",
+            'fields' => 'files(id)',
+        ]);
+
+        $fileId = $files->getFiles()[0]->getId() ?? null;
+
+        if (!$fileId) {
+            \Log::error('Drive image ID not found after upload', ['path' => $path]);
+            return 'drive:' . $path;
+        }
+
+        return 'drive:' . $fileId;
+    }
     public static function deleteImage(?string $path): void
     {
         if ($path && Storage::disk('public')->exists($path)) {
@@ -79,7 +165,6 @@ class FileUploadHelper
     {
         if (empty($pathOrUrl)) return;
 
-        // drive: prefix হলে file ID দিয়ে delete করো
         if (str_starts_with($pathOrUrl, 'drive:')) {
             $fileId = str_replace('drive:', '', $pathOrUrl);
             try {
@@ -96,12 +181,10 @@ class FileUploadHelper
             return;
         }
 
-        // Full URL হলে skip
         if (str_starts_with($pathOrUrl, 'http')) {
             return;
         }
 
-        // Normal path হলে disk দিয়ে delete
         if (Storage::disk('google_drive')->exists($pathOrUrl)) {
             Storage::disk('google_drive')->delete($pathOrUrl);
         }

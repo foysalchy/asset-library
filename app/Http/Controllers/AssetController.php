@@ -129,13 +129,28 @@ class AssetController extends Controller
 
         return redirect()->route('assets.show', $asset)->with('success', 'Asset updated successfully.');
     }
+    public function editContent(Asset $asset)
+    {
+        $asset->load('media', 'project', 'assetType');
+        return view('frontend.assets.edit-content', compact('asset'));
+    }
     public function destroy(Asset $asset)
     {
         foreach ($asset->media as $media) {
-            FileUploadHelper::deleteImage($media->file_path);
+            if (str_starts_with($media->file_path ?? '', 'drive:')) {
+                FileUploadHelper::deleteFile($media->file_path);
+            } else {
+                FileUploadHelper::deleteImage($media->file_path);
+            }
+
+            if (!empty($media->file_path_compressed)) {
+                FileUploadHelper::deleteFile($media->file_path_compressed);
+            }
         }
 
+        // Asset file delete — Drive
         FileUploadHelper::deleteFile($asset->file_path);
+
         $asset->delete();
 
         $this->activityLog->log('deleted', $asset, "Deleted asset: {$asset->title}");
@@ -147,7 +162,18 @@ class AssetController extends Controller
 
     public function destroyMedia(AssetMedia $media)
     {
-        FileUploadHelper::deleteImage($media->file_path);
+        // file_path — Drive or local
+        if (str_starts_with($media->file_path ?? '', 'drive:')) {
+            FileUploadHelper::deleteFile($media->file_path);
+        } else {
+            FileUploadHelper::deleteImage($media->file_path);
+        }
+
+        // Compressed version
+        if (!empty($media->file_path_compressed)) {
+            FileUploadHelper::deleteFile($media->file_path_compressed);
+        }
+
         $media->delete();
 
         return response()->json(['success' => true]);
@@ -166,27 +192,39 @@ class AssetController extends Controller
             foreach ((array) $request->delete_media as $mediaId) {
                 $media = AssetMedia::find($mediaId);
                 if ($media && (int) $media->asset_id === (int) $asset->id) {
-                    $mime = $media->mime_type ?? '';
-                    str_starts_with($mime, 'image')
-                        ? FileUploadHelper::deleteImage($media->file_path)
-                        : FileUploadHelper::deleteFile($media->file_path);
+
+                    // file_path
+                    if (str_starts_with($media->file_path ?? '', 'drive:')) {
+                        FileUploadHelper::deleteFile($media->file_path);
+                    } else {
+                        FileUploadHelper::deleteImage($media->file_path);
+                    }
+
+                    // compressed version
+                    if (!empty($media->file_path_compressed)) {
+                        FileUploadHelper::deleteFile($media->file_path_compressed);
+                    }
+
                     $media->delete();
                 }
             }
         }
 
-        // ✅ Image — local upload
+        // ✅ Image — Google Drive
         if ($request->hasFile('media')) {
             $order = $asset->media()->max('sort_order') ?? 0;
             foreach ($request->file('media') as $file) {
-                $mime = $file->getMimeType();
+                $mime  = $file->getMimeType();
+                $paths = FileUploadHelper::uploadImageToDriveWithCompressed($file, 'assets/media');
+
                 $asset->media()->create([
-                    'file_path'          => FileUploadHelper::uploadImage($file, 'assets/media'),
-                    'file_original_name' => $file->getClientOriginalName(),
-                    'media_type'         => 'image',
-                    'mime_type'          => $mime,
-                    'file_size'          => $file->getSize(),
-                    'sort_order'         => ++$order,
+                    'file_path'            => $paths['original'],    // original
+                    'file_path_compressed' => $paths['compressed'],  // thumbnail
+                    'file_original_name'   => $file->getClientOriginalName(),
+                    'media_type'           => 'image',
+                    'mime_type'            => $mime,
+                    'file_size'            => $file->getSize(),
+                    'sort_order'           => ++$order,
                 ]);
             }
         }

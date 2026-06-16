@@ -128,7 +128,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
             'update'  => 'permission:roles.edit',
             'destroy' => 'permission:roles.delete',
         ]);
-Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::resource('users', UserController::class)
         ->middleware([
             'index'   => 'permission:users.view',
@@ -161,7 +161,10 @@ Route::prefix('')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [FrontendAuthController::class, 'index'])->name('profile.index');
         Route::put('/profile/update', [FrontendAuthController::class, 'update'])->name('profile.update');
-
+        Route::get('/assets/{asset:slug}/edit-content', [AssetController::class, 'editContent'])
+            ->name('assets.edit-content');
+        Route::get('/drive/media/{media}/base64', [FileController::class, 'base64Image'])
+            ->name('drive.media.base64');
         Route::get('/home', [HomeController::class, 'index'])->name('home.index');
         Route::get('/campaign/{slug}', [HomeController::class, 'campaignDetails'])->name('campaign.details');
         Route::get('/asset/{slug}', [HomeController::class, 'assetdetails'])->name('asset.details');
@@ -171,6 +174,9 @@ Route::prefix('')->group(function () {
             ->name('drive.file.stream');
         Route::get('/drive/media/{media}', [FileController::class, 'streamMedia'])
             ->name('drive.media.stream');
+
+
+
         Route::get('/download-logs', [DownloadLogController::class, 'index'])->name('download-logs.index');
 
         Route::post('/drive/bulk-download', [FileController::class, 'bulkDownload'])->name('drive.bulkDownload');

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
+
 class AssetMedia extends Model
 {
 
@@ -14,6 +15,7 @@ class AssetMedia extends Model
         'asset_id',
         'file_path',
         'file_original_name',
+        'file_path_compressed',
         'media_type',
         'mime_type',
         'file_size',
@@ -37,29 +39,39 @@ class AssetMedia extends Model
 
         return Storage::disk('public')->url($this->file_path);
     }
+    // Thumbnail — compressed
     public function getUrlAttribute(): ?string
+    {
+        $path = $this->file_path_compressed ?? $this->file_path;
+        if (!$path) return null;
+
+        if (str_starts_with($path, 'drive:')) {
+            return route('drive.media.stream', ['media' => $this->id, 'version' => 'compressed']);
+        }
+        return Storage::disk('public')->url($path);
+    }
+
+    // Original — download/edit
+    public function getOriginalUrlAttribute(): ?string
     {
         if (!$this->file_path) return null;
 
-        // Drive file — thumbnail নেই, placeholder দাও
         if (str_starts_with($this->file_path, 'drive:')) {
-            return null; // thumbnail rail এ video icon দেখাবে
+            return route('drive.media.stream', ['media' => $this->id, 'version' => 'original']);
         }
-
-        // Local image
         return Storage::disk('public')->url($this->file_path);
     }
     public function getThumbnailUrlAttribute(): ?string
-{
-    if (!$this->file_path) return null;
+    {
+        if (!$this->file_path) return null;
 
-    // Local image/video
-    if (!str_starts_with($this->file_path, 'drive:')) {
-        return Storage::disk('public')->url($this->file_path);
+        // Local image/video
+        if (!str_starts_with($this->file_path, 'drive:')) {
+            return Storage::disk('public')->url($this->file_path);
+        }
+
+        // Drive video — Google Drive thumbnail URL
+        $fileId = str_replace('drive:', '', $this->file_path);
+        return "https://drive.google.com/thumbnail?id={$fileId}&sz=w200";
     }
-
-    // Drive video — Google Drive thumbnail URL
-    $fileId = str_replace('drive:', '', $this->file_path);
-    return "https://drive.google.com/thumbnail?id={$fileId}&sz=w200";
-}
 }

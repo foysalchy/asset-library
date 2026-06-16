@@ -187,6 +187,10 @@
                         <i class="fa-solid fa-download"></i>
                         <span>Download</span>
                     </a>
+                    <a href="<?php echo e(route('assets.edit-content', $asset->slug)); ?>"
+                        class="flex-1 border-2 border-[#0071c5] text-[#0071c5] font-bold py-3 px-6 flex items-center justify-center gap-2 hover:bg-blue-50 transition-all">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit Content
+                    </a>
                     <button onclick="openGlobalShareModal(window.location.href, 'Check out this Asset')"
                         class="flex-1 border-2 border-[#0071c5] text-[#0071c5] font-bold py-3 px-6 flex items-center justify-center gap-2 hover:bg-blue-50 transition-all">
                         <i class="fa-solid fa-share-nodes"></i> Share
