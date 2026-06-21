@@ -174,6 +174,9 @@ Route::prefix('')->group(function () {
             ->name('drive.file.stream');
         Route::get('/drive/media/{media}', [FileController::class, 'streamMedia'])
             ->name('drive.media.stream');
+        Route::post('/assets/media/{media}/process-video', [FileController::class, 'processVideo'])
+            ->name('assets.media.process-video')
+            ->middleware('auth');
 
 
 
