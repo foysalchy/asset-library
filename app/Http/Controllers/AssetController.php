@@ -10,6 +10,7 @@ use App\Models\Project;
 use App\Services\ActivityLogService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -179,57 +180,100 @@ class AssetController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function destroyAsssetMedia(AssetMedia $media)
+    {
+        // file_path — Drive or local
+        if (str_starts_with($media->file_path ?? '', 'drive:')) {
+            FileUploadHelper::deleteFile($media->file_path);
+        } else {
+            FileUploadHelper::deleteImage($media->file_path);
+        }
+
+        // Compressed version
+        if (!empty($media->file_path_compressed)) {
+            FileUploadHelper::deleteFile($media->file_path_compressed);
+        }
+
+        $media->delete();
+
+        return back();
+    }
+    public function uploadImageImmediate(Request $request)
+    {
+        $request->validate([
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:20480'],
+        ]);
+
+        try {
+            $result = FileUploadHelper::uploadImageWithCompressionToDrive($request->file('image'));
+
+            return response()->json([
+                'success'            => true,
+                'drive_id'           => $result['original_id'],
+                'drive_compressed_id' => $result['compressed_id'],
+                'original_name'      => $result['original_name'],
+                'mime_type'          => $result['mime_type'],
+                'file_size'          => $result['file_size'],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Image upload error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Upload failed.'], 500);
+        }
+    }
+    public function deleteTempImage(Request $request)
+    {
+        $request->validate([
+            'drive_id'      => ['required', 'string'],
+            'compressed_id' => ['nullable', 'string'],
+        ]);
+
+        FileUploadHelper::deleteFile('drive:' . $request->drive_id);
+
+        if ($request->filled('compressed_id')) {
+            FileUploadHelper::deleteFile('drive:' . $request->compressed_id);
+        }
+
+        return response()->json(['success' => true]);
+    }
     // ── Private Helpers ──────────────────────────────────────────────────────
 
     private function syncMedia(Request $request, Asset $asset): void
     {
-        \Log::info('syncMedia input', [
-            'has_media'       => $request->hasFile('media'),
-            'drive_video_ids' => $request->input('drive_video_ids'),
-        ]);
-        // Delete marked media
         if ($request->filled('delete_media')) {
             foreach ((array) $request->delete_media as $mediaId) {
                 $media = AssetMedia::find($mediaId);
                 if ($media && (int) $media->asset_id === (int) $asset->id) {
-
-                    // file_path
                     if (str_starts_with($media->file_path ?? '', 'drive:')) {
                         FileUploadHelper::deleteFile($media->file_path);
                     } else {
                         FileUploadHelper::deleteImage($media->file_path);
                     }
-
-                    // compressed version
                     if (!empty($media->file_path_compressed)) {
                         FileUploadHelper::deleteFile($media->file_path_compressed);
                     }
-
                     $media->delete();
                 }
             }
         }
 
-        // ✅ Image — Google Drive
-        if ($request->hasFile('media')) {
+        if ($request->filled('drive_images')) {
             $order = $asset->media()->max('sort_order') ?? 0;
-            foreach ($request->file('media') as $file) {
-                $mime  = $file->getMimeType();
-                $paths = FileUploadHelper::uploadImageToDriveWithCompressed($file, 'assets/media');
+            foreach ((array) $request->drive_images as $jsonData) {
+                $data = json_decode($jsonData, true);
+                if (!$data || empty($data['drive_id'])) continue;
 
                 $asset->media()->create([
-                    'file_path'            => $paths['original'],    // original
-                    'file_path_compressed' => $paths['compressed'],  // thumbnail
-                    'file_original_name'   => $file->getClientOriginalName(),
+                    'file_path'            => 'drive:' . $data['drive_id'],
+                    'file_path_compressed' => !empty($data['compressed_id']) ? 'drive:' . $data['compressed_id'] : null,
+                    'file_original_name'   => $data['original_name'] ?? 'image',
                     'media_type'           => 'image',
-                    'mime_type'            => $mime,
-                    'file_size'            => $file->getSize(),
+                    'mime_type'            => $data['mime_type'] ?? 'image/jpeg',
+                    'file_size'            => $data['file_size'] ?? 0,
                     'sort_order'           => ++$order,
                 ]);
             }
         }
-
-        // ✅ Video — Google Drive (file ID থেকে)
+        // Video — unchanged
         if ($request->filled('drive_video_ids')) {
             $order = $asset->media()->max('sort_order') ?? 0;
             foreach ((array) $request->drive_video_ids as $fileId) {

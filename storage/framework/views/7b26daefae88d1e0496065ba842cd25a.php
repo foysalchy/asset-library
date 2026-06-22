@@ -352,68 +352,184 @@ unset($__errorArgs, $__bag); ?>
             </div>
 
             
-            
-            <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                    Images
-                    <span class="text-xs font-normal text-gray-400 ml-1">JPG, PNG, WEBP, GIF</span>
-                </label>
+            <div x-data="{
+    images: [],
+    completedData: [],
 
-                <div x-data="{
-        files: [],
-        addFiles(e) {
-            Array.from(e.target.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = ev => this.files.push({ name: file.name, preview: ev.target.result });
-                reader.readAsDataURL(file);
+  async addImages(e) {
+    const newFiles = Array.from(e.target.files);
+    for (const file of newFiles) {
+        const image = {
+            file, name: file.name, size: this.formatSize(file.size),
+            status: 'idle', progress: 0, errorMsg: '',
+            preview: URL.createObjectURL(file),
+        };
+        this.images.push(image);
+
+        const reactiveImage = this.images[this.images.length - 1];
+        await this.uploadImage(reactiveImage);
+    }
+    e.target.value = '';
+},
+
+    uploadImage(image) {
+        return new Promise((resolve) => {
+            image.status = 'uploading';
+            image.progress = 0;
+            this.$dispatch('drive-uploading', { uploading: true });
+
+            const xhr = new XMLHttpRequest();
+            const formData = new FormData();
+            formData.append('image', image.file);
+            formData.append('_token', document.querySelector('meta[name=csrf-token]').content);
+xhr.upload.addEventListener('progress', (e) => {
+    if (e.lengthComputable) {
+        const pct = Math.round((e.loaded / e.total) * 90);
+        image.progress = pct;
+        this.images = [...this.images]; // ✅ force re-render
+    }
+});
+
+           xhr.addEventListener('load', () => {
+    try {
+        const data = JSON.parse(xhr.responseText);
+        if (data.success) {
+            image.progress = 100;
+            image.status   = 'completed';
+            image.driveId  = data.drive_id; 
+            image.compressedId   = data.drive_compressed_id; 
+
+
+            this.completedData.push({
+                drive_id: data.drive_id,
+                compressed_id: data.drive_compressed_id,
+                original_name: data.original_name,
+                mime_type: data.mime_type,
+                file_size: data.file_size,
             });
-        },
-        remove(index) { this.files.splice(index, 1); }
-    }">
-                    <div @click="$refs.imageInput.click()"
-                        @dragover.prevent
-                        @drop.prevent="addFiles({ target: { files: $event.dataTransfer.files } })"
-                        class="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/50 p-6 cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 dark:border-gray-700 dark:bg-gray-800/40 transition-all">
-                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center dark:bg-blue-900/30">
-                            <svg class="text-blue-500" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" />
-                            </svg>
-                        </div>
-                        <div class="text-center">
-                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Click or drag images here</p>
-                            <p class="text-xs text-gray-400 mt-0.5">JPG, PNG, WEBP, GIF</p>
-                        </div>
+        } else {
+            image.status = 'failed';
+            image.errorMsg = data.message || 'Upload failed.';
+        }
+    } catch(e) {
+        image.status = 'failed';
+        image.errorMsg = 'Invalid server response.';
+    }
+
+    const allDone = this.images.every(v => v.status !== 'uploading');
+    if (allDone) this.$dispatch('drive-uploading', { uploading: false });
+    resolve();
+});
+            xhr.addEventListener('error', () => {
+                image.status = 'failed';
+                image.errorMsg = 'Network error.';
+                resolve();
+            });
+
+            xhr.open('POST', '<?php echo e(route('assets.media.upload-image')); ?>');
+            xhr.send(formData);
+        });
+    },
+
+async remove(index) {
+    const img = this.images[index];
+
+    if (img.driveId) {
+        img.status = 'removing'; 
+
+        try {
+            await fetch('<?php echo e(route('assets.media.delete-temp-image')); ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                },
+                body: JSON.stringify({
+                    drive_id: img.driveId,
+                    compressed_id: img.compressedId,
+                }),
+            });
+        } catch (e) {
+            console.error('Failed to delete from Drive:', e);
+        }
+
+        this.completedData = this.completedData.filter(d => d.drive_id !== img.driveId);
+    }
+
+    this.images.splice(index, 1);
+},
+
+    formatSize(bytes) {
+        const units = ['B','KB','MB','GB'];
+        let i = 0;
+        while (bytes >= 1024 && i < units.length - 1) { bytes /= 1024; i++; }
+        return Math.round(bytes * 10) / 10 + ' ' + units[i];
+    }
+}">
+
+                
+                <template x-for="(data, index) in completedData" :key="index">
+                    <input type="hidden" name="drive_images[]" :value="JSON.stringify(data)">
+                </template>
+
+                
+                <div @click="$refs.imageInput.click()"
+                    @dragover.prevent
+                    @drop.prevent="addImages({ target: { files: $event.dataTransfer.files } })"
+                    class="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/50 p-6 cursor-pointer hover:border-blue-400 transition-all">
+                    <div class="text-center">
+                        <p class="text-sm font-medium text-gray-700">Click or drag images here</p>
+                        <p class="text-xs text-gray-400 mt-0.5">JPG, PNG, WEBP — uploads + compresses instantly</p>
                     </div>
-
-                    
-                    <template x-if="files.length > 0">
-                        <div class="mt-3 grid grid-cols-4 gap-2">
-                            <template x-for="(file, index) in files" :key="index">
-                                <div class="relative group rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-                                    <img :src="file.preview" class="w-full h-20 object-cover">
-                                    <button type="button" @click="remove(index)"
-                                        class="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <svg width="10" height="10" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </template>
-                        </div>
-                    </template>
-
-                    <input type="file" x-ref="imageInput" name="media[]" multiple
-                        accept="image/jpeg,image/png,image/webp,image/gif"
-                        class="hidden" @change="addFiles($event)">
                 </div>
-                <?php $__errorArgs = ['media.*'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?><p class="mt-1.5 text-xs text-red-500"><?php echo e($message); ?></p><?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
+
+                
+                <template x-if="images.length > 0">
+                    <div class="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <template x-for="(image, index) in images" :key="index">
+                            <div class="relative rounded-lg border border-gray-200 bg-white p-2">
+                                <div class="relative aspect-square rounded-lg overflow-hidden mb-2 bg-gray-100">
+                                    <img :src="image.preview" class="w-full h-full object-cover" :class="image.status === 'uploading' ? 'opacity-50' : ''">
+                                    <template x-if="image.status == 'uploading'">
+                                        <div class="absolute inset-0 flex items-center justify-center bg-black/30">
+                                            <span class="text-white text-xs font-bold" x-text="image.progress + '%'"></span>
+                                        </div>
+                                    </template>
+
+                                    <template x-if="image.status === 'removing'">
+                                        <div class="absolute inset-0 flex items-center justify-center bg-red-500/30">
+                                            <svg class="animate-spin text-white w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                                            </svg>
+                                        </div>
+                                    </template>
+                                    <template x-if="image.status === 'completed'">
+                                        <div class="absolute top-1 right-1 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                                            <svg width="10" height="10" viewBox="0 0 20 20" fill="white">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                                            </svg>
+                                        </div>
+                                    </template>
+                                </div>
+                                <p class="text-xs text-gray-500 truncate" x-text="image.name"></p>
+                                <button type="button" @click="remove(index)"
+                                    :disabled="image.status === 'uploading' || image.status === 'removing'"
+                                    class="text-xs text-red-500 hover:underline mt-1"
+                                    :class="(image.status === 'uploading' || image.status === 'removing') ? 'opacity-30 cursor-not-allowed' : ''">
+                                    <span x-show="image.status !== 'removing'">Remove</span>
+                                    <span x-show="image.status === 'removing'" class="flex items-center gap-1">
+                                        <svg class="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                                        </svg>
+                                        Removing...
+                                    </span>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <input type="file" x-ref="imageInput" multiple accept="image/jpeg,image/png,image/webp,image/gif" class="hidden" @change="addImages($event)">
             </div>
 
             
@@ -881,17 +997,11 @@ unset($__errorArgs, $__bag); ?>
             </div>
 
             
-            <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Upload Date</label>
-                <input type="date" name="uploaded_at"
-                    value="<?php echo e(old('uploaded_at', $isEdit && $asset->uploaded_at ? $asset->uploaded_at->format('Y-m-d') : '')); ?>"
-                    class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
-            </div>
+        
         </div>
 
     </div>
 </div>
-
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

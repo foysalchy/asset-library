@@ -90,7 +90,66 @@ class FileUploadHelper
 
         return $tempPath;
     }
+/**
+ * Image সরাসরি upload করে (already server এ আছে) — compress + original দুটোই Drive এ upload করে।
+ * কোনো Drive download লাগে না কারণ file already locally available.
+ */
+public static function uploadImageWithCompressionToDrive(UploadedFile $file): array
+{
+    $client = new \Google\Client();
+    $client->setClientId(config('filesystems.disks.google_drive.clientId'));
+    $client->setClientSecret(config('filesystems.disks.google_drive.clientSecret'));
+    $client->refreshToken(config('filesystems.disks.google_drive.refreshToken'));
+    $service = new \Google\Service\Drive($client);
 
+    $originalName = $file->getClientOriginalName();
+    $mimeType     = $file->getMimeType();
+    $fileSize     = $file->getSize();
+    $ext          = $file->getClientOriginalExtension();
+
+    // ── Original upload ──────────────────────────────────────
+    $originalFilename = \Str::uuid() . '.' . $ext;
+    $originalPath      = 'assets/media/' . $originalFilename;
+    Storage::disk('google_drive')->put($originalPath, file_get_contents($file->getRealPath()));
+
+    $originalFiles = $service->files->listFiles([
+        'q'      => "name = '{$originalFilename}' and trashed = false",
+        'fields' => 'files(id)',
+    ]);
+    $originalId = $originalFiles->getFiles()[0]->getId() ?? null;
+
+    // ── Compress (already local file — তাৎক্ষণিক, কোনো download লাগে না) ──
+    $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+    $image   = $manager->read($file->getRealPath());
+
+    $maxWidth = 800;
+    if ($image->width() > $maxWidth) {
+        $image->scaleDown(width: $maxWidth);
+    }
+
+    $compressedFilename = \Str::uuid() . '_thumb.jpg';
+    $compressedTempPath = sys_get_temp_dir() . '/' . $compressedFilename;
+    $image->toJpeg(75)->save($compressedTempPath);
+
+    // ── Compressed upload ─────────────────────────────────────
+    $compressedPath = 'assets/media/compressed/' . $compressedFilename;
+    Storage::disk('google_drive')->put($compressedPath, file_get_contents($compressedTempPath));
+    @unlink($compressedTempPath);
+
+    $compressedFiles = $service->files->listFiles([
+        'q'      => "name = '{$compressedFilename}' and trashed = false",
+        'fields' => 'files(id)',
+    ]);
+    $compressedId = $compressedFiles->getFiles()[0]->getId() ?? null;
+
+    return [
+        'original_id'    => $originalId,
+        'compressed_id'  => $compressedId,
+        'original_name'  => $originalName,
+        'mime_type'      => $mimeType,
+        'file_size'      => $fileSize,
+    ];
+}
     /**
      * Image upload to Drive — original + compressed দুটোই
      * Returns ['original' => 'drive:ID', 'compressed' => 'drive:ID']

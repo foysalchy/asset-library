@@ -28,6 +28,10 @@
                         fill="" />
                 </svg>
             </button>
+               <a href="/home" class=" text-gray-500">
+                View Site
+            </a>
+
 
             <!-- Mobile Menu Toggle Button (visible below xl) -->
             <button

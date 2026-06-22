@@ -118,6 +118,14 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::delete('asset-media/{media}', [AssetController::class, 'destroyMedia'])
         ->name('asset-media.destroy')
         ->middleware('permission:assets.edit');
+    Route::delete('asset/delete-media/{media}', [AssetController::class, 'destroyAsssetMedia'])
+        ->name('asset.delete.media.destroy')
+        ->middleware('permission:assets.edit');
+    Route::post('/assets/media/upload-image', [AssetController::class, 'uploadImageImmediate'])
+        ->name('assets.media.upload-image');
+    Route::post('/assets/media/delete-temp-image', [AssetController::class, 'deleteTempImage'])
+        ->name('assets.media.delete-temp-image')
+        ->middleware('auth');
 
     Route::resource('roles', RoleController::class)->except(['show'])
         ->middleware([

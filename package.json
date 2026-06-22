@@ -25,7 +25,6 @@
         "@tailwindcss/typography": "^0.5.19",
         "alpinejs": "^3.14.9",
         "apexcharts": "^5.3.5",
-        "flatpickr": "^4.6.13",
         "jsvectormap": "^1.7.0",
         "prismjs": "^1.30.0",
         "swiper": "^12.1.4"

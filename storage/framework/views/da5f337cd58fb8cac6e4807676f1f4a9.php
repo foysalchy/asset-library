@@ -51,7 +51,19 @@
             
             <?php if($asset->media->count()): ?>
             <div class="rounded-xl border border-gray-100 bg-white overflow-hidden dark:border-gray-800 dark:bg-white/[0.03]"
-                x-data="{ active: 0, total: <?php echo e($asset->media->count()); ?> }">
+                x-data="{ 
+        active: 0, 
+        total: <?php echo e($asset->media->count()); ?>,
+        mediaItems: <?php echo e(json_encode($asset->media->map(fn($m) => ['id' => $m->id, 'name' => $m->file_original_name])->toArray())); ?>,
+        deleteModal: false, 
+        deleteId: null, 
+        deleteTitle: '',
+        openDelete(id, name) { 
+            this.deleteId = id; 
+            this.deleteTitle = name; 
+            this.deleteModal = true; 
+        } 
+    }">
 
                 
                 <div class="relative bg-gray-900 aspect-video">
@@ -72,6 +84,15 @@
                         <?php endif; ?>
                     </div>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+                    
+                    <button type="button"
+                        @click="openDelete(mediaItems[active].id, mediaItems[active].name)"
+                        class="absolute top-3 right-3 inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-300 hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20 transition-colors">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" />
+                        </svg>
+                    </button>
 
                     
                     <?php if($asset->media->count() > 1): ?>
@@ -104,8 +125,8 @@
                         class="shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all"
                         :class="active === <?php echo e($i); ?>
 
-                                            ? 'border-blue-500 ring-2 ring-blue-500/20'
-                                            : 'border-transparent hover:border-gray-300 dark:hover:border-gray-600'">
+                                        ? 'border-blue-500 ring-2 ring-blue-500/20'
+                                        : 'border-transparent hover:border-gray-300 dark:hover:border-gray-600'">
                         <?php if($media->media_type === 'image'): ?>
                         <img src="<?php echo e($media->url); ?>"
                             alt="<?php echo e($media->file_original_name); ?>"
@@ -121,6 +142,39 @@
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
                 <?php endif; ?>
+
+                
+                <div x-show="deleteModal" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display:none;">
+                    <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" @click="deleteModal = false"></div>
+                    <div class="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-gray-900"
+                        x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+                        <div class="flex flex-col items-center text-center gap-4">
+                            <div class="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center dark:bg-red-900/30">
+                                <svg class="text-red-500" width="28" height="28" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Delete Media</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    Are you sure you want to delete <span class="font-medium text-gray-700 dark:text-gray-300" x-text='"' + deleteTitle + '"'"></span>?
+                    </p>
+                </div>
+                <div class=" flex gap-3 w-full">
+                                        <button type="button" @click="deleteModal = false"
+                                            class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 transition-colors">
+                                            Cancel
+                                        </button>
+                                        <form :action="'/admin/asset/delete-media/' + deleteId" method="POST" class="flex-1">
+                                            <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
+                                            <button type="submit" class="w-full rounded-lg bg-red-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-600 transition-colors">
+                                                Delete
+                                            </button>
+                                        </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <?php endif; ?>
 
@@ -129,52 +183,52 @@
             <div class="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
                 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Description</h3>
                 <div class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                                        <?php echo $asset->description; ?>
+                    <?php echo $asset->description; ?>
 
 
                 </div>
             </div>
             <?php endif; ?>
-           <table class="w-full border border-gray-200 text-sm">
-    <thead class="bg-gray-100 text-left">
-        <tr>
-            <th class="p-2 border">User</th>
-            <th class="p-2 border">Total Downloads</th>
-            <th class="p-2 border">IP Address</th>
-            <th class="p-2 border">Last Download</th>
-        </tr>
-    </thead>
+            <table class="w-full border border-gray-200 text-sm">
+                <thead class="bg-gray-100 text-left">
+                    <tr>
+                        <th class="p-2 border">User</th>
+                        <th class="p-2 border">Total Downloads</th>
+                        <th class="p-2 border">IP Address</th>
+                        <th class="p-2 border">Last Download</th>
+                    </tr>
+                </thead>
 
-    <tbody>
-        <?php $__currentLoopData = $asset->downloadLogs->groupBy('user_id'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $userId => $logs): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <?php
-                $user = $logs->first()->user;
-            ?>
+                <tbody>
+                    <?php $__currentLoopData = $asset->downloadLogs->groupBy('user_id'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $userId => $logs): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php
+                    $user = $logs->first()->user;
+                    ?>
 
-            <tr class="border-t">
-                <td class="p-2 border">
-                    <?php echo e($user->name ?? 'Guest'); ?>
+                    <tr class="border-t">
+                        <td class="p-2 border">
+                            <?php echo e($user->name ?? 'Guest'); ?>
 
-                </td>
+                        </td>
 
-                <td class="p-2 border">
-                    <?php echo e($logs->sum('count')); ?>
+                        <td class="p-2 border">
+                            <?php echo e($logs->sum('count')); ?>
 
-                </td>
+                        </td>
 
-                <td class="p-2 border">
-                    <?php echo e($logs->last()->ip_address); ?>
+                        <td class="p-2 border">
+                            <?php echo e($logs->last()->ip_address); ?>
 
-                </td>
+                        </td>
 
-                <td class="p-2 border">
-                    <?php echo e($logs->max('created_at')->format('Y-m-d H:i')); ?>
+                        <td class="p-2 border">
+                            <?php echo e($logs->max('created_at')->format('Y-m-d H:i')); ?>
 
-                </td>
-            </tr>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-    </tbody>
-</table>
+                        </td>
+                    </tr>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </tbody>
+            </table>
         </div>
 
         
