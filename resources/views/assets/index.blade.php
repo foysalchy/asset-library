@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="p-4 mx-auto w-full  md:p-6">
+    <div class="p-4 mx-auto w-full md:p-6">
 
         <div class="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -34,9 +34,11 @@
                 deleteModal: false,
                 deleteId: null,
                 deleteTitle: '',
-                openDelete(id, title) { this.deleteId = id;
+                openDelete(id, title) { 
+                    this.deleteId = id;
                     this.deleteTitle = title;
-                    this.deleteModal = true; }
+                    this.deleteModal = true; 
+                }
             }">
 
             {{-- Filters --}}
@@ -95,48 +97,59 @@
             </div>
 
             {{-- Table --}}
-            <div class="overflow-hidden">
+            <div class="overflow-hidden" x-data="dragDropSort()">
                 <div class="max-w-full px-5 overflow-x-auto">
                     <table class="min-w-full">
                         <thead>
                             <tr class="border-gray-200 border-y dark:border-gray-700">
-                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                                    Asset</th>
-                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                                    Project</th>
-                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                                    Type</th>
-                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                                    Media</th>
-                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                                    File</th>
-                                       
-                                    <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                                    Download</th>
+                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400 w-6">
+                                    <svg class="text-gray-400" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M8 5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM8 12a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM3.5 15a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                                        <path d="M15 5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 12a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM10.5 15a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                                    </svg>
+                                </th>
+                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Asset</th>
+                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Project</th>
+                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Type</th>
+                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Media</th>
+                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">File</th>
+                                <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">Download</th>
                                 <th class="relative px-4 py-3"><span class="sr-only">Actions</span></th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700" 
+                               @drop="handleDrop($event)" 
+                               @dragover.prevent 
+                               @dragenter.prevent 
+                               x-ref="tableBody">
                             @forelse($assets as $asset)
-                                <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
+                                <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors cursor-move group" 
+                                    draggable="true"
+                                    @dragstart="handleDragStart($event, {{ $asset->id }})"
+                                    @dragend="handleDragEnd($event)"
+                                    @dragover.prevent="handleDragOver($event)"
+                                    data-asset-id="{{ $asset->id }}"
+                                    x-ref="row_{{ $asset->id }}">
+                                    <td class="px-4 py-4 whitespace-nowrap opacity-50 group-hover:opacity-100">
+                                        <svg class="text-gray-400 cursor-grab active:cursor-grabbing" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M8 5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM8 12a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM3.5 15a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                                            <path d="M15 5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 12a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM10.5 15a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                                        </svg>
+                                    </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
                                         <div class="flex items-center gap-3">
                                             @if ($asset->media->first()?->media_type === 'image')
                                                 <img src="{{ $asset->media->first()->url }}" alt="{{ $asset->title }}"
                                                     class="w-10 h-10 rounded-lg object-cover shrink-0 border border-gray-200 dark:border-gray-700">
                                             @else
-                                                <div
-                                                    class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center shrink-0">
-                                                    <svg class="text-purple-500" width="18" height="18"
-                                                        viewBox="0 0 20 20" fill="currentColor">
-                                                        <path
-                                                            d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                                                <div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center shrink-0">
+                                                    <svg class="text-purple-500" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
                                                     </svg>
                                                 </div>
                                             @endif
                                             <div>
-                                                <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                                    {{ $asset->title }}</p>
+                                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $asset->title }}</p>
                                                 @if ($asset->asset_id_code)
                                                     <p class="text-xs text-gray-400 mt-0.5">{{ $asset->asset_id_code }}</p>
                                                 @endif
@@ -144,97 +157,74 @@
                                         </div>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
-                                        <span
-                                            class="text-sm text-gray-600 dark:text-gray-400">{{ $asset->project->name }}</span>
+                                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ $asset->project->name }}</span>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
-                                        <span
-                                            class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                                        <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
                                             {{ $asset->assetType->name }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
-                                        <span
-                                            class="text-sm text-gray-500 dark:text-gray-400">{{ $asset->media->count() }}
-                                            file(s)</span>
+                                        <span class="text-sm text-gray-500 dark:text-gray-400">{{ $asset->media->count() }} file(s)</span>
                                     </td>
-                                    
                                     <td class="px-4 py-4 whitespace-nowrap">
                                         @if ($asset->file_path)
-                                            <span
-                                                class="text-sm text-gray-500 dark:text-gray-400">{{ $asset->file_size_formatted }}</span>
+                                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ $asset->file_size_formatted }}</span>
                                         @else
                                             <span class="text-gray-300 dark:text-gray-600">—</span>
                                         @endif
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
-                                        <span
-                                            class="text-sm text-gray-500 dark:text-gray-400">{{ $asset->getTotalDownloadsAttribute() }} </span>
+                                        <span class="text-sm text-gray-500 dark:text-gray-400">{{ $asset->getTotalDownloadsAttribute() }}</span>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
                                         <div class="flex items-center justify-end gap-2">
-
-                                            {{-- View --}}
                                             @permission('assets.view')
                                                 <a href="{{ route('assets.show', $asset) }}"
                                                     class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/10 transition-colors">
-                                                    <svg width="16" height="16" viewBox="0 0 20 20"
-                                                        fill="currentColor">
+                                                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
                                                         <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                                            d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
                                                     </svg>
                                                 </a>
                                             @endpermission
 
-                                            {{-- Edit --}}
                                             @permission('assets.edit')
                                                 <a href="{{ route('assets.edit', $asset) }}"
                                                     class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-blue-900/20 transition-colors">
-                                                    <svg width="16" height="16" viewBox="0 0 20 20"
-                                                        fill="currentColor">
-                                                        <path
-                                                            d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                                     </svg>
                                                 </a>
                                             @endpermission
 
-                                            {{-- Delete --}}
                                             @permission('assets.delete')
                                                 <button type="button"
                                                     @click="$dispatch('open-delete-modal', {
-                url: '{{ route('assets.destroy', $asset->id) }}',
-                title: '{{ addslashes($asset->title) }}'
-            })"
+                                                        url: '{{ route('assets.destroy', $asset->id) }}',
+                                                        title: '{{ addslashes($asset->title) }}'
+                                                    })"
                                                     class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20 transition-colors">
-                                                    <svg width="16" height="16" viewBox="0 0 20 20"
-                                                        fill="currentColor">
-                                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" />
+                                                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" />
                                                     </svg>
                                                 </button>
                                             @endpermission
-
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-16 text-center">
+                                    <td colspan="8" class="px-4 py-16 text-center">
                                         <div class="flex flex-col items-center gap-3">
-                                            <div
-                                                class="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                                                <svg class="text-gray-400" width="28" height="28"
-                                                    viewBox="0 0 20 20" fill="currentColor">
-                                                    <path
-                                                        d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                                            <div class="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                                                <svg class="text-gray-400" width="28" height="28" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
                                                 </svg>
                                             </div>
                                             <div>
-                                                <p class="text-sm font-medium text-gray-900 dark:text-white">No assets
-                                                    found</p>
-                                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Get started by
-                                                    creating a new asset.</p>
+                                                <p class="text-sm font-medium text-gray-900 dark:text-white">No assets found</p>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Get started by creating a new asset.</p>
                                             </div>
                                             <a href="{{ route('assets.create') }}"
                                                 class="inline-flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 transition-colors">
@@ -252,10 +242,95 @@
             {{-- Pagination --}}
             @include('partials.pagination', ['items' => $assets])
 
-
-
-
-
         </div>
     </div>
+
+    <script>
+        function dragDropSort() {
+            return {
+                draggedElement: null,
+                draggedId: null,
+                isSorting: false,
+
+                handleDragStart(event, assetId) {
+                    if (this.isSorting) return;
+                    
+                    this.draggedElement = event.target.closest('tr');
+                    this.draggedId = assetId;
+                    
+                    event.dataTransfer.effectAllowed = 'move';
+                    event.dataTransfer.setData('text/plain', assetId);
+                    
+                    this.draggedElement.classList.add('opacity-40', 'bg-blue-50', 'dark:bg-blue-900/20');
+                },
+
+                handleDragEnd(event) {
+                    if (this.draggedElement) {
+                        this.draggedElement.classList.remove('opacity-40', 'bg-blue-50', 'dark:bg-blue-900/20');
+                    }
+                    this.draggedElement = null;
+                    this.draggedId = null;
+                },
+
+                handleDragOver(event) {
+                    event.preventDefault();
+                    if (!this.draggedElement) return;
+
+                    const targetRow = event.target.closest('tbody tr');
+                    if (!targetRow || targetRow === this.draggedElement) return;
+
+                    const tbody = this.$refs.tableBody;
+                    const rect = targetRow.getBoundingClientRect();
+                    
+                    // চেক করা হচ্ছে কার্সরের পজিশন টার্গেট রো-এর মাঝামাঝি অংশ অতিক্রম করেছে কিনা
+                    const next = (event.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+
+                    tbody.insertBefore(this.draggedElement, next ? targetRow.nextSibling : targetRow);
+                },
+
+                handleDrop(event) {
+                    event.preventDefault();
+                    if (!this.draggedId) return;
+
+                    this.updateSortOrder();
+                },
+
+                updateSortOrder() {
+                    this.isSorting = true;
+                    const rows = document.querySelectorAll('tbody tr[data-asset-id]');
+                    const updates = [];
+
+                    rows.forEach((row, index) => {
+                        const assetId = row.getAttribute('data-asset-id');
+                        if (assetId) {
+                            updates.push({
+                                id: parseInt(assetId),
+                                sort_order: index
+                            });
+                        }
+                    });
+
+                    fetch('{{ route("assets.sort") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({ assets: updates })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Sort updated successfully:', data);
+                    })
+                    .catch(error => {
+                        console.error('Error updating sort:', error);
+                        window.location.reload();
+                    })
+                    .finally(() => {
+                        this.isSorting = false;
+                    });
+                }
+            }
+        }
+    </script>
 @endsection

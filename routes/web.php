@@ -114,6 +114,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
             'update'  => 'permission:assets.edit',
             'destroy' => 'permission:assets.delete',
         ]);
+    Route::post('/assets/sort', [AssetController::class, 'sort'])->name('assets.sort');
 
     Route::delete('asset-media/{media}', [AssetController::class, 'destroyMedia'])
         ->name('asset-media.destroy')

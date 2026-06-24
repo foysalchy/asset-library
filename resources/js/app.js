@@ -3,8 +3,7 @@ import Alpine from 'alpinejs';
 import ApexCharts from 'apexcharts';
 
 // flatpickr
-import flatpickr from 'flatpickr';
-import 'flatpickr/dist/flatpickr.min.css';
+
 // FullCalendar
 import { Calendar } from '@fullcalendar/core';
 import Swiper from 'swiper/bundle';
@@ -12,8 +11,7 @@ import 'swiper/css/bundle';
 
 
 window.Alpine = Alpine;
-window.ApexCharts = ApexCharts;
-window.flatpickr = flatpickr;
+window.ApexCharts = ApexCharts
 window.FullCalendar = Calendar;
 window.Swiper = Swiper;
 Alpine.start();

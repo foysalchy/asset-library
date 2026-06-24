@@ -33,7 +33,7 @@ class AssetController extends Controller
         if ($request->filled('project_id'))    $query->where('project_id', $request->project_id);
         if ($request->filled('asset_type_id')) $query->where('asset_type_id', $request->asset_type_id);
 
-        $assets     = $query->orderBy('sort_order')->orderByDesc('created_at')->paginate(10)->withQueryString();
+        $assets     = $query->orderBy('sort_order', 'asc')->paginate(10)->withQueryString();
         $projects   = Project::orderBy('name')->get();
         $assetTypes = AssetType::orderBy('name')->get();
 
@@ -66,7 +66,8 @@ class AssetController extends Controller
         }
 
         $validated['created_by'] = auth()->id();
-        $validated['sort_order'] = $validated['sort_order'] ?? 0;
+        $minSortOrder = Asset::min('sort_order');
+        $validated['sort_order'] = ($minSortOrder !== null) ? ($minSortOrder - 1) : 1;
         if ($request->filled('drive_file_id')) {
             $validated['file_path'] = 'drive:' . $request->drive_file_id;
         }
@@ -78,6 +79,7 @@ class AssetController extends Controller
         NotificationService::notifyAll('asset', $asset->id, $asset->title, $asset->slug);
         return redirect()->route('assets.show', $asset)->with('success', 'Asset created successfully.');
     }
+
 
     public function show(Asset $asset)
     {
@@ -361,5 +363,30 @@ class AssetController extends Controller
             'delete_media'        => ['nullable', 'array'],
             'delete_media.*'      => ['string'],
         ]);
+    }
+    public function sort(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'assets' => 'required|array',
+                'assets.*.id' => 'required|integer|exists:assets,id',
+                'assets.*.sort_order' => 'required|integer|min:0',
+            ]);
+
+            foreach ($validated['assets'] as $assetData) {
+                Asset::where('id', $assetData['id'])
+                    ->update(['sort_order' => $assetData['sort_order']]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Assets sorted successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating sort order: ' . $e->getMessage()
+            ], 422);
+        }
     }
 }

@@ -17,8 +17,10 @@ class HomeController extends Controller
         $user = Auth::user();
         $featuredCampaigns = Campaign::with('project')->latest()->take(4)->get();
 
-        $latestAssets = Asset::with('media')->where('status', 'active')->latest()->get();
-
+        $latestAssets = Asset::with('media')
+            ->where('status', 'active')
+            ->orderBy('sort_order', 'asc')
+            ->get();
         $recommendedAssets = Asset::with('media')->where('status', 'active')->inRandomOrder()->take(8)->get();
 
         $concerns = Project::CONCERNS;
@@ -52,14 +54,14 @@ class HomeController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
-    //          dd($asset->media->map(fn($m) => [
-    //     'id'         => $m->id,
-    //     'file_path'  => $m->file_path,
-    //     'media_type' => $m->media_type,
-    //     'url'        => $m->url,
-    //     'stream_url' => $m->stream_url,
-    //     'embed_url'  => $m->embed_url,
-    // ]));
+        //          dd($asset->media->map(fn($m) => [
+        //     'id'         => $m->id,
+        //     'file_path'  => $m->file_path,
+        //     'media_type' => $m->media_type,
+        //     'url'        => $m->url,
+        //     'stream_url' => $m->stream_url,
+        //     'embed_url'  => $m->embed_url,
+        // ]));
 
         return view('frontend.assetDetails', compact('asset'));
     }

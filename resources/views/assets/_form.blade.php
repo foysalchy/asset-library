@@ -878,13 +878,6 @@ retry(index) {
                 @error('status')<p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>@enderror
             </div>
 
-            {{-- Sort Order --}}
-            <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Sort Order</label>
-                <input type="number" name="sort_order" min="0"
-                    value="{{ old('sort_order', $isEdit ? $asset->sort_order : 0) }}"
-                    class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
-            </div>
 
             {{-- Upload Date --}}
         
