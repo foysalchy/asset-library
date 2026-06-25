@@ -235,7 +235,7 @@
                         <div class="flex justify-between items-center mb-3">
                             <h3 class="text-sm font-bold text-gray-700 flex items-center gap-2">
                                 <i class="fa-solid fa-text-height text-[#0071c5]"></i>
-                                <span x-text="selectedIndex !== null ? 'Edit Text' : 'Type to Add Text'"></span>
+                                <span x-text="selectedIndex !== null ? 'Edit Text' : 'Type to Add Text/Number'"></span>
                             </h3>
                             <button x-show="selectedIndex !== null" @click="deselectText()"
                                 class="text-xs text-[#0071c5] hover:text-[#005ea3] font-bold bg-blue-50 px-2 py-1 rounded transition-colors">
@@ -685,7 +685,6 @@ $mediaData = $asset->media
             },
 
          async switchMedia(index) {
-                // ১. আগে বর্তমান মিডিয়ার ডাটা সেভ করুন
                 if (!this.isVideo) {
                     this.saveTexts();
                 } else {
@@ -695,12 +694,10 @@ $mediaData = $asset->media
                 const targetMedia = MEDIA_DATA[index];
                 const targetIsVideo = targetMedia.type === 'video';
 
-                // ২. কপি লজিক: যদি নতুন মিডিয়াটি ইমেজ হয়, এবং এটি আগে এডিট না হয়ে থাকে, তাহলে আগের টেক্সট কপি করে দিবে
                 if (!targetIsVideo && !this.allTexts[index] && this.texts.length > 0) {
                     this.allTexts[index] = JSON.parse(JSON.stringify(this.texts));
                 }
 
-                // ৩. স্টেট আপডেট
                 this.activeIndex = index;
                 this.isVideo = targetIsVideo;
 
