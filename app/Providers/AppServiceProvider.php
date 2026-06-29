@@ -7,7 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\Bookmark;
 use App\Models\Notification;
-
+use Illuminate\Support\Facades\URL;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -21,6 +21,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
+        public function boot()
+{
+    if (app()->environment('production')) {
+        URL::forceScheme('https');
+    }
+}
         Blade::directive('permission', function ($expression) {
             return "<?php if(auth()->check() && auth()->user()->hasPermission({$expression})): ?>";
         });
