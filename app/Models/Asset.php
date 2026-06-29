@@ -39,7 +39,11 @@ class Asset extends Model
     protected static function booted(): void
     {
         static::creating(function (Asset $a) {
-            if (empty($a->slug)) $a->slug = Str::slug($a->title);
+            if (empty($a->slug)) {
+                $a->slug = Str::slug($a->title);
+            } else {
+                $a->slug = Str::slug($a->slug);
+            }
         });
     }
     public function project()

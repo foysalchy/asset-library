@@ -178,26 +178,32 @@
                     
                     <div x-show="!loading && isVideo" class="relative flex items-center justify-center w-full">
                         <div class="relative inline-block max-w-full" id="video-wrapper" style="width: 100%; max-width: 850px;">
+                            <div id="video-wrapper" style="width: 100%; max-width: 850px;">
 
-                            <video id="editor-video"
-                                :src="currentVideoUrl"
-                                controls
-                                muted
-                                class="block w-full h-auto rounded-lg bg-black"
-                                @loadedmetadata="onVideoLoaded($event)">
-                            </video>
+                                <video id="editor-video"
+                                    :src="currentVideoUrl"
+                                    controls
+                                    muted
+                                    class="block w-full h-auto rounded-lg bg-black"
+                                    @loadedmetadata="onVideoLoaded($event)">
+                                </video>
 
-                            
-                            <div id="overlay-box"
-                                x-show="videoBox.visible"
-                                @mousedown="onBoxMouseDown($event)"
-                                @touchstart="onBoxMouseDown($event)"
-                                class="absolute select-none touch-none flex items-center justify-center px-3 py-1.5 rounded"
-                                :style="boxStyle"
-                                style="cursor: grab;">
-                                <span :style="textStyle" x-text="videoBox.text || 'Your text here'"></span>
+                                <div id="overlay-box"
+                                    x-show="videoBox.visible"
+                                    @mousedown="onBoxMouseDown($event)"
+                                    @touchstart="onBoxMouseDown($event)"
+                                    class="absolute select-none touch-none flex items-center justify-center px-3 py-1.5 rounded"
+                                    :style="boxStyle">
+                                    <span :style="textStyle" x-text="videoBox.text || 'Your text here'"></span>
+                                </div>
+
+                                
+                                <div x-show="isVideo"
+                                    class="absolute top-2 left-2 bg-[#0071c5] text-white text-[10px] sm:text-xs px-2 py-1 rounded-full pointer-events-none shadow-md">
+                                    <i class="fa-solid fa-arrows-up-down-left-right mr-1"></i> Drag to move
+                                </div>
+
                             </div>
-
                         </div>
                     </div>
 
@@ -459,6 +465,7 @@ $mediaData = $asset->media
         transform: translate(-50%, -50%);
         background: ${this.hexToRgba(this.videoBox.bgColor, this.videoBox.bgOpacity)};
         white-space: nowrap;
+        cursor: ${this.isDraggingBox ? 'grabbing' : 'grab'};   
     `;
             },
 
@@ -684,7 +691,7 @@ $mediaData = $asset->media
                 this.allTexts[this.activeIndex] = JSON.parse(JSON.stringify(this.texts));
             },
 
-         async switchMedia(index) {
+            async switchMedia(index) {
                 if (!this.isVideo) {
                     this.saveTexts();
                 } else {
