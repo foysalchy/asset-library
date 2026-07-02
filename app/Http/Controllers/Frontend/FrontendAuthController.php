@@ -66,7 +66,7 @@ class FrontendAuthController extends Controller
             'email'    => $request->email,
             'employee_id'    => $request->employee_id,
             'password' => Hash::make($request->password),
-            'status'   => 'inactive',
+            'status'   => 'active',
         ]);
 
         // Frontend user role assign
