@@ -410,7 +410,7 @@ public function processVideo(Request $request, AssetMedia $media)
 
     $processArgs = array_merge($processArgs, [
         '-codec:a', 'copy',
-        '-y', basename($tempOutput), /
+        '-y', basename($tempOutput), 
     ]);
 
     $process = new \Symfony\Component\Process\Process($processArgs);

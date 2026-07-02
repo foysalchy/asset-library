@@ -12,35 +12,38 @@ use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
-public function index()
-{
-    $user = Auth::user();
+    public function index()
+    {
+        $user = Auth::user();
 
-    $latestAssets = Asset::with(['media' => fn($q) => $q->where('media_type', 'image')->orderBy('sort_order')->limit(1)])
-        ->where('status', 'active')
-        ->orderBy('sort_order')
-        ->limit(8)
-        ->get();
+        $latestAssets = Asset::with(['media' => fn($q) => $q->where('media_type', 'image')->orderBy('sort_order')->limit(1)])
+            ->where('status', 'active')
+            ->orderBy('sort_order')
+            ->limit(8)
+            ->select('id', 'title', 'slug', 'status', 'sort_order')
+            ->get();
 
-    $concerns = Project::CONCERNS;
+        $concerns = Project::CONCERNS;
 
-    $projects = Project::where('status', 'active')
-        ->select('id', 'name')
-        ->orderBy('name')
-        ->get();
+        $projects = Project::where('status', 'active')
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
 
-    $assetTypes = AssetType::select('id', 'name')->orderBy('name')->get();
+        $assetTypes = AssetType::select('id', 'name')
+            ->orderBy('name')
+            ->get();
 
 
 
-    return view('frontend.index', compact(
-        'latestAssets',
-        'concerns',
-        'projects',
-        'assetTypes',
-        'user'
-    ));
-}
+        return view('frontend.index', compact(
+            'latestAssets',
+            'concerns',
+            'projects',
+            'assetTypes',
+            'user'
+        ));
+    }
     public function campaignDetails($slug)
     {
         $campaign = Campaign::where('slug', $slug)->firstOrFail();
