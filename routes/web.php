@@ -217,4 +217,8 @@ Route::prefix('')->group(function () {
         ->name('drive.upload.complete');
     Route::post('/drive/upload/resolve', [DriveUploadController::class, 'resolveFileId'])
         ->name('drive.upload.resolve');
+
+    Route::get('/assets/{asset}/video/{media}/download', [FileController::class, 'downloadVideo'])
+    ->name('assets.video.download')
+    ->middleware('auth');
 });

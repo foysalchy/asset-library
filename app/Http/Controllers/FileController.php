@@ -279,183 +279,192 @@ class FileController extends Controller
     }
 
 
-public function processVideo(Request $request, AssetMedia $media)
-{
-    $validated = $request->validate([
-        'text'       => ['nullable', 'string', 'max:100'],
-        'bg_color'   => ['required', 'string'],
-        'bg_opacity' => ['required', 'numeric', 'min:0', 'max:1'],
-        'font_size'  => ['required', 'integer', 'min:10', 'max:80'],
-        'text_color' => ['required', 'string'],
-        'x_percent'  => ['required', 'numeric', 'min:0', 'max:100'],
-        'y_percent'  => ['required', 'numeric', 'min:0', 'max:100'],
-    ]);
+    public function processVideo(Request $request, AssetMedia $media)
+    {
+        $validated = $request->validate([
+            'text'       => ['nullable', 'string', 'max:100'],
+            'bg_color'   => ['required', 'string'],
+            'bg_opacity' => ['required', 'numeric', 'min:0', 'max:1'],
+            'font_size'  => ['required', 'integer', 'min:10', 'max:80'],
+            'text_color' => ['required', 'string'],
+            'x_percent'  => ['required', 'numeric', 'min:0', 'max:100'],
+            'y_percent'  => ['required', 'numeric', 'min:0', 'max:100'],
+        ]);
 
-    if ($media->media_type !== 'video' || !str_starts_with($media->file_path, 'drive:')) {
-        abort(404, 'Invalid video media.');
-    }
+        if ($media->media_type !== 'video' || !str_starts_with($media->file_path, 'drive:')) {
+            abort(404, 'Invalid video media.');
+        }
 
-    $fileId = str_replace('drive:', '', $media->file_path);
+        $fileId = str_replace('drive:', '', $media->file_path);
 
 
 
-    // ── Step 1: Download video from Google Drive ──────────────────────────
-    $client = new \Google\Client();
-    $client->setClientId(config('filesystems.disks.google_drive.clientId'));
-    $client->setClientSecret(config('filesystems.disks.google_drive.clientSecret'));
-    $client->refreshToken(config('filesystems.disks.google_drive.refreshToken'));
+        // ── Step 1: Download video from Google Drive ──────────────────────────
+        $client = new \Google\Client();
+        $client->setClientId(config('filesystems.disks.google_drive.clientId'));
+        $client->setClientSecret(config('filesystems.disks.google_drive.clientSecret'));
+        $client->refreshToken(config('filesystems.disks.google_drive.refreshToken'));
 
-    $service  = new \Google\Service\Drive($client);
-    $response = $service->files->get($fileId, ['alt' => 'media']);
-    $body     = $response->getBody();
+        $service  = new \Google\Service\Drive($client);
+        $response = $service->files->get($fileId, ['alt' => 'media']);
+        $body     = $response->getBody();
 
-    $tempInput = storage_path('app/temp/' . \Str::uuid() . '.mp4');
-    if (!is_dir(dirname($tempInput))) {
-        mkdir(dirname($tempInput), 0755, true);
-    }
+        $tempInput = storage_path('app/temp/' . \Str::uuid() . '.mp4');
+        if (!is_dir(dirname($tempInput))) {
+            mkdir(dirname($tempInput), 0755, true);
+        }
 
-    $out = fopen($tempInput, 'w');
-    while (!$body->eof()) {
-        fwrite($out, $body->read(1024 * 1024));
-    }
-    fclose($out);
+        $out = fopen($tempInput, 'w');
+        while (!$body->eof()) {
+            fwrite($out, $body->read(1024 * 1024));
+        }
+        fclose($out);
 
-    Log::info('Video downloaded: ' . $tempInput);
+        Log::info('Video downloaded: ' . $tempInput);
         $ffmpegPath = 'C:\ffmpeg\bin\ffmpeg.exe';
 
-    // ── Step 2: Get video dimensions & Bitrate ────────────────────────────
-     $ffprobe = \FFMpeg\FFProbe::create([
+        // ── Step 2: Get video dimensions & Bitrate ────────────────────────────
+        $ffprobe = \FFMpeg\FFProbe::create([
             'ffmpeg.binaries'  => 'C:\ffmpeg\bin\ffmpeg.exe',
             'ffprobe.binaries' => 'C:\ffmpeg\bin\ffprobe.exe',
         ]);
-    $videoStream = $ffprobe->streams($tempInput)->videos()->first();
-    $videoWidth  = $videoStream->get('width');
-    $videoHeight = $videoStream->get('height');
-    
-    $bitRate = $videoStream->has('bit_rate') ? $videoStream->get('bit_rate') : null;
+        $videoStream = $ffprobe->streams($tempInput)->videos()->first();
+        $videoWidth  = $videoStream->get('width');
+        $videoHeight = $videoStream->get('height');
 
-    Log::info("Video dimensions: {$videoWidth}x{$videoHeight}, Bitrate: {$bitRate}");
+        $bitRate = $videoStream->has('bit_rate') ? $videoStream->get('bit_rate') : null;
 
-    // ── Step 3: Calculate box position ─────────────────────────────────
-    $boxWidth  = max(200, strlen($validated['text'] ?? '') * $validated['font_size'] * 0.6 + 60);
-    $boxHeight = $validated['font_size'] * 1.8;
+        Log::info("Video dimensions: {$videoWidth}x{$videoHeight}, Bitrate: {$bitRate}");
 
-    $boxX = ($validated['x_percent'] / 100) * $videoWidth - ($boxWidth / 2);
-    $boxY = ($validated['y_percent'] / 100) * $videoHeight - ($boxHeight / 2);
+        // ── Step 3: Calculate box position ─────────────────────────────────
+        $boxWidth  = max(200, strlen($validated['text'] ?? '') * $validated['font_size'] * 0.6 + 60);
+        $boxHeight = $validated['font_size'] * 1.8;
 
-    $boxX = max(0, min($videoWidth - $boxWidth, $boxX));
-    $boxY = max(0, min($videoHeight - $boxHeight, $boxY));
+        $boxX = ($validated['x_percent'] / 100) * $videoWidth - ($boxWidth / 2);
+        $boxY = ($validated['y_percent'] / 100) * $videoHeight - ($boxHeight / 2);
 
-    Log::info("Box position: x={$boxX}, y={$boxY}, w={$boxWidth}, h={$boxHeight}");
+        $boxX = max(0, min($videoWidth - $boxWidth, $boxX));
+        $boxY = max(0, min($videoHeight - $boxHeight, $boxY));
 
-    $bgRgb   = $this->hexToFFmpegColor($validated['bg_color'], $validated['bg_opacity']);
-    $textRgb = $this->hexToFFmpegColor($validated['text_color'], 1);
+        Log::info("Box position: x={$boxX}, y={$boxY}, w={$boxWidth}, h={$boxHeight}");
 
-    // ── Step 4: Prepare text and BULLETPROOF FONT PATH ───────────────────
-    $text = $validated['text'] ?? '';
-    $text = str_replace(["'", ":", "\\", "\n", "[", "]"], "", $text);
-    Log::info("Cleaned text: '{$text}'");
+        $bgRgb   = $this->hexToFFmpegColor($validated['bg_color'], $validated['bg_opacity']);
+        $textRgb = $this->hexToFFmpegColor($validated['text_color'], 1);
 
-    $tempOutput = storage_path('app/temp/' . \Str::uuid() . '_output.mp4');
-    $fontFileOriginal = public_path('font/Outfit-VariableFont_wght.ttf');
+        // ── Step 4: Prepare text and BULLETPROOF FONT PATH ───────────────────
+        $text = $validated['text'] ?? '';
+        $text = str_replace(["'", ":", "\\", "\n", "[", "]"], "", $text);
+        Log::info("Cleaned text: '{$text}'");
 
-    if (!file_exists($fontFileOriginal)) {
-        @unlink($tempInput);
-        Log::error("Font not found at: " . $fontFileOriginal);
-        return response()->json(['message' => 'System error: Font file is missing in public directory.'], 500);
-    }
+        $tempOutput = storage_path('app/temp/' . \Str::uuid() . '_output.mp4');
+        $fontFileOriginal = public_path('font/Outfit-VariableFont_wght.ttf');
 
-    $tempFontPath = storage_path('app/temp/font_' . \Str::uuid() . '.ttf');
-    copy($fontFileOriginal, $tempFontPath);
-    
-    $fontFileName = basename($tempFontPath);
-
-    // Text position
-    $textX = (int)($boxX + ($boxWidth / 2));
-    $textY = (int)($boxY + ($boxHeight / 2));
-    $filter = "drawbox=x=" . (int)$boxX
-        . ":y=" . (int)$boxY
-        . ":w=" . (int)$boxWidth
-        . ":h=" . (int)$boxHeight
-        . ":color=" . $bgRgb
-        . ":t=fill"
-        . ",drawtext=fontfile='" . $fontFileName . "'"
-        . ":text='" . $text . "'"
-        . ":fontsize=" . (int)$validated['font_size']
-        . ":fontcolor=" . $textRgb
-        . ":x=" . $textX . "-text_w/2"
-        . ":y=" . $textY . "-text_h/2"
-        . ":line_spacing=" . (int)($validated['font_size'] * 0.2);
-
-    Log::info("Complete filter string: " . $filter);
-
-    
-    $processArgs = [
-        $ffmpegPath,
-        '-i', basename($tempInput), 
-        '-vf', $filter,
-        '-c:v', 'libx264',
-        '-preset', 'slow',
-    ];
-
-    if ($bitRate) {
-        $processArgs = array_merge($processArgs, [
-            '-b:v', $bitRate,
-            '-maxrate', $bitRate,
-            '-bufsize', (string)((int)$bitRate * 2),
-        ]);
-    } else {
-        $processArgs = array_merge($processArgs, ['-crf', '14']);
-    }
-
-    $processArgs = array_merge($processArgs, [
-        '-codec:a', 'copy',
-        '-y', basename($tempOutput), 
-    ]);
-
-    $process = new \Symfony\Component\Process\Process($processArgs);
-    
-    $process->setWorkingDirectory(dirname($tempInput)); 
-
-    $process->setTimeout(300);
-    $process->setIdleTimeout(300);
-
-    $process->run();
-
-    $stdout = $process->getOutput();
-    $stderr = $process->getErrorOutput();
-
-    if (!empty($stdout)) {
-        Log::info('FFmpeg STDOUT: ' . substr($stdout, -500));
-    }
-    if (!empty($stderr)) {
-        Log::error('FFmpeg STDERR: ' . substr($stderr, -1000));
-    }
-
-    // ── Step 7: Cleanup & Return ────────────────────────────────────────
-    
-    // প্রসেস শেষ হলে অরিজিনাল ভিডিও এবং টেম্প ফন্ট ডিলিট করা হচ্ছে
-    @unlink($tempInput);
-    @unlink($tempFontPath); 
-
-    if (!$process->isSuccessful()) {
-        $errorMsg = 'FFmpeg failed';
-        if (strpos($stderr, 'No such file') !== false || strpos($stderr, 'fontconfig') !== false) {
-            $errorMsg = 'Font loading error - verify font exists';
-        } elseif (strpos($stderr, 'Error parsing') !== false) {
-            $errorMsg = 'Filter syntax error';
+        if (!file_exists($fontFileOriginal)) {
+            @unlink($tempInput);
+            Log::error("Font not found at: " . $fontFileOriginal);
+            return response()->json(['message' => 'System error: Font file is missing in public directory.'], 500);
         }
 
-        Log::error('Video processing failed: ' . $errorMsg);
-        Log::error('Exit code: ' . $process->getExitCode());
+        $tempFontPath = storage_path('app/temp/font_' . \Str::uuid() . '.ttf');
+        copy($fontFileOriginal, $tempFontPath);
 
-        return response()->json(['message' => $errorMsg], 500);
+        $fontFileName = basename($tempFontPath);
+
+        // Text position
+        $textX = (int)($boxX + ($boxWidth / 2));
+        $textY = (int)($boxY + ($boxHeight / 2));
+        $filter = "drawbox=x=" . (int)$boxX
+            . ":y=" . (int)$boxY
+            . ":w=" . (int)$boxWidth
+            . ":h=" . (int)$boxHeight
+            . ":color=" . $bgRgb
+            . ":t=fill"
+            . ",drawtext=fontfile='" . $fontFileName . "'"
+            . ":text='" . $text . "'"
+            . ":fontsize=" . (int)$validated['font_size']
+            . ":fontcolor=" . $textRgb
+            . ":x=" . $textX . "-text_w/2"
+            . ":y=" . $textY . "-text_h/2"
+            . ":line_spacing=" . (int)($validated['font_size'] * 0.2);
+
+        Log::info("Complete filter string: " . $filter);
+
+
+        $processArgs = [
+            $ffmpegPath,
+            '-i',
+            basename($tempInput),
+            '-vf',
+            $filter,
+            '-c:v',
+            'libx264',
+            '-preset',
+            'slow',
+        ];
+
+        if ($bitRate) {
+            $processArgs = array_merge($processArgs, [
+                '-b:v',
+                $bitRate,
+                '-maxrate',
+                $bitRate,
+                '-bufsize',
+                (string)((int)$bitRate * 2),
+            ]);
+        } else {
+            $processArgs = array_merge($processArgs, ['-crf', '14']);
+        }
+
+        $processArgs = array_merge($processArgs, [
+            '-codec:a',
+            'copy',
+            '-y',
+            basename($tempOutput),
+        ]);
+
+        $process = new \Symfony\Component\Process\Process($processArgs);
+
+        $process->setWorkingDirectory(dirname($tempInput));
+
+        $process->setTimeout(300);
+        $process->setIdleTimeout(300);
+
+        $process->run();
+
+        $stdout = $process->getOutput();
+        $stderr = $process->getErrorOutput();
+
+        if (!empty($stdout)) {
+            Log::info('FFmpeg STDOUT: ' . substr($stdout, -500));
+        }
+        if (!empty($stderr)) {
+            Log::error('FFmpeg STDERR: ' . substr($stderr, -1000));
+        }
+
+        // ── Step 7: Cleanup & Return ────────────────────────────────────────
+
+        // প্রসেস শেষ হলে অরিজিনাল ভিডিও এবং টেম্প ফন্ট ডিলিট করা হচ্ছে
+        @unlink($tempInput);
+        @unlink($tempFontPath);
+
+        if (!$process->isSuccessful()) {
+            $errorMsg = 'FFmpeg failed';
+            if (strpos($stderr, 'No such file') !== false || strpos($stderr, 'fontconfig') !== false) {
+                $errorMsg = 'Font loading error - verify font exists';
+            } elseif (strpos($stderr, 'Error parsing') !== false) {
+                $errorMsg = 'Filter syntax error';
+            }
+
+            Log::error('Video processing failed: ' . $errorMsg);
+            Log::error('Exit code: ' . $process->getExitCode());
+
+            return response()->json(['message' => $errorMsg], 500);
+        }
+
+        Log::info('Video processing completed successfully');
+
+        return response()->download($tempOutput, 'edited_video.mp4')->deleteFileAfterSend(true);
     }
-
-    Log::info('Video processing completed successfully');
-
-    return response()->download($tempOutput, 'edited_video.mp4')->deleteFileAfterSend(true);
-}
     private function hexToFFmpegColor(string $hex, float $opacity): string
     {
         $hex = ltrim($hex, '#');
@@ -618,5 +627,17 @@ public function processVideo(Request $request, AssetMedia $media)
         } catch (\Exception $e) {
             Log::error('Download log error: ' . $e->getMessage());
         }
+    }
+    public function downloadVideo(Asset $asset, AssetMedia $media)
+    {
+        if ($media->asset_id !== $asset->id || $media->media_type !== 'video') {
+            abort(404);
+        }
+
+        // Download log
+        $this->logDownload('asset', $asset->id);
+
+        $fileId = str_replace('drive:', '', $media->file_path);
+        return $this->streamGoogleDriveFile($fileId);
     }
 }

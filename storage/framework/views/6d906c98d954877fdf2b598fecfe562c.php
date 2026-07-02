@@ -113,26 +113,23 @@
 
             
             <div class="flex gap-3 mb-4 overflow-x-auto pb-4 scrollbar-hide items-center px-1">
-                <?php $__currentLoopData = $asset->media; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $media): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php $__currentLoopData = $asset->media->where('media_type', 'image'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $media): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <button
-                    @click="switchMedia(<?php echo e($loop->index); ?>)"
+                    @click="switchImage(<?php echo e($loop->index); ?>)"
                     :class="activeIndex === <?php echo e($loop->index); ?>
 
-                ? 'ring-2 ring-offset-2 ring-[#0071c5] border-[#0071c5] opacity-100'
-                : 'border-transparent opacity-60 hover:opacity-100 hover:border-gray-300'"
+                            ? 'ring-2 ring-offset-2 ring-[#0071c5] border-[#0071c5] opacity-100'
+                            : 'border-transparent opacity-60 hover:opacity-100 hover:border-gray-300'"
                     class="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg border-2 transition-all overflow-hidden p-0 relative block bg-gray-200">
-
-                    <?php if($media->media_type === 'video'): ?>
-                    <div class="w-full h-full flex items-center justify-center bg-gray-900">
-                        <i class="fa-solid fa-play text-white text-sm"></i>
-                    </div>
-                    <?php else: ?>
                     <img src="<?php echo e($media->url); ?>" class="w-full h-full block object-cover aspect-square" alt="thumbnail">
-                    <?php endif; ?>
 
                     <div x-show="activeIndex === <?php echo e($loop->index); ?>"
                         class="absolute top-1 right-1 bg-[#0071c5] text-white text-[10px] rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
                         <i class="fa-solid fa-check"></i>
+                    </div>
+
+                    <div x-show="isImageEdited(<?php echo e($loop->index); ?>)"
+                        class="absolute bottom-1 right-1 bg-green-500 w-3 h-3 rounded-full border border-white shadow-sm">
                     </div>
                 </button>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -149,12 +146,11 @@
                             <svg class="animate-spin text-[#0071c5] w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
                             </svg>
-                            <p class="text-sm text-gray-500" x-text="isVideo ? 'Loading video...' : 'Loading image...'"></p>
+                            <p class="text-sm text-gray-500">Loading image...</p>
                         </div>
                     </div>
 
-                    
-                    <div x-show="!loading && !isVideo" class="relative flex items-center justify-center w-full">
+                    <div x-show="!loading" class="relative flex items-center justify-center w-full">
                         <div class="relative inline-block max-w-full">
                             <canvas id="editor-canvas"
                                 class="block max-w-full h-auto rounded-lg touch-none"
@@ -166,41 +162,9 @@
                                 @touchmove.window="onMouseMove($event)"
                                 @touchend.window="onMouseUp($event)">
                             </canvas>
-                            <div x-show="selectedIndex !== null && !isVideo"
+                            <div x-show="selectedIndex !== null"
                                 class="absolute top-2 left-2 bg-[#0071c5] text-white text-[10px] sm:text-xs px-2 py-1 rounded-full pointer-events-none shadow-md">
                                 <i class="fa-solid fa-arrows-up-down-left-right mr-1"></i> Drag to move
-                            </div>
-                        </div>
-                    </div>
-
-                    
-                    <div x-show="!loading && isVideo" class="relative flex items-center justify-center w-full">
-                        <div class="relative inline-block max-w-full" id="video-wrapper" style="width: 100%; max-width: 850px;">
-                            <div id="video-wrapper" style="width: 100%; max-width: 850px;">
-
-                                <video id="editor-video"
-                                    :src="currentVideoUrl"
-                                    controls
-                                    muted
-                                    class="block w-full h-auto rounded-lg bg-black"
-                                    @loadedmetadata="onVideoLoaded($event)">
-                                </video>
-
-                                <div id="overlay-box"
-                                    x-show="videoBox.visible"
-                                    @mousedown="onBoxMouseDown($event)"
-                                    @touchstart="onBoxMouseDown($event)"
-                                    class="absolute select-none touch-none flex items-center justify-center px-3 py-1.5 rounded"
-                                    :style="boxStyle">
-                                    <span :style="textStyle" x-text="videoBox.text || 'Your text here'"></span>
-                                </div>
-
-                                
-                                <div x-show="isVideo"
-                                    class="absolute top-2 left-2 bg-[#0071c5] text-white text-[10px] sm:text-xs px-2 py-1 rounded-full pointer-events-none shadow-md">
-                                    <i class="fa-solid fa-arrows-up-down-left-right mr-1"></i> Drag to move
-                                </div>
-
                             </div>
                         </div>
                     </div>
@@ -209,24 +173,13 @@
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 pt-4 border-t border-gray-100 gap-3">
                         <p class="text-[11px] sm:text-xs text-gray-400">
                             <i class="fa-solid fa-circle-info mr-1"></i>
-                            <span x-text="isVideo ? 'Drag the box to position the overlay' : 'Tap/Click text to select · Drag to move'"></span>
+                            Tap/Click text to select · Drag to move
                         </p>
-
-                        <button x-show="!isVideo" @click="downloadCurrent()"
+                        <button @click="downloadCurrent()"
                             :disabled="texts.length === 0 || loading"
                             class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#0071c5] text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-[#005ea3] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                            <i class="fa-solid fa-download"></i> Download This
-                        </button>
-
-                        <button x-show="isVideo" @click="downloadVideo()"
-                            :disabled="isProcessingVideo"
-                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#0071c5] text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-[#005ea3] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                            <template x-if="!isProcessingVideo">
-                                <span><i class="fa-solid fa-download mr-1"></i> Download Video</span>
-                            </template>
-                            <template x-if="isProcessingVideo">
-                                <span><i class="fa-solid fa-spinner fa-spin mr-1"></i> Processing...</span>
-                            </template>
+                            <i class="fa-solid fa-download"></i>
+                            Download This
                         </button>
                     </div>
                 </div>
@@ -235,7 +188,7 @@
                 <div class="lg:col-span-4 space-y-4">
 
                     
-                    <div x-show="!isVideo" class="bg-white rounded-2xl shadow-sm p-4 sm:p-5">
+                    <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-5">
                         <div class="flex justify-between items-center mb-3">
                             <h3 class="text-sm font-bold text-gray-700 flex items-center gap-2">
                                 <i class="fa-solid fa-text-height text-[#0071c5]"></i>
@@ -256,7 +209,7 @@
                     </div>
 
                     
-                    <div x-show="!isVideo" class="bg-white rounded-2xl shadow-sm p-4 sm:p-5">
+                    <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-5">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-sm font-bold text-gray-700 flex items-center gap-2">
                                 <i class="fa-solid fa-palette text-[#0071c5]"></i>
@@ -308,69 +261,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <div x-show="isVideo" class="space-y-4">
-
-                        
-                        <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-5">
-                            <h3 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-                                <i class="fa-solid fa-phone text-[#0071c5]"></i> Box Text / Number
-                            </h3>
-                            <input type="text" x-model="videoBox.text"
-                                @input="renderVideoOverlay()"
-                                placeholder="e.g. +880 1234-567890"
-                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-[#0071c5] focus:outline-none focus:ring-2 focus:ring-[#0071c5]/10">
-                        </div>
-
-                        
-                        <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-5">
-                            <h3 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2">
-                                <i class="fa-solid fa-palette text-[#0071c5]"></i> Box Style
-                            </h3>
-
-                            
-                            <div class="mb-4">
-                                <label class="block text-xs font-medium text-gray-500 mb-1.5">Box Background</label>
-                                <div class="flex items-center gap-2">
-                                    <input type="color" x-model="videoBox.bgColor" @input="renderVideoOverlay()"
-                                        class="w-12 h-12 rounded-lg border border-gray-300 cursor-pointer p-0.5 shrink-0">
-                                    <input type="text" x-model="videoBox.bgColor" @input="renderVideoOverlay()"
-                                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm uppercase font-mono focus:border-[#0071c5] focus:outline-none"
-                                        maxlength="7">
-                                </div>
-                            </div>
-
-                            
-                            <div class="mb-4">
-                                <label class="block text-xs font-medium text-gray-500 mb-1.5">
-                                    Box Opacity: <span class="text-[#0071c5] font-bold" x-text="Math.round(videoBox.bgOpacity * 100) + '%'"></span>
-                                </label>
-                                <input type="range" x-model="videoBox.bgOpacity" min="0" max="1" step="0.05"
-                                    @input="renderVideoOverlay()" class="w-full accent-[#0071c5]">
-                            </div>
-
-                            
-                            <div class="mb-4">
-                                <label class="block text-xs font-medium text-gray-500 mb-1.5">
-                                    Text Size: <span class="text-[#0071c5] font-bold" x-text="videoBox.fontSize + 'px'"></span>
-                                </label>
-                                <input type="range" x-model="videoBox.fontSize" min="10" max="80" step="1"
-                                    @input="renderVideoOverlay()" class="w-full accent-[#0071c5]">
-                            </div>
-
-                            
-                            <div class="mb-1">
-                                <label class="block text-xs font-medium text-gray-500 mb-1.5">Text Color</label>
-                                <div class="flex items-center gap-2">
-                                    <input type="color" x-model="videoBox.textColor" @input="renderVideoOverlay()"
-                                        class="w-12 h-12 rounded-lg border border-gray-300 cursor-pointer p-0.5 shrink-0">
-                                    <input type="text" x-model="videoBox.textColor" @input="renderVideoOverlay()"
-                                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm uppercase font-mono focus:border-[#0071c5] focus:outline-none"
-                                        maxlength="7">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                 </div>
             </div>
@@ -382,14 +272,13 @@
 
 <?php
 $mediaData = $asset->media
+->where('media_type', 'image')
 ->values()
 ->map(fn($m) => [
 'id' => $m->id,
-'type' => $m->media_type,
-'base64_url' => $m->media_type === 'image' ? route('drive.media.base64', $m->id) : null,
-'stream_url' => $m->media_type === 'video' ? route('drive.media.stream', $m->id) : null,
-'thumbnail' => $m->media_type === 'image' ? $m->url : null,
-'original_name' => $m->file_original_name ?? 'media',
+'base64_url' => route('drive.media.base64', $m->id),
+'thumbnail' => $m->url,
+'original_name' => $m->file_original_name ?? 'image',
 ]);
 ?>
 
@@ -412,27 +301,6 @@ $mediaData = $asset->media
             dragOffsetX: 0,
             dragOffsetY: 0,
             currentTextInput: '',
-            // ── Video state ──────────────────────────────────────
-            isVideo: false,
-            currentVideoUrl: '',
-            videoBoxPosition: {}, // index → {xPercent, yPercent}
-            isProcessingVideo: false,
-            videoProcessProgress: '',
-
-            videoBox: {
-                visible: true,
-                text: '',
-                bgColor: '#000000',
-                bgOpacity: 0.6,
-                fontSize: 28,
-                textColor: '#ffffff',
-                xPercent: 50, // center % of video width
-                yPercent: 85, // near bottom %
-            },
-
-            isDraggingBox: false,
-            boxDragOffsetX: 0,
-            boxDragOffsetY: 0,
 
             downloadModalOpen: false,
             selectedForDownload: [],
@@ -456,37 +324,18 @@ $mediaData = $asset->media
             },
 
             quickColors: ['#ffffff', '#000000', '#ff0000', '#ffff00', '#00ff00', '#0071c5', '#ff6b35', '#f7931e', '#9b59b6', '#2ecc71'],
-            get boxStyle() {
-                return `
-        left: ${this.videoBox.xPercent}%;
-        top: ${this.videoBox.yPercent}%;
-        transform: translate(-50%, -50%);
-        background: ${this.hexToRgba(this.videoBox.bgColor, this.videoBox.bgOpacity)};
-        white-space: nowrap;
-        cursor: ${this.isDraggingBox ? 'grabbing' : 'grab'};   
-    `;
-            },
-
-            get textStyle() {
-                return `
-        font-size: ${this.videoBox.fontSize}px;
-        color: ${this.videoBox.textColor};
-        font-weight: bold;
-        white-space: nowrap;
-    `;
-            },
 
             async init() {
                 this.canvas = document.getElementById('editor-canvas');
                 this.ctx = this.canvas.getContext('2d');
 
                 window.addEventListener('resize', () => {
-                    if (!this.loading && this.baseImage && !this.isVideo) {
+                    if (!this.loading && this.baseImage) {
                         this.render();
                     }
                 });
 
-                await this.switchMedia(0);
+                await this.loadImage(0);
             },
 
             isImageEdited(index) {
@@ -501,11 +350,7 @@ $mediaData = $asset->media
                 }
                 return false;
             },
-            onVideoLoaded(e) {
-                this.loading = false;
-                console.log('Video loaded, videoBox:', this.videoBox);
-                this.renderVideoOverlay();
-            },
+
             openDownloadModal() {
                 this.deselectText();
                 this.saveTexts();
@@ -534,11 +379,17 @@ $mediaData = $asset->media
                 this.style.color = '#ffffff';
                 this.updateSelected();
             },
-
             async loadImage(index) {
                 this.loading = true;
-                this.deselectText();
-                this.texts = this.allTexts[index] ? [...this.allTexts[index]] : [];
+
+                // ✅ আগে texts set করো
+                this.texts = this.allTexts[index] ?
+                    JSON.parse(JSON.stringify(this.allTexts[index])) :
+                    [];
+
+                // ✅ তারপর deselect করো (render call ছাড়া)
+                this.selectedIndex = null;
+                this.currentTextInput = '';
 
                 if (this.imageCache[index]) {
                     this.setImage(this.imageCache[index]);
@@ -555,7 +406,6 @@ $mediaData = $asset->media
                     this.loading = false;
                 }
             },
-
             setImage(base64) {
                 const img = new Image();
                 img.onload = () => {
@@ -563,7 +413,6 @@ $mediaData = $asset->media
 
                     const container = document.getElementById('canvas-container');
                     const maxW = container ? (container.clientWidth - 32) : Math.min(850, window.innerWidth - 32);
-
                     const scale = img.width > maxW ? maxW / img.width : 1;
 
                     this.canvas.width = img.width * scale;
@@ -573,6 +422,8 @@ $mediaData = $asset->media
                     this.canvas.dataset.origH = img.height;
 
                     this.loading = false;
+
+                    // ✅ এখানে log করো
                     this.render();
                 };
                 img.src = base64;
@@ -688,71 +539,16 @@ $mediaData = $asset->media
             saveTexts() {
                 this.allTexts[this.activeIndex] = JSON.parse(JSON.stringify(this.texts));
             },
+            async switchImage(index) {
+                this.saveTexts();
 
-            async switchMedia(index) {
-                if (!this.isVideo) {
-                    this.saveTexts();
-                } else {
-                    this.saveVideoBox();
-                }
-
-                const targetMedia = MEDIA_DATA[index];
-                const targetIsVideo = targetMedia.type === 'video';
-
-                if (!targetIsVideo && !this.allTexts[index] && this.texts.length > 0) {
+                if (!this.allTexts[index] && this.texts.length > 0) {
                     this.allTexts[index] = JSON.parse(JSON.stringify(this.texts));
                 }
 
                 this.activeIndex = index;
-                this.isVideo = targetIsVideo;
+                await this.loadImage(index);
 
-                if (this.isVideo) {
-                    this.loading = true;
-                    this.currentVideoUrl = targetMedia.stream_url;
-
-                    if (this.videoBoxPosition[index]) {
-                        this.videoBox = {
-                            ...this.videoBox,
-                            ...this.videoBoxPosition[index]
-                        };
-                    } else {
-                        this.videoBox.xPercent = 50;
-                        this.videoBox.yPercent = 85;
-                    }
-
-                } else {
-                    await this.loadImage(index);
-
-                    const imageTexts = this.allTexts[index];
-                    if (imageTexts && imageTexts.length > 0) {
-                        this.style = {
-                            ...imageTexts[imageTexts.length - 1].style
-                        };
-                    }
-                }
-            },
-
-            saveVideoBox() {
-                if (this.activeIndex === null) return;
-                this.videoBoxPosition[this.activeIndex] = {
-                    ...this.videoBox
-                };
-            },
-
-            onVideoLoaded(e) {
-                this.loading = false;
-                this.renderVideoOverlay();
-            },
-
-            renderVideoOverlay() {
-                this.saveVideoBox();
-            },
-
-            hexToRgba(hex, opacity) {
-                const r = parseInt(hex.slice(1, 3), 16);
-                const g = parseInt(hex.slice(3, 5), 16);
-                const b = parseInt(hex.slice(5, 7), 16);
-                return `rgba(${r}, ${g}, ${b}, ${opacity})`;
             },
 
             onMouseDown(e) {
@@ -814,71 +610,7 @@ $mediaData = $asset->media
                 }
                 this.isDragging = false;
             },
-            onBoxMouseDown(e) {
-                e.preventDefault();
-                this.isDraggingBox = true;
 
-                const wrapper = document.getElementById('video-wrapper');
-                const rect = wrapper.getBoundingClientRect();
-
-                let clientX = e.clientX,
-                    clientY = e.clientY;
-                if (e.touches && e.touches.length > 0) {
-                    clientX = e.touches[0].clientX;
-                    clientY = e.touches[0].clientY;
-                }
-
-                const boxX = (this.videoBox.xPercent / 100) * rect.width;
-                const boxY = (this.videoBox.yPercent / 100) * rect.height;
-
-                this.boxDragOffsetX = (clientX - rect.left) - boxX;
-                this.boxDragOffsetY = (clientY - rect.top) - boxY;
-
-                const onMove = (ev) => this.onBoxMouseMove(ev);
-                const onUp = () => {
-                    this.isDraggingBox = false;
-                    this.saveVideoBox();
-                    window.removeEventListener('mousemove', onMove);
-                    window.removeEventListener('mouseup', onUp);
-                    window.removeEventListener('touchmove', onMove);
-                    window.removeEventListener('touchend', onUp);
-                };
-
-                window.addEventListener('mousemove', onMove);
-                window.addEventListener('mouseup', onUp);
-                window.addEventListener('touchmove', onMove, {
-                    passive: false
-                });
-                window.addEventListener('touchend', onUp);
-            },
-
-            onBoxMouseMove(e) {
-                if (!this.isDraggingBox) return;
-                e.preventDefault?.();
-
-                const wrapper = document.getElementById('video-wrapper');
-                const rect = wrapper.getBoundingClientRect();
-
-                let clientX = e.clientX,
-                    clientY = e.clientY;
-                if (e.touches && e.touches.length > 0) {
-                    clientX = e.touches[0].clientX;
-                    clientY = e.touches[0].clientY;
-                }
-
-                const newX = clientX - rect.left - this.boxDragOffsetX;
-                const newY = clientY - rect.top - this.boxDragOffsetY;
-
-                let xPercent = (newX / rect.width) * 100;
-                let yPercent = (newY / rect.height) * 100;
-
-                // boundaries
-                xPercent = Math.max(2, Math.min(98, xPercent));
-                yPercent = Math.max(2, Math.min(98, yPercent));
-
-                this.videoBox.xPercent = xPercent;
-                this.videoBox.yPercent = yPercent;
-            },
             getCanvasPos(e) {
                 const rect = this.canvas.getBoundingClientRect();
 
@@ -979,56 +711,7 @@ $mediaData = $asset->media
                 this.isDownloading = false;
                 this.downloadModalOpen = false;
                 this.downloadProgress = '';
-            },
-            async downloadVideo() {
-                this.saveVideoBox();
-                this.isProcessingVideo = true;
-
-                const videoEl = document.getElementById('editor-video');
-                const wrapper = document.getElementById('video-wrapper');
-                const displayedWidth = wrapper.clientWidth; // ✅ actual rendered width (responsive safe)
-
-                const mediaId = MEDIA_DATA[this.activeIndex].id;
-
-                try {
-                    const response = await fetch(`/assets/media/${mediaId}/process-video`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        },
-                        body: JSON.stringify({
-                            text: this.videoBox.text,
-                            bg_color: this.videoBox.bgColor,
-                            bg_opacity: this.videoBox.bgOpacity,
-                            font_size: this.videoBox.fontSize,
-                            text_color: this.videoBox.textColor,
-                            x_percent: this.videoBox.xPercent,
-                            y_percent: this.videoBox.yPercent,
-                            displayed_width: displayedWidth, // ✅ নতুন
-                        }),
-                    });
-
-                    if (!response.ok) {
-                        const err = await response.json();
-                        throw new Error(err.message || 'Processing failed');
-                    }
-
-                    const blob = await response.blob();
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = (MEDIA_DATA[this.activeIndex].original_name || 'video') + '_edited.mp4';
-                    link.click();
-                    URL.revokeObjectURL(url);
-
-                } catch (e) {
-                    alert('Video processing failed: ' + e.message);
-                    console.error(e);
-                } finally {
-                    this.isProcessingVideo = false;
-                }
-            },
+            }
         };
     }
 </script>
