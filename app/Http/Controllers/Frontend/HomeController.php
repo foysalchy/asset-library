@@ -12,35 +12,35 @@ use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
-    public function index()
-    {
-        $user = Auth::user();
-        $featuredCampaigns = Campaign::with('project')->latest()->take(4)->get();
+public function index()
+{
+    $user = Auth::user();
 
-        $latestAssets = Asset::with('media')
-            ->where('status', 'active')
-            ->orderBy('sort_order', 'asc')
-            ->get();
-        $recommendedAssets = Asset::with('media')->where('status', 'active')->inRandomOrder()->take(8)->get();
+    $latestAssets = Asset::with(['media' => fn($q) => $q->where('media_type', 'image')->orderBy('sort_order')->limit(1)])
+        ->where('status', 'active')
+        ->orderBy('sort_order')
+        ->limit(8)
+        ->get();
 
-        $concerns = Project::CONCERNS;
-        $projects = Project::where('status', 'active')->get();
-        $assetTypes = AssetType::all();
+    $concerns = Project::CONCERNS;
 
-        $allLanguages = Campaign::pluck('languages')->flatten()->unique()->filter();
+    $projects = Project::where('status', 'active')
+        ->select('id', 'name')
+        ->orderBy('name')
+        ->get();
 
-        // dd($latestAssets);
-        return view('frontend.index', compact(
-            'featuredCampaigns',
-            'latestAssets',
-            'recommendedAssets',
-            'concerns',
-            'projects',
-            'assetTypes',
-            'allLanguages',
-            'user'
-        ));
-    }
+    $assetTypes = AssetType::select('id', 'name')->orderBy('name')->get();
+
+
+
+    return view('frontend.index', compact(
+        'latestAssets',
+        'concerns',
+        'projects',
+        'assetTypes',
+        'user'
+    ));
+}
     public function campaignDetails($slug)
     {
         $campaign = Campaign::where('slug', $slug)->firstOrFail();

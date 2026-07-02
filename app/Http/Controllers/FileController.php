@@ -332,7 +332,6 @@ public function processVideo(Request $request, AssetMedia $media)
     $videoWidth  = $videoStream->get('width');
     $videoHeight = $videoStream->get('height');
     
-    // অরিজিনাল ভিডিওর Bitrate বের করা হচ্ছে
     $bitRate = $videoStream->has('bit_rate') ? $videoStream->get('bit_rate') : null;
 
     Log::info("Video dimensions: {$videoWidth}x{$videoHeight}, Bitrate: {$bitRate}");
@@ -399,7 +398,6 @@ public function processVideo(Request $request, AssetMedia $media)
         '-preset', 'slow',
     ];
 
-    // ✅ অরিজিনাল ভিডিওর সমান বিটরেট (Bitrate) ফোর্স করা হচ্ছে
     if ($bitRate) {
         $processArgs = array_merge($processArgs, [
             '-b:v', $bitRate,
@@ -412,12 +410,11 @@ public function processVideo(Request $request, AssetMedia $media)
 
     $processArgs = array_merge($processArgs, [
         '-codec:a', 'copy',
-        '-y', basename($tempOutput), // শুধু ফাইলের নাম
+        '-y', basename($tempOutput), /
     ]);
 
     $process = new \Symfony\Component\Process\Process($processArgs);
     
-    // 🔥 THE FIX: Process-কে বলে দেওয়া হচ্ছে 'temp' ফোল্ডারের ভেতর রান করতে
     $process->setWorkingDirectory(dirname($tempInput)); 
 
     $process->setTimeout(300);
