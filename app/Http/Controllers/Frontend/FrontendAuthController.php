@@ -73,7 +73,7 @@ class FrontendAuthController extends Controller
         $role = Role::where('name', 'frontend_user')->first();
         if ($role) $user->roles()->attach($role->id);
         return redirect()->route('signin')
-            ->with('success', 'Your account has been created successfully! Please wait for admin approval before logging in.');
+            ->with('success', 'Your account has been created successfully.');
     }
 
     public function showSignin()
