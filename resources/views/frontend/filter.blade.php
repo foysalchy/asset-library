@@ -69,15 +69,16 @@
                         <select  id="project-select" name="project" onchange="this.form.submit()" aria-label="project"
                             class="w-full appearance-none px-4 py-3 text-sm text-gray-700 bg-white hover:bg-gray-50 border-none outline-none cursor-pointer">
                             <option value="">Project</option>
-                            @foreach ($projects as $project)
-                                @if($request->filled('concern') && $request->concern !== $project->concern)
-                                    
-                            <option data-key="{{ $project->concern }}" value="{{ $project->id }}"
-                                {{ request('project') == $project->id ? 'selected' : '' }}>{{ $project->name }}
-                            </option>
-                            
-                            @endif
-                            @endforeach
+                           @foreach ($projects as $project)
+    @if(!request()->filled('concern') || request('concern') === $project->concern)
+        <option
+            data-key="{{ $project->concern }}"
+            value="{{ $project->id }}"
+            {{ request('project') == $project->id ? 'selected' : '' }}>
+            {{ $project->name }}
+        </option>
+    @endif
+@endforeach
                         </select>
                         <i
                             class="fas fa-chevron-right text-gray-400 text-[10px] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
