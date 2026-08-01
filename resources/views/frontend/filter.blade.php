@@ -37,7 +37,7 @@
                 <div class="space-y-1">
                     <!-- Topics -->
                     <div class="relative border border-gray-200">
-                        <select name="concern" onchange="this.form.submit()" aria-label="concern"
+                        <select id="concern-select" name="concern" onchange="this.form.submit()" aria-label="concern"
                             class="w-full appearance-none px-4 py-3 text-sm text-gray-700 bg-white hover:bg-gray-50 border-none outline-none cursor-pointer">
                             <option value="">Concern</option>
                             @foreach (\App\Models\Project::CONCERNS as $key => $label)
@@ -52,7 +52,7 @@
 
                     <!-- Asset Type -->
                     <div class="relative border border-gray-200">
-                        <select name="type" onchange="this.form.submit()" aria-label="type"
+                        <select id="type-select" name="type" onchange="this.form.submit()" aria-label="type"
                             class="w-full appearance-none px-4 py-3 text-sm text-gray-700 bg-white hover:bg-gray-50 border-none outline-none cursor-pointer">
                             <option value="">Asset Type</option>
                             @foreach ($assetTypes as $type)
@@ -66,11 +66,11 @@
 
                     <!-- Project -->
                     <div class="relative border border-gray-200">
-                        <select name="project" onchange="this.form.submit()" aria-label="project"
+                        <select  id="project-select" name="project" onchange="this.form.submit()" aria-label="project"
                             class="w-full appearance-none px-4 py-3 text-sm text-gray-700 bg-white hover:bg-gray-50 border-none outline-none cursor-pointer">
                             <option value="">Project</option>
                             @foreach ($projects as $project)
-                            <option value="{{ $project->id }}"
+                            <option data-key="{{ $project->concern }}" value="{{ $project->id }}"
                                 {{ request('project') == $project->id ? 'selected' : '' }}>{{ $project->name }}
                             </option>
                             @endforeach
@@ -485,3 +485,30 @@ function handleDownload() {
     });
 </script>
 @endsection
+@push('scripts')
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const concernSelect = document.getElementById("concern-select");
+    const projectSelect = document.getElementById("project-select");
+
+    concernSelect.addEventListener("change", function () {
+        const selectedConcern = this.value;
+
+        projectSelect.querySelectorAll("option").forEach(function (option) {
+            const projectConcern = option.dataset.key;
+
+            if (selectedConcern === "" || projectConcern === selectedConcern) {
+                option.hidden = false;
+            } else {
+                option.hidden = true;
+            }
+        });
+
+        // Reset selected project if it becomes hidden
+        if (projectSelect.selectedOptions.length > 0 && projectSelect.selectedOptions[0].hidden) {
+            projectSelect.value = "";
+        }
+    });
+});
+</script>
+@endpush
