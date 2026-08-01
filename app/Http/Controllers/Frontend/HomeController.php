@@ -26,7 +26,7 @@ class HomeController extends Controller
         $concerns = Project::CONCERNS;
 
         $projects = Project::where('status', 'active')
-            ->select('id', 'name')
+          
             ->orderBy('name')
             ->get();
 
