@@ -162,16 +162,28 @@
 @endsection
 @push('scripts')
 <script>
-    $('#concern-select').change(function() {
-        var selectedConcern = $(this).val();
-        $('#project-select option').each(function() {
-            var projectConcern = $(this).data('key');
-            if (selectedConcern === '' || projectConcern === selectedConcern) {
-                $(this).show();
+document.addEventListener("DOMContentLoaded", function () {
+    const concernSelect = document.getElementById("concern-select");
+    const projectSelect = document.getElementById("project-select");
+
+    concernSelect.addEventListener("change", function () {
+        const selectedConcern = this.value;
+
+        projectSelect.querySelectorAll("option").forEach(function (option) {
+            const projectConcern = option.dataset.key;
+
+            if (selectedConcern === "" || projectConcern === selectedConcern) {
+                option.hidden = false;
             } else {
-                $(this).hide();
+                option.hidden = true;
             }
         });
+
+        // Reset selected project if it becomes hidden
+        if (projectSelect.selectedOptions.length > 0 && projectSelect.selectedOptions[0].hidden) {
+            projectSelect.value = "";
+        }
     });
+});
 </script>
 @endpush
