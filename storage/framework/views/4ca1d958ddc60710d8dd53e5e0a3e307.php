@@ -1,14 +1,14 @@
-@php
+<?php
     $siteSetting = \App\Models\SiteSetting::first();
 
-@endphp
+?>
 
 <header class="w-full bg-[#003b7a] text-white sticky top-0 z-50 shadow-md" x-data="{ mobileMenu: false }">
     <div class="container mx-auto px-4 lg:px-6 flex justify-between items-center py-2">
         <!-- ── LOGO ── -->
         <div class="flex items-center gap-3 shrink-0">
-            <a href="{{ route('home.index') }}" class=" px-2 py-2 flex items-center">
-                <img src="{{ $siteSetting->logo_url }}" alt="Bhaiya Asset" class="  w-auto h-[40px] block" />
+            <a href="<?php echo e(route('home.index')); ?>" class=" px-2 py-2 flex items-center">
+                <img src="<?php echo e($siteSetting->logo_url); ?>" alt="Bhaiya Asset" class="  w-auto h-[40px] block" />
             </a>
 
         </div>
@@ -20,79 +20,80 @@
         <!-- ── NAV ── -->
         <nav class="hidden lg:flex items-stretch gap-0">
             <!-- Home (active) -->
-            <a href="{{ route('home.index') }}"
-                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 border-b-2 text-white {{ request()->routeIs('home.index') ? 'border-white' : 'border-transparent hover:border-white/40' }}">
+            <a href="<?php echo e(route('home.index')); ?>"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 border-b-2 text-white <?php echo e(request()->routeIs('home.index') ? 'border-white' : 'border-transparent hover:border-white/40'); ?>">
                 <i class="fas fa-home text-lg"></i>
                 <span class="text-sm tracking-wide">Home</span>
             </a>
 
             <!-- Campaigns -->
-            <!-- <a href="{{ route('home.filter', ['section' => 'campaigns']) }}"
+            <!-- <a href="<?php echo e(route('home.filter', ['section' => 'campaigns'])); ?>"
                 class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                 <i class="fas fa-bullhorn text-lg"></i>
                 <span class="text-sm tracking-wide flex items-center gap-1">Campaigns </span>
             </a> -->
 
             <!-- Assets -->
-            <a href="{{ route('home.filter', ['section' => 'assets', 'sort' => 'latest']) }}"
-                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40 {{ request()->fullUrlIs(route('home.filter', ['section' => 'assets', 'sort' => 'latest'])) ? 'border-white' : 'border-transparent hover:border-white/40' }}">
+            <a href="<?php echo e(route('home.filter', ['section' => 'assets', 'sort' => 'latest'])); ?>"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40 <?php echo e(request()->fullUrlIs(route('home.filter', ['section' => 'assets', 'sort' => 'latest'])) ? 'border-white' : 'border-transparent hover:border-white/40'); ?>">
                 <i class="fas fa-box text-lg"></i>
                 <span class="text-sm tracking-wide flex items-center gap-1">Assets </span>
             </a>
 
             <!-- Brand Assets -->
-            <a href="{{ route('brand.index') }}"
-                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40 {{ request()->routeIs('brand.index') ? 'border-white' : 'border-transparent hover:border-white/40' }}">
+            <a href="<?php echo e(route('brand.index')); ?>"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40 <?php echo e(request()->routeIs('brand.index') ? 'border-white' : 'border-transparent hover:border-white/40'); ?>">
                 <i class="fas fa-palette text-lg"></i>
                 <span class="text-sm tracking-wide">Brand Assets</span>
             </a>
         </nav>
         <nav class="hidden lg:flex items-stretch gap-0">
 
-            @guest
-                <a href="{{ route('frontend.signin') }}"
+            <?php if(auth()->guard()->guest()): ?>
+                <a href="<?php echo e(route('frontend.signin')); ?>"
                     class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                     <i class="fas fa-sign-in-alt text-lg"></i>
                     <span class="text-sm tracking-wide">Sign In</span>
                 </a>
 
-                <a href="{{ route('frontend.signup') }}"
+                <a href="<?php echo e(route('frontend.signup')); ?>"
                     class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                     <i class="fas fa-user-plus text-lg"></i>
                     <span class="text-sm tracking-wide">Sign Up</span>
                 </a>
-            @endguest
+            <?php endif; ?>
 
-            @auth
-                <a href="{{ route('profile.index') }}"
-                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40 {{ request()->routeIs('profile.index') ? 'border-white' : 'border-transparent hover:border-white/40' }}">
+            <?php if(auth()->guard()->check()): ?>
+                <a href="<?php echo e(route('profile.index')); ?>"
+                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40 <?php echo e(request()->routeIs('profile.index') ? 'border-white' : 'border-transparent hover:border-white/40'); ?>">
 
 
-                    <img src="{{ Auth::user()->avatar_url ?? asset('./images/user/images.png') }}" alt="Profile"
+                    <img src="<?php echo e(Auth::user()->avatar_url ?? asset('./images/user/images.png')); ?>" alt="Profile"
                         class="w-6 h-6 rounded-full object-cover border border-white/50">
 
-                    <span class="text-sm tracking-wide">{{ Auth::user()->name }}</span>
+                    <span class="text-sm tracking-wide"><?php echo e(Auth::user()->name); ?></span>
                 </a>
 
-                <form id="logout-form" action="{{ route('frontend.logout') }}" method="POST" class="hidden">
-                    @csrf
+                <form id="logout-form" action="<?php echo e(route('frontend.logout')); ?>" method="POST" class="hidden">
+                    <?php echo csrf_field(); ?>
                 </form>
                 <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                     class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-red-400 transition-colors border-b-2 border-transparent hover:border-white/40">
                     <i class="fas fa-power-off text-lg"></i>
                     <span class="text-sm tracking-wide">Logout</span>
                 </a>
-            @endauth
-            <a href="{{ route('bookmark.list') }}"
-                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40 {{ request()->routeIs('bookmark.list') ? 'border-white' : 'border-transparent hover:border-white/40' }}">
+            <?php endif; ?>
+            <a href="<?php echo e(route('bookmark.list')); ?>"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40 <?php echo e(request()->routeIs('bookmark.list') ? 'border-white' : 'border-transparent hover:border-white/40'); ?>">
                 <div class="relative">
                     <i class="fa-regular fa-bookmark text-lg"></i>
-                    @if ($bookmarkCount > 0)
+                    <?php if($bookmarkCount > 0): ?>
                         <span
                             class="absolute -top-2 -right-2 bg-white text-[#003b7a] text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                            {{ $bookmarkCount > 99 ? '99+' : $bookmarkCount }}
+                            <?php echo e($bookmarkCount > 99 ? '99+' : $bookmarkCount); ?>
+
                         </span>
-                    @endif
+                    <?php endif; ?>
                 </div>
                 <span class="text-sm tracking-wide flex items-center gap-1">Bookmark</span>
             </a>
@@ -101,12 +102,13 @@
                     class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                     <div class="relative">
                         <i class="fa-regular fa-bell text-lg"></i>
-                        @if ($unreadCount > 0)
+                        <?php if($unreadCount > 0): ?>
                             <span id="notifBadge"
                                 class="absolute -top-2 -right-2 bg-white text-[#003b7a] text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                                {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                                <?php echo e($unreadCount > 99 ? '99+' : $unreadCount); ?>
+
                             </span>
-                        @endif
+                        <?php endif; ?>
                     </div>
                     <span class="text-sm tracking-wide">Notification</span>
                 </button>
@@ -118,71 +120,73 @@
                     <!-- Header -->
                     <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                         <span class="text-sm font-semibold text-gray-700">Notifications</span>
-                        @if ($unreadCount > 0)
+                        <?php if($unreadCount > 0): ?>
                             <button onclick="markAllRead()"
                                 class="text-[11px] text-[#0071c5] font-semibold hover:underline">
                                 Mark all as read
                             </button>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
                     <!-- List -->
                     <div class="max-h-80 overflow-y-auto divide-y divide-gray-50">
-                        @forelse($notifications as $notif)
-                            @php
+                        <?php $__empty_1 = true; $__currentLoopData = $notifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notif): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <?php
                                 // check notification by user
                                 $userId = auth()->id();
                                 $readBy = $notif->read_by ?? []; //
                                 $isRead = in_array($userId, $readBy);
-                            @endphp
+                            ?>
 
-                            <a href="{{ $notif->url }}" onclick="markRead(event, {{ $notif->id }}, '{{ $notif->url }}')"
-                                id="notif-{{ $notif->id }}" {{-- unread --}}
+                            <a href="<?php echo e($notif->url); ?>" onclick="markRead(event, <?php echo e($notif->id); ?>, '<?php echo e($notif->url); ?>')"
+                                id="notif-<?php echo e($notif->id); ?>" 
                                 class="flex items-start gap-3 px-4 py-4 transition-all border-b border-gray-100
-                                    {{ !$isRead ? 'bg-[#f0f7ff] border-l-4 border-l-[#0071c5]' : 'bg-white opacity-50' }} hover:bg-gray-50">
+                                    <?php echo e(!$isRead ? 'bg-[#f0f7ff] border-l-4 border-l-[#0071c5]' : 'bg-white opacity-50'); ?> hover:bg-gray-50">
 
                                 <div
                                     class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5
-                                        {{ $notif->type === 'asset' ? 'bg-blue-100 text-blue-600' : 'bg-teal-100 text-teal-600' }}">
+                                        <?php echo e($notif->type === 'asset' ? 'bg-blue-100 text-blue-600' : 'bg-teal-100 text-teal-600'); ?>">
                                     <i
-                                        class="fa-solid {{ $notif->type === 'asset' ? 'fa-file' : 'fa-bullhorn' }} text-xs"></i>
+                                        class="fa-solid <?php echo e($notif->type === 'asset' ? 'fa-file' : 'fa-bullhorn'); ?> text-xs"></i>
                                 </div>
 
                                 <div class="flex-1 min-w-0">
                                     <p
-                                        class="text-[13px] leading-snug {{ !$isRead ? 'font-bold text-gray-900' : 'font-normal text-gray-500' }}">
-                                        {{ $notif->title }}
+                                        class="text-[13px] leading-snug <?php echo e(!$isRead ? 'font-bold text-gray-900' : 'font-normal text-gray-500'); ?>">
+                                        <?php echo e($notif->title); ?>
+
                                     </p>
                                     <p class="text-[11px] text-gray-400 mt-1">
-                                        {{ $notif->created_at->diffForHumans() }}
+                                        <?php echo e($notif->created_at->diffForHumans()); ?>
+
                                     </p>
                                 </div>
 
-                                @if (!$isRead)
+                                <?php if(!$isRead): ?>
                                     <div class="unread-dot w-2.5 h-2.5 bg-[#0071c5] rounded-full shrink-0 mt-2"></div>
-                                @endif
+                                <?php endif; ?>
                             </a>
-                        @empty
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <div class="px-4 py-10 text-center text-sm text-gray-400">
                                 No notifications yet
                             </div>
-                        @endforelse
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
-            @if(auth()->user()?->isSuperAdmin())
-                <a href="{{ route('dashboard') }}"
+            <?php if(auth()->user()?->isSuperAdmin()): ?>
+                <a href="<?php echo e(route('dashboard')); ?>"
                     class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                     <i class="fa-solid fa-gauge text-lg"></i>
                     <span class="text-sm tracking-wide flex items-center gap-1">Admin Dashboard</span>
                 </a>
-            @else
-                <a href="{{ route('tickets.index') }}"
+            <?php else: ?>
+                <a href="<?php echo e(route('tickets.index')); ?>"
                     class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                     <i class="fa-regular fa-circle-question text-lg"></i>
                     <span class="text-sm tracking-wide flex items-center gap-1">Help</span>
                 </a>
-            @endif
+            <?php endif; ?>
         </nav>
         <!-- ── MOBILE NAV DRAWER (সব ডিভাইসে নিখুঁত কাজ করবে) ── -->
         <div x-show="mobileMenu" x-transition:enter="transition ease-out duration-300"
@@ -202,46 +206,47 @@
                 </div>
 
                 <div class="flex flex-col space-y-4 overflow-y-auto">
-                    <a href="{{ route('home.index') }}"
+                    <a href="<?php echo e(route('home.index')); ?>"
                         class="text-lg font-medium border-b border-white/10 pb-2">Home</a>
-                    <a href="{{ route('home.filter', ['section' => 'campaigns']) }}"
+                    <a href="<?php echo e(route('home.filter', ['section' => 'campaigns'])); ?>"
                         class="text-lg font-medium border-b border-white/10 pb-2">Campaigns</a>
-                    <a href="{{ route('home.filter', ['section' => 'assets', 'sort' => 'latest']) }}"
+                    <a href="<?php echo e(route('home.filter', ['section' => 'assets', 'sort' => 'latest'])); ?>"
                         class="text-lg font-medium border-b border-white/10 pb-2">Assets</a>
-                    <a href="{{ route('brand.index') }}" class="text-lg font-medium border-b border-white/10 pb-2">Brand
+                    <a href="<?php echo e(route('brand.index')); ?>" class="text-lg font-medium border-b border-white/10 pb-2">Brand
                         Assets</a>
 
                     <div class="pt-6 space-y-4">
-                        @guest
-                            <a href="{{ route('frontend.signin') }}" class="flex items-center gap-3"><i
+                        <?php if(auth()->guard()->guest()): ?>
+                            <a href="<?php echo e(route('frontend.signin')); ?>" class="flex items-center gap-3"><i
                                     class="fas fa-sign-in-alt"></i> Sign In</a>
-                        @endguest
-                        @auth
-                            <a href="{{ route('profile.index') }}" class="flex items-center gap-3">
-                                <img src="{{ Auth::user()->avatar_url ?? asset('./images/user/owner.jpg')}}"
+                        <?php endif; ?>
+                        <?php if(auth()->guard()->check()): ?>
+                            <a href="<?php echo e(route('profile.index')); ?>" class="flex items-center gap-3">
+                                <img src="<?php echo e(Auth::user()->avatar_url ?? asset('./images/user/owner.jpg')); ?>"
                                     class="w-8 h-8 rounded-full">
-                                <span>{{ Auth::user()->name }}</span>
+                                <span><?php echo e(Auth::user()->name); ?></span>
                             </a>
-                        @endauth
+                        <?php endif; ?>
 
-                        <a href="{{ route('bookmark.list') }}" class="flex items-center justify-between">
+                        <a href="<?php echo e(route('bookmark.list')); ?>" class="flex items-center justify-between">
                             <span><i class="fa-regular fa-bookmark mr-2"></i> Saved Items</span>
-                            @if($bookmarkCount > 0) <span
-                            class="bg-red-500 px-2 rounded-full text-xs">{{ $bookmarkCount }}</span> @endif
+                            <?php if($bookmarkCount > 0): ?> <span
+                            class="bg-red-500 px-2 rounded-full text-xs"><?php echo e($bookmarkCount); ?></span> <?php endif; ?>
                         </a>
 
-                        <a href="{{ route('tickets.index') }}" class="flex items-center gap-3"><i
+                        <a href="<?php echo e(route('tickets.index')); ?>" class="flex items-center gap-3"><i
                                 class="fa-regular fa-circle-question"></i> Help Center</a>
 
-                        @auth
+                        <?php if(auth()->guard()->check()): ?>
                             <button onclick="document.getElementById('logout-form').submit();"
                                 class="text-red-400 font-bold pt-4 text-left">
                                 <i class="fas fa-power-off mr-2"></i> Logout
                             </button>
-                        @endauth
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </header>
+<?php /**PATH C:\laragon\www\asset-library\resources\views/frontend/partials/header.blade.php ENDPATH**/ ?>
