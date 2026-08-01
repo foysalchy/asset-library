@@ -56,7 +56,7 @@
                     class="grid grid-cols-2 md:grid-cols-4 lg:flex items-center divide-x divide-gray-100 lg:divide-gray-200 border-b lg:border-b-0">
                     <div class="px-2 lg:px-5">
                         <label for="concern-select" class="sr-only">Filter by Concern</label>
-                        <select name="concern" aria-label="Filter by Concern"
+                        <select name="concern" id="concern-select" aria-label="Filter by Concern"
                             class="w-full outline-none text-[12px] lg:text-sm font-medium text-gray-600 bg-transparent py-3 lg:py-4">
                             <option value="">Concern</option>
                             @foreach ($concerns as $key => $name)
@@ -70,11 +70,11 @@
                     <!-- 2. Project -->
                     <div class="px-5">
                         <label for="project-select" class="sr-only">Filter by Project</label>
-                        <select name="project" aria-label="Filter by projetc"
+                        <select name="project" id="project-select" aria-label="Filter by project"
                             class="outline-none text-sm font-medium text-gray-600 bg-transparent cursor-pointer py-4 min-w-[90px]">
                             <option value="">Project</option>
                             @foreach ($projects as $project)
-                            <option value="{{ $project->id }}"
+                            <option value="{{ $project->id }}" data-key="{{$project->concern}}"
                                 {{ request('project') == $project->id ? 'selected' : '' }}>{{ $project->name }}
                             </option>
                             @endforeach
@@ -84,11 +84,11 @@
                     <!-- 3. Asset Type -->
                     <div class="px-5">
                         <label for="type-select" class="sr-only">Filter by Asset Type</label>
-                        <select name="type" aria-label="Filter by type"
+                        <select name="type" id="type-select" aria-label="Filter by type"
                             class="outline-none text-sm font-medium text-gray-600 bg-transparent cursor-pointer py-4 min-w-[100px]">
                             <option value="">Asset Type</option>
                             @foreach ($assetTypes as $type)
-                            <option value="{{ $type->id }}"
+                            <option  value="{{ $type->id }}"
                                 {{ request('type') == $type->id ? 'selected' : '' }}>
                                 {{ $type->name }}
                             </option>
@@ -160,3 +160,18 @@
 </section>
 
 @endsection
+@push('scripts')
+<script>
+    $('#concern-select').change(function() {
+        var selectedConcern = $(this).val();
+        $('#project-select option').each(function() {
+            var projectConcern = $(this).data('key');
+            if (selectedConcern === '' || projectConcern === selectedConcern) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+</script>
+@endpush
