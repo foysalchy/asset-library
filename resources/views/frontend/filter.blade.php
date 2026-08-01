@@ -39,7 +39,7 @@
                     <div class="relative border border-gray-200">
                         <select name="concern" onchange="this.form.submit()" aria-label="concern"
                             class="w-full appearance-none px-4 py-3 text-sm text-gray-700 bg-white hover:bg-gray-50 border-none outline-none cursor-pointer">
-                            <option value="">Topics</option>
+                            <option value="">Concern</option>
                             @foreach (\App\Models\Project::CONCERNS as $key => $label)
                             <option value="{{ $key }}" {{ request('concern') == $key ? 'selected' : '' }}>
                                 {{ $label }}
