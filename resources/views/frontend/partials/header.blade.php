@@ -8,7 +8,8 @@
         <!-- ── LOGO ── -->
         <div class="flex items-center gap-3 shrink-0">
             <a href="{{ route('home.index') }}" class=" px-2 py-2 flex items-center">
-                <img src="{{ $siteSetting->logo_url }}" style="  filter: brightness(0) invert(1);" alt="Bhaiya Asset" class="  w-auto h-[40px] block" />
+                <img src="{{ $siteSetting->logo_url }}" style="  filter: brightness(0) invert(1);" alt="Bhaiya Asset"
+                    class="  w-auto h-[40px] block" />
             </a>
 
         </div>
@@ -139,11 +140,11 @@
                             <a href="{{ $notif->url }}" onclick="markRead(event, {{ $notif->id }}, '{{ $notif->url }}')"
                                 id="notif-{{ $notif->id }}" {{-- unread --}}
                                 class="flex items-start gap-3 px-4 py-4 transition-all border-b border-gray-100
-                                    {{ !$isRead ? 'bg-[#f0f7ff] border-l-4 border-l-[#0071c5]' : 'bg-white opacity-50' }} hover:bg-gray-50">
+                                            {{ !$isRead ? 'bg-[#f0f7ff] border-l-4 border-l-[#0071c5]' : 'bg-white opacity-50' }} hover:bg-gray-50">
 
                                 <div
                                     class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5
-                                        {{ $notif->type === 'asset' ? 'bg-blue-100 text-blue-600' : 'bg-teal-100 text-teal-600' }}">
+                                                {{ $notif->type === 'asset' ? 'bg-blue-100 text-blue-600' : 'bg-teal-100 text-teal-600' }}">
                                     <i
                                         class="fa-solid {{ $notif->type === 'asset' ? 'fa-file' : 'fa-bullhorn' }} text-xs"></i>
                                 </div>
@@ -181,6 +182,12 @@
                     class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                     <i class="fa-regular fa-circle-question text-lg"></i>
                     <span class="text-sm tracking-wide flex items-center gap-1">Help</span>
+                </a>
+                <!-- Tutorial (Desktop) -->
+                <a href="javascript:void(0)" id="tutorial-trigger"
+                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
+                    <i class="fa-brands fa-readme text-lg"></i>
+                    <span class="text-sm tracking-wide">Tutorial</span>
                 </a>
             @endif
         </nav>
@@ -233,6 +240,12 @@
                         <a href="{{ route('tickets.index') }}" class="flex items-center gap-3"><i
                                 class="fa-regular fa-circle-question"></i> Help Center</a>
 
+                        <a href="javascript:void(0)" id="tutorial-trigger-mobile"
+                            class="text-lg font-medium border-b border-white/10 pb-2 flex items-center gap-2">
+                            <i class="fa-brands fa-readme"></i> Tutorial
+                        </a>
+
+
                         @auth
                             <button onclick="document.getElementById('logout-form').submit();"
                                 class="text-red-400 font-bold pt-4 text-left">
@@ -245,3 +258,109 @@
         </div>
     </div>
 </header>
+<!-- MARKETING POPUP WITH YOUTUBE VIDEO -->
+<div id="marketing-popup"
+    class="fixed inset-0 z-[1001] flex items-center justify-center bg-black/90 transition-opacity duration-700 opacity-0"
+    style="display: none;">
+
+    <!-- কন্টেইনারের সাইজ max-w-6xl বা 7xl করলে এটি বড় দেখাবে -->
+    <div class="relative w-full max-w-6xl px-4 animate-fade-in-up">
+
+        <!-- Close Button (ভিডিওর ঠিক উপরে ডানে রাখার জন্য পজিশন) -->
+        <button id="close-popup-btn"
+            class="absolute -top-12 right-4 text-white text-4xl hover:text-gray-300 transition-colors focus:outline-none">
+            &times;
+        </button>
+
+        <!-- Video Container (Responsive 16:9) -->
+        <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border-4 border-white/10">
+            <!-- এখানে id="popup-video" অবশ্যই থাকতে হবে -->
+            <iframe id="popup-video"
+                class="w-full h-full"
+                src="https://www.youtube.com/embed/0WxwVOItNFI?si=IdQzZGsZq7jzHrhH"
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const splash = document.getElementById("splash-screen");
+        const popup = document.getElementById("marketing-popup");
+        const closeBtn = document.getElementById("close-popup-btn");
+        const videoIframe = document.getElementById("popup-video");
+
+        const tutorialBtn = document.getElementById("tutorial-trigger");
+        const tutorialBtnMobile = document.getElementById("tutorial-trigger-mobile");
+
+        // ১. লগইন করা ইউজারের আইডি নেওয়া (Laravel থেকে)
+        const userId = "{{ auth()->id() }}";
+        const storageKey = "tutorial_seen_user_" + userId;
+
+        // ২. পপআপ দেখানোর ফাংশন
+        function showPopup() {
+            if (popup) {
+                popup.style.display = "flex";
+                setTimeout(() => {
+                    popup.classList.remove("opacity-0");
+                    popup.classList.add("opacity-100");
+                }, 100);
+            }
+        }
+
+        // ৩. অটো-পপআপ লজিক (লগইনের পর প্রথমবার)
+        function checkAutoPopup() {
+            // যদি ইউজার লগইন অবস্থায় থাকে এবং আগে পপআপ না দেখে থাকে
+            if (userId && !localStorage.getItem(storageKey)) {
+                showPopup();
+                // ব্রাউজারে সেভ করে রাখা যাতে পরে আর অটো না দেখায়
+                localStorage.setItem(storageKey, "true");
+            }
+        }
+
+        // ৪. স্প্ল্যাশ স্ক্রিন লজিক
+        if (splash) {
+            setTimeout(() => {
+                splash.classList.replace("opacity-100", "opacity-0");
+                setTimeout(() => {
+                    splash.style.display = "none";
+                    // স্প্ল্যাশ শেষ হওয়ার পর অটো পপআপ চেক করবে
+                    checkAutoPopup();
+                }, 1000);
+            }, 2500);
+        } else {
+            // স্প্ল্যাশ না থাকলে সরাসরি চেক করবে
+            checkAutoPopup();
+        }
+
+        // ৫. ম্যানুয়াল ক্লিক লজিক (বাটনে ক্লিক করলে সবসময় আসবে)
+        if (tutorialBtn) {
+            tutorialBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                showPopup();
+            });
+        }
+        if (tutorialBtnMobile) {
+            tutorialBtnMobile.addEventListener("click", (e) => {
+                e.preventDefault();
+                showPopup();
+            });
+        }
+
+        // ৬. ক্লোজ বাটন লজিক
+        if (closeBtn) {
+            closeBtn.addEventListener("click", () => {
+                popup.classList.replace("opacity-100", "opacity-0");
+                if (videoIframe) {
+                    let videoSrc = videoIframe.src;
+                    videoIframe.src = "";
+                    videoIframe.src = videoSrc;
+                }
+                setTimeout(() => { popup.style.display = "none"; }, 700);
+            });
+        }
+    });
+</script>
