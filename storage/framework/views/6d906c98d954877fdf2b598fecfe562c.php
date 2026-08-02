@@ -1,19 +1,17 @@
-@extends('frontend.layouts.font')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <!-- JSZip Library for ZIP download -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <div class="bg-[#f3f3f3] min-h-screen pb-20 font-['Outfit']" x-data="contentEditor()">
 
-    {{-- Download Selection Modal Overlay --}}
+    
     <div x-show="downloadModalOpen" style="display: none;"
         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
 
         <div class="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden"
             @click.outside="if(!isDownloading) downloadModalOpen = false">
 
-            {{-- Modal Header --}}
+            
             <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                 <div>
                     <h3 class="text-lg font-bold text-gray-800">Select Images to Download</h3>
@@ -24,7 +22,7 @@
                 </button>
             </div>
 
-            {{-- Modal Body (Thumbnails Grid) --}}
+            
             <div class="p-6 overflow-y-auto flex-1">
                 <div class="flex justify-between items-center mb-4">
                     <div class="text-sm font-bold text-[#0071c5]" x-text="selectedForDownload.length + ' selected'"></div>
@@ -34,7 +32,7 @@
                     </div>
                 </div>
 
-                {{-- Grid of EDITED images only --}}
+                
                 <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
                     <template x-for="(media, index) in MEDIA_DATA" :key="index">
                         <div x-show="isImageEdited(index)"
@@ -44,10 +42,10 @@
 
                             <img :src="media.thumbnail" class="w-full h-full object-cover">
 
-                            {{-- Overlay for unselected state --}}
+                            
                             <div class="absolute inset-0 bg-black/40 transition-opacity" :class="selectedForDownload.includes(index) ? 'opacity-0' : 'opacity-100 group-hover:opacity-60'"></div>
 
-                            {{-- Checkmark for selected --}}
+                            
                             <div x-show="selectedForDownload.includes(index)" class="absolute top-2 right-2 bg-[#0071c5] text-white w-6 h-6 flex items-center justify-center rounded-full shadow-md">
                                 <i class="fa-solid fa-check text-xs"></i>
                             </div>
@@ -56,7 +54,7 @@
                 </div>
             </div>
 
-            {{-- Modal Footer (Download Buttons) --}}
+            
             <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row gap-3 justify-end items-center">
 
                 <div x-show="isDownloading" class="flex items-center gap-2 text-sm text-[#0071c5] font-bold w-full sm:w-auto justify-center sm:justify-start mr-auto">
@@ -77,20 +75,20 @@
 
     <section class="container mx-auto">
 
-        {{-- Header --}}
+        
         <div class="flex flex-col sm:flex-row items-center justify-between py-6 px-6 gap-4 text-[#0071c5]">
             <div class="flex items-center gap-4 w-full sm:w-auto">
-                <a href="{{ route('assets.show', $asset->slug) }}" class="hover:opacity-70">
+                <a href="<?php echo e(route('assets.show', $asset->slug)); ?>" class="hover:opacity-70">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </a>
                 <div>
                     <h1 class="text-lg font-bold text-gray-800">Edit Content</h1>
-                    <p class="text-xs sm:text-sm text-gray-500 truncate max-w-[150px] sm:max-w-xs">{{ $asset->title }}</p>
+                    <p class="text-xs sm:text-sm text-gray-500 truncate max-w-[150px] sm:max-w-xs"><?php echo e($asset->title); ?></p>
                 </div>
             </div>
 
             <div class="flex items-center gap-2 w-full sm:w-auto">
-                {{-- Download This 1 (Header) --}}
+                
                 <button @click="downloadCurrent()"
                     :disabled="texts.length === 0 || loading"
                     class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-[#0071c5] text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg text-sm font-bold hover:bg-[#005ea3] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
@@ -99,7 +97,7 @@
                     <span class="sm:hidden">Current</span>
                 </button>
 
-                {{-- Download All --}}
+                
                 <button @click="openDownloadModal()"
                     :disabled="!isAnyEdited()"
                     class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg text-sm font-bold hover:bg-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
@@ -110,36 +108,37 @@
             </div>
         </div>
 
-        {{-- Main Editor --}}
+        
         <div class="px-4 sm:px-6">
 
-            {{-- Image Thumbnails Tabs --}}
+            
             <div class="flex gap-3 mb-4 overflow-x-auto pb-4 scrollbar-hide items-center px-1">
-                @foreach($asset->media->where('media_type', 'image') as $index => $media)
+                <?php $__currentLoopData = $asset->media->where('media_type', 'image'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $media): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <button
-                    @click="switchImage({{ $loop->index }})"
-                    :class="activeIndex === {{ $loop->index }}
+                    @click="switchImage(<?php echo e($loop->index); ?>)"
+                    :class="activeIndex === <?php echo e($loop->index); ?>
+
                             ? 'ring-2 ring-offset-2 ring-[#0071c5] border-[#0071c5] opacity-100'
                             : 'border-transparent opacity-60 hover:opacity-100 hover:border-gray-300'"
                     class="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg border-2 transition-all overflow-hidden p-0 relative block bg-gray-200">
-                    <img src="{{ $media->url }}" class="w-full h-full block object-cover aspect-square" alt="thumbnail">
+                    <img src="<?php echo e($media->url); ?>" class="w-full h-full block object-cover aspect-square" alt="thumbnail">
 
-                    <div x-show="activeIndex === {{ $loop->index }}"
+                    <div x-show="activeIndex === <?php echo e($loop->index); ?>"
                         class="absolute top-1 right-1 bg-[#0071c5] text-white text-[10px] rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
                         <i class="fa-solid fa-check"></i>
                     </div>
 
-                    <div x-show="isImageEdited({{ $loop->index }})"
+                    <div x-show="isImageEdited(<?php echo e($loop->index); ?>)"
                         class="absolute bottom-1 right-1 bg-green-500 w-3 h-3 rounded-full border border-white shadow-sm">
                     </div>
                 </button>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
-            {{-- Editor Layout --}}
+            
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-                {{-- Canvas Area --}}
+                
                 <div class="lg:col-span-8 bg-white rounded-2xl shadow-sm p-4 w-full overflow-hidden" id="canvas-container">
 
                     <div x-show="loading" class="flex items-center justify-center h-[300px] sm:h-[500px]">
@@ -170,7 +169,7 @@
                         </div>
                     </div>
 
-                    {{-- Download This 2 (Under Canvas) & Info --}}
+                    
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 pt-4 border-t border-gray-100 gap-3">
                         <p class="text-[11px] sm:text-xs text-gray-400">
                             <i class="fa-solid fa-circle-info mr-1"></i>
@@ -185,10 +184,10 @@
                     </div>
                 </div>
 
-                {{-- Controls Panel --}}
+                
                 <div class="lg:col-span-4 space-y-4">
 
-                    {{-- Live Edit / Add Text --}}
+                    
                     <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-5">
                         <div class="flex justify-between items-center mb-3">
                             <h3 class="text-sm font-bold text-gray-700 flex items-center gap-2">
@@ -209,7 +208,7 @@
                         </textarea>
                     </div>
 
-                    {{-- Style Panel --}}
+                    
                     <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-5">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-sm font-bold text-gray-700 flex items-center gap-2">
@@ -226,7 +225,7 @@
                             </button>
                         </div>
 
-                        {{-- Font Size --}}
+                        
                         <div class="mb-5">
                             <label class="block text-xs font-medium text-gray-500 mb-1.5">
                                 Size: <span class="text-[#0071c5] font-bold" x-text="style.fontSize + 'px'"></span>
@@ -241,7 +240,7 @@
                             </div>
                         </div>
 
-                        {{-- Text Color --}}
+                        
                         <div class="mb-2">
                             <label class="block text-xs font-medium text-gray-500 mb-1.5">Text Color</label>
                             <div class="flex items-center gap-2 mb-3">
@@ -269,9 +268,9 @@
     </section>
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@php
+<?php
 $mediaData = $asset->media
 ->where('media_type', 'image')
 ->values()
@@ -281,13 +280,13 @@ $mediaData = $asset->media
 'thumbnail' => $m->url,
 'original_name' => $m->file_original_name ?? 'image',
 ]);
-@endphp
+?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
-    const MEDIA_DATA = @json($mediaData);
- const ASSET_ID        = {{ $asset->id }};
-    const TRACK_URL       = "{{ route('download-logs.track') }}";
+    const MEDIA_DATA = <?php echo json_encode($mediaData, 15, 512) ?>;
+ const ASSET_ID        = <?php echo e($asset->id); ?>;
+    const TRACK_URL       = "<?php echo e(route('download-logs.track')); ?>";
     const CSRF_TOKEN      = document.querySelector('meta[name=csrf-token]').content;
 
     async function trackDownload() {
@@ -726,7 +725,7 @@ $mediaData = $asset->media
                         type: "blob"
                     });
                     const link = document.createElement('a');
-                    link.download = @js($asset->title) + ".zip";
+                    link.download = <?php echo \Illuminate\Support\Js::from($asset->title)->toHtml() ?> + ".zip";
                     link.href = URL.createObjectURL(content);
                     link.click();
                 }
@@ -738,4 +737,5 @@ $mediaData = $asset->media
         };
     }
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('frontend.layouts.font', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\asset-management\resources\views/frontend/assets/edit-content.blade.php ENDPATH**/ ?>

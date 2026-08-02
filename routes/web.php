@@ -19,6 +19,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DownloadLogController;
+use App\Http\Controllers\FcmController;
 use Google\Service\Storage;
 use Illuminate\Support\Facades\Storage as FacadesStorage;
 
@@ -148,7 +149,11 @@ Route::middleware('auth')->prefix('admin')->group(function () {
             'update'  => 'permission:users.edit',
             'destroy' => 'permission:users.delete',
         ]);
+    Route::get('users/{user}/download-logs/more', [UserController::class, 'loadMoreDownloadLogs'])
+        ->name('users.download-logs.more');
 
+    Route::get('users/{user}/activity-logs/more', [UserController::class, 'loadMoreActivityLogs'])
+        ->name('users.activity-logs.more');
     Route::get('activity-logs', [ActivityLogController::class, 'index'])
         ->name('activity-logs.index')
         ->middleware('permission:activity_logs.view');
@@ -219,6 +224,13 @@ Route::prefix('')->group(function () {
         ->name('drive.upload.resolve');
 
     Route::get('/assets/{asset}/video/{media}/download', [FileController::class, 'downloadVideo'])
-    ->name('assets.video.download')
-    ->middleware('auth');
+        ->name('assets.video.download')
+        ->middleware('auth');
+    Route::post('/download-logs/track', [DownloadLogController::class, 'track'])
+        ->name('download-logs.track')
+        ->middleware('auth');
+
+    Route::middleware('auth')->group(function () {
+        Route::post('/fcm/token', [FcmController::class, 'saveToken'])->name('fcm.token');
+    });
 });

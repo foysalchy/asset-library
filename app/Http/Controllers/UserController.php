@@ -9,13 +9,16 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use App\Helpers\FileUploadHelper;
-
+use App\Models\ActivityLog;
+use App\Models\DownloadLog;
 
 class UserController extends Controller
 {
     public function __construct(
         private ActivityLogService $activityLog
     ) {}
+    const LOGS_PER_PAGE = 10;
+
 
     public function index(Request $request)
     {
@@ -88,10 +91,86 @@ class UserController extends Controller
     public function show(User $user)
     {
         $user->load('roles.permissions');
-        $logs = \App\Models\ActivityLog::where('user_id', $user->id)
-            ->latest()->limit(20)->get();
 
-        return view('users.show', compact('user', 'logs'));
+        $downloadLogs = DownloadLog::where('user_id', $user->id)
+            ->latest()
+            ->limit(self::LOGS_PER_PAGE)
+            ->get();
+        $this->attachTitles($downloadLogs);
+        $downloadLogsTotal = DownloadLog::where('user_id', $user->id)->count();
+
+        $logs = ActivityLog::where('user_id', $user->id)
+            ->latest()
+            ->limit(self::LOGS_PER_PAGE)
+            ->get();
+
+        $logsTotal = ActivityLog::where('user_id', $user->id)->count();
+
+        return view('users.show', compact(
+            'user',
+            'logs',
+            'logsTotal',
+            'downloadLogs',
+            'downloadLogsTotal'
+        ));
+    }
+
+    public function loadMoreDownloadLogs(User $user, Request $request)
+    {
+        $offset = (int) $request->query('offset', self::LOGS_PER_PAGE);
+
+        $downloadLogs = DownloadLog::where('user_id', $user->id)
+            ->latest()
+            ->skip($offset)
+            ->take(self::LOGS_PER_PAGE)
+            ->get();
+        $this->attachTitles($downloadLogs);
+        $total = DownloadLog::where('user_id', $user->id)->count();
+
+        return response()->json([
+            'html'    => view('users.partials.download-log-rows', compact('downloadLogs'))->render(),
+            'hasMore' => ($offset + $downloadLogs->count()) < $total,
+        ]);
+    }
+
+    public function loadMoreActivityLogs(User $user, Request $request)
+    {
+        $offset = (int) $request->query('offset', self::LOGS_PER_PAGE);
+
+        $logs = ActivityLog::where('user_id', $user->id)
+            ->latest()
+            ->skip($offset)
+            ->take(self::LOGS_PER_PAGE)
+            ->get();
+
+        $total = ActivityLog::where('user_id', $user->id)->count();
+
+        return response()->json([
+            'html'    => view('users.partials.activity-log-rows', compact('logs'))->render(),
+            'hasMore' => ($offset + $logs->count()) < $total,
+        ]);
+    }
+
+    // UserController.php — helper method
+    private function attachTitles($downloadLogs)
+    {
+        $downloadLogs->groupBy('model')->each(function ($logs, $modelName) {
+            $class = "App\\Models\\{$modelName}";
+            if (!class_exists($class)) return;
+
+            $ids = $logs->pluck('model_id');
+            $records = $class::whereIn('id', $ids)->get()->keyBy('id');
+
+            $logs->each(function ($log) use ($records) {
+                $related = $records->get($log->model_id);
+                $log->setAttribute(
+                    'title',
+                    $related->title ?? $related->name ?? "{$log->model} #{$log->model_id}"
+                );
+            });
+        });
+
+        return $downloadLogs;
     }
 
     public function edit(User $user)
