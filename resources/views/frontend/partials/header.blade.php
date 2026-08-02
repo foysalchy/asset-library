@@ -8,7 +8,7 @@
         <!-- ── LOGO ── -->
         <div class="flex items-center gap-3 shrink-0">
             <a href="{{ route('home.index') }}" class=" px-2 py-2 flex items-center">
-                <img src="{{ $siteSetting->logo_url }}" alt="Bhaiya Asset" class="  w-auto h-[40px] block" />
+                <img src="{{ $siteSetting->logo_url }}" style="  filter: brightness(0) invert(1);" alt="Bhaiya Asset" class="  w-auto h-[40px] block" />
             </a>
 
         </div>
