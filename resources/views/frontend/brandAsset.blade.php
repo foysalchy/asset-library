@@ -22,7 +22,7 @@
 
                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
                         @foreach ($projects as $project)
-                            <div class="bg-white border border-gray-200 p-8 flex flex-col items-center justify-center text-center hover:shadow-md transition-all duration-300 group cursor-pointer h-full">
+                             <a href="{{ route('home.filter', ['section' => 'assets', 'project' => $project->id]) }}"  class="bg-white border border-gray-200 p-8 flex flex-col items-center justify-center text-center hover:shadow-md transition-all duration-300 group cursor-pointer h-full">
 
                                 <div class="h-24 w-full flex items-center justify-center mb-6">
                                     @if ($project->logo)
@@ -37,7 +37,7 @@
                                 <h3 class="text-[#0071c5] text-sm font-bold uppercase tracking-[1.5px] leading-tight group-hover:text-[#005ea3]">
                                     {{ $project->name }}
                                 </h3>
-                            </div>
+                            </a>
                         @endforeach
                     </div>
                 </div>
