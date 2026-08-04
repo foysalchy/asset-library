@@ -70,16 +70,7 @@
                 <option value="last_login" <?php echo e(request('sort') === 'last_login' ? 'selected' : ''); ?>>Last Active</option>
             </select>
 
-            
-            <input type="date" name="date_from" value="<?php echo e(request('date_from')); ?>"
-                onchange="document.getElementById('filterForm').submit()"
-                class="h-[42px] rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs focus:border-blue-300 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-                title="Joined from">
-
-            <input type="date" name="date_to" value="<?php echo e(request('date_to')); ?>"
-                onchange="document.getElementById('filterForm').submit()"
-                class="h-[42px] rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs focus:border-blue-300 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-                title="Joined to">
+     
 
             
             <select name="per_page" onchange="document.getElementById('filterForm').submit()"

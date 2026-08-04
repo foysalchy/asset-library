@@ -24,6 +24,10 @@ class TicketController extends Controller
     {
         return view('frontend.tickets.create');
     }
+    public function guestCreate()
+    {
+        return view('frontend.tickets.guest');
+    }
 
     // User: ticket submit
     public function store(Request $request)
@@ -48,6 +52,32 @@ class TicketController extends Controller
         Ticket::create($data);
 
         return redirect()->route('tickets.index')->with('success', 'Ticket submitted successfully.');
+    }
+    public function guestStore(Request $request)
+    {
+        $request->validate([
+            'subject'     => 'required|string|max:255',
+            'phone'   =>
+            'required|string|regex:/^\+?[0-9\s\-()]{7,18}$/',
+
+            'description' => 'required|string',
+            'image'       => 'nullable|image|max:2048',
+        ]);
+
+        $data = [
+            'phone' => $request->phone,
+            'subject'     => $request->subject,
+            'description' => $request->description,
+            'status'      => 0,
+        ];
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('tickets', 'public');
+        }
+
+        Ticket::create($data);
+
+        return redirect()->back()->with('success', 'Ticket submitted successfully.');
     }
 
     // User + Admin: ticket detail + replies

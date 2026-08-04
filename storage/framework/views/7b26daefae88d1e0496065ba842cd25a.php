@@ -157,14 +157,39 @@
     <div class="lg:col-span-2 space-y-5">
 
         
-        <div>
-            <label for="title" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                Title <span class="text-red-500">*</span>
-            </label>
-            <input type="text" name="title" id="title" required
-                value="<?php echo e(old('title', $isEdit ? $asset->title : '')); ?>"
-                placeholder="e.g. Static Banners:"
-                class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 <?php $__errorArgs = ['title'];
+<div x-data="{
+        title: <?php echo \Illuminate\Support\Js::from(old('title', $isEdit ? $asset->title : ''))->toHtml() ?>,
+        init() {
+            if (!this.title) {
+                this.title = this.getOrdinalDate();
+            }
+        },
+        getOrdinalDate() {
+            const date = new Date();
+            const day = date.getDate();
+            const month = date.toLocaleString('en-US', { month: 'long' });
+            const year = date.getFullYear();
+
+            const suffix = (d) => {
+                if (d > 3 && d < 21) return 'th';
+                switch (d % 10) {
+                    case 1: return 'st';
+                    case 2: return 'nd';
+                    case 3: return 'rd';
+                    default: return 'th';
+                }
+            };
+
+            return `${day}${suffix(day)} ${month} ${year}`;
+        }
+     }">
+    <label for="title" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+        Title <span class="text-red-500">*</span>
+    </label>
+    <input type="text" name="title" id="title" required
+        x-model="title"
+        placeholder="e.g. Static Banners:"
+        class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 <?php $__errorArgs = ['title'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -172,7 +197,7 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-400 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" />
-            <?php $__errorArgs = ['title'];
+    <?php $__errorArgs = ['title'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -180,7 +205,7 @@ $message = $__bag->first($__errorArgs[0]); ?><p class="mt-1.5 text-xs text-red-5
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-        </div>
+</div>
 
         
         <div>

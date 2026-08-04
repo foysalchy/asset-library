@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="p-4 mx-auto w-full  md:p-6">
 
     <div class="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
@@ -10,16 +8,16 @@
         </div>
     </div>
 
-    @if (session('success'))
+    <?php if(session('success')): ?>
     <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
         class="mb-5 flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 px-4 py-3 dark:border-green-800 dark:bg-green-900/20">
         <svg class="shrink-0 text-green-500" width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" clip-rule="evenodd"
                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
         </svg>
-        <p class="text-sm font-medium text-green-700 dark:text-green-400">{{ session('success') }}</p>
+        <p class="text-sm font-medium text-green-700 dark:text-green-400"><?php echo e(session('success')); ?></p>
     </div>
-    @endif
+    <?php endif; ?>
 
     <div class="rounded-xl border border-gray-100 bg-white pt-4 dark:border-gray-800 dark:bg-white/[0.03]"
         x-data="{
@@ -33,29 +31,29 @@
                 }
             }">
 
-        {{-- Filters --}}
+        
         <div class="flex flex-col gap-3 px-5 mb-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div>
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">All Tickets</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ $tickets->total() }} total tickets</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($tickets->total()); ?> total tickets</p>
             </div>
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <form method="GET" action="{{ route('ticket.admin') }}" id="filterForm" class="flex gap-2">
+                <form method="GET" action="<?php echo e(route('ticket.admin')); ?>" id="filterForm" class="flex gap-2">
                     <select name="status" onchange="document.getElementById('filterForm').submit()"
                         class="h-[42px] rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 shadow-theme-xs focus:border-blue-300 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
                         <option value="">All Status</option>
-                        <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Pending</option>
-                        <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Open</option>
-                        <option value="2" {{ request('status') === '2' ? 'selected' : '' }}>Closed</option>
+                        <option value="0" <?php echo e(request('status') === '0' ? 'selected' : ''); ?>>Pending</option>
+                        <option value="1" <?php echo e(request('status') === '1' ? 'selected' : ''); ?>>Open</option>
+                        <option value="2" <?php echo e(request('status') === '2' ? 'selected' : ''); ?>>Closed</option>
                     </select>
-                    @if (request('search'))
-                    <input type="hidden" name="search" value="{{ request('search') }}">
-                    @endif
+                    <?php if(request('search')): ?>
+                    <input type="hidden" name="search" value="<?php echo e(request('search')); ?>">
+                    <?php endif; ?>
                 </form>
-                <form method="GET" action="{{ route('ticket.admin') }}">
-                    @if (request('status'))
-                    <input type="hidden" name="status" value="{{ request('status') }}">
-                    @endif
+                <form method="GET" action="<?php echo e(route('ticket.admin')); ?>">
+                    <?php if(request('status')): ?>
+                    <input type="hidden" name="status" value="<?php echo e(request('status')); ?>">
+                    <?php endif; ?>
                     <div class="relative">
                         <button type="submit" class="absolute -translate-y-1/2 left-4 top-1/2">
                             <svg class="fill-gray-500 dark:fill-gray-400" width="20" height="20"
@@ -64,7 +62,7 @@
                                     d="M3.04199 9.37381C3.04199 5.87712 5.87735 3.04218 9.37533 3.04218C12.8733 3.04218 15.7087 5.87712 15.7087 9.37381C15.7087 12.8705 12.8733 15.7055 9.37533 15.7055C5.87735 15.7055 3.04199 12.8705 3.04199 9.37381ZM9.37533 1.54218C5.04926 1.54218 1.54199 5.04835 1.54199 9.37381C1.54199 13.6993 5.04926 17.2055 9.37533 17.2055C11.2676 17.2055 13.0032 16.5346 14.3572 15.4178L17.1773 18.2381C17.4702 18.531 17.945 18.5311 18.2379 18.2382C18.5308 17.9453 18.5309 17.4704 18.238 17.1775L15.4182 14.3575C16.5367 13.0035 17.2087 11.2671 17.2087 9.37381C17.2087 5.04835 13.7014 1.54218 9.37533 1.54218Z" />
                             </svg>
                         </button>
-                        <input type="text" name="search" value="{{ request('search') }}"
+                        <input type="text" name="search" value="<?php echo e(request('search')); ?>"
                             placeholder="Search tickets..."
                             class="h-[42px] w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-[42px] pr-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 xl:w-[240px]" />
                     </div>
@@ -72,7 +70,7 @@
             </div>
         </div>
 
-        {{-- Table --}}
+        
         <div class="overflow-hidden">
             <div class="max-w-full px-5 overflow-x-auto">
                 <table class="min-w-full">
@@ -92,10 +90,10 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                        @forelse($tickets as $ticket)
+                        <?php $__empty_1 = true; $__currentLoopData = $tickets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ticket): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
 
-                            {{-- Ticket --}}
+                            
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <div class="flex items-center gap-3">
                                     <div
@@ -108,54 +106,57 @@
                                     </div>
                                     <div>
                                         <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ $ticket->subject }}
+                                            <?php echo e($ticket->subject); ?>
+
                                         </p>
-                                        <p class="text-xs text-gray-400 mt-0.5">#{{ $ticket->id }}</p>
+                                        <p class="text-xs text-gray-400 mt-0.5">#<?php echo e($ticket->id); ?></p>
                                     </div>
                                 </div>
                             </td>
 
-                            {{-- User --}}
-                            @if($ticket->user)
+                            
+                            <?php if($ticket->user): ?>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ $ticket->user->name }}</p>
-                                <p class="text-xs text-gray-400 mt-0.5">{{ $ticket->user->email }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400"><?php echo e($ticket->user->name); ?></p>
+                                <p class="text-xs text-gray-400 mt-0.5"><?php echo e($ticket->user->email); ?></p>
                             </td>
-                            @else
+                            <?php else: ?>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <p class="text-sm text-gray-600 dark:text-gray-400">Guest User</p>
-                                <p class="text-xs text-gray-400 mt-0.5">{{ $ticket->phone }}</p>
+                                <p class="text-xs text-gray-400 mt-0.5"><?php echo e($ticket->phone); ?></p>
                             </td>
-                            @endif
+                            <?php endif; ?>
 
-                            {{-- Status --}}
+                            
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span
                                     class="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium
-                                                bg-{{ $ticket->status_color }}-50 text-{{ $ticket->status_color }}-700
-                                                dark:bg-{{ $ticket->status_color }}-900/30 dark:text-{{ $ticket->status_color }}-400 border border-{{ $ticket->status_color }}-100 dark:border-{{ $ticket->status_color }}-800/50">
-                                    {{ $ticket->status_label }}
+                                                bg-<?php echo e($ticket->status_color); ?>-50 text-<?php echo e($ticket->status_color); ?>-700
+                                                dark:bg-<?php echo e($ticket->status_color); ?>-900/30 dark:text-<?php echo e($ticket->status_color); ?>-400 border border-<?php echo e($ticket->status_color); ?>-100 dark:border-<?php echo e($ticket->status_color); ?>-800/50">
+                                    <?php echo e($ticket->status_label); ?>
+
                                 </span>
                             </td>
 
-                            {{-- Replies --}}
+                            
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="text-sm text-gray-500 dark:text-gray-400">{{ $ticket->replies_count }}
+                                <span class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($ticket->replies_count); ?>
+
                                     replies</span>
                             </td>
 
-                            {{-- Date --}}
+                            
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span
-                                    class="text-sm text-gray-500 dark:text-gray-400">{{ $ticket->created_at->format('d M Y') }}</span>
+                                    class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($ticket->created_at->format('d M Y')); ?></span>
                             </td>
 
-                            {{-- Actions --}}
+                            
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-2">
 
-                                    {{-- View --}}
-                                    <a href="{{ route('admin.tickets.show', $ticket) }}"
+                                    
+                                    <a href="<?php echo e(route('admin.tickets.show', $ticket)); ?>"
                                         class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/10 transition-colors">
                                         <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
                                             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
@@ -164,9 +165,9 @@
                                         </svg>
                                     </a>
 
-                                    {{-- Delete --}}
+                                    
                                     <button type="button"
-                                        @click="openDelete({{ $ticket->id }}, '{{ addslashes($ticket->subject) }}')"
+                                        @click="openDelete(<?php echo e($ticket->id); ?>, '<?php echo e(addslashes($ticket->subject)); ?>')"
                                         class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20 transition-colors">
                                         <svg width="16" height="16" viewBox="0 0 20 20"
                                             fill="currentColor">
@@ -178,7 +179,7 @@
                                 </div>
                             </td>
                         </tr>
-                        @empty
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
                             <td colspan="6" class="px-4 py-16 text-center">
                                 <div class="flex flex-col items-center gap-3">
@@ -199,16 +200,16 @@
                                 </div>
                             </td>
                         </tr>
-                        @endforelse
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        {{-- Pagination --}}
-        @include('partials.pagination', ['items' => $tickets])
+        
+        <?php echo $__env->make('partials.pagination', ['items' => $tickets], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
-        {{-- Delete Modal (same as asset) --}}
+        
         <div x-show="deleteModal" x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
             <div @click.outside="deleteModal = false"
@@ -236,9 +237,9 @@
                         class="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/10 rounded-lg transition-colors">
                         Cancel
                     </button>
-                    <form :action="'{{ route('ticket.admin') }}/' + deleteId" method="POST">
-                        @csrf
-                        @method('DELETE')
+                    <form :action="'<?php echo e(route('ticket.admin')); ?>/' + deleteId" method="POST">
+                        <?php echo csrf_field(); ?>
+                        <?php echo method_field('DELETE'); ?>
                         <button type="submit"
                             class="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors">
                             Delete
@@ -250,4 +251,5 @@
 
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\asset-management\resources\views/support-ticket/list.blade.php ENDPATH**/ ?>

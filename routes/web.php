@@ -46,6 +46,8 @@ Route::get('/create-storage-link', function () {
 Route::middleware('guest')->group(function () {
     Route::get('/admin-login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/admin-login', [AuthController::class, 'login']);
+    Route::get('/guest/tickets/create', [TicketController::class, 'guestCreate'])->name('guest.tickets.create');
+    Route::post('/guest/tickets', [TicketController::class, 'guestStore'])->name('guest.tickets.store');
 });
 Route::get('/fix-media-paths', function () {
     $medias = \App\Models\AssetMedia::where('file_path', 'not like', 'drive:%')
@@ -175,7 +177,7 @@ Route::prefix('')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [FrontendAuthController::class, 'index'])->name('profile.index');
         Route::put('/profile/update', [FrontendAuthController::class, 'update'])->name('profile.update');
-            Route::put('/password', [FrontendAuthController::class, 'updatePassword'])->name('password.update');
+        Route::put('/password', [FrontendAuthController::class, 'updatePassword'])->name('password.update');
         Route::get('/assets/{asset:slug}/edit-content', [AssetController::class, 'editContent'])
             ->name('assets.edit-content');
         Route::get('/drive/media/{media}/base64', [FileController::class, 'base64Image'])

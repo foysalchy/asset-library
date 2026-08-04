@@ -48,7 +48,7 @@ class MenuHelper
             ],
             [
                 'icon'       => 'asset',
-                'name'       => 'Assets',
+                'name'       => 'Asset Upload',
                 'path'       => route('assets.index'),
                 'permission' => 'assets.view',
             ],

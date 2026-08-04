@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="robots" content="noindex, nofollow">
@@ -19,14 +20,14 @@
                 </svg>
             </div>
         </div>
-      @if($errors->any())
-            <div class="mb-5 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 dark:border-red-800 dark:bg-red-900/20">
-                <svg class="shrink-0 text-red-500 mt-0.5" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" />
-                </svg>
-                <p class="text-sm text-red-700 dark:text-red-400">{{ $errors->first() }}</p>
-            </div>
-            @endif
+        @if($errors->any())
+        <div class="mb-5 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 dark:border-red-800 dark:bg-red-900/20">
+            <svg class="shrink-0 text-red-500 mt-0.5" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" />
+            </svg>
+            <p class="text-sm text-red-700 dark:text-red-400">{{ $errors->first() }}</p>
+        </div>
+        @endif
         <div class="rounded-xl border border-gray-100 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="mb-6">
                 <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">Create Account</h1>
@@ -88,7 +89,20 @@
                     <a href="{{ route('signin') }}" class="text-blue-600 hover:underline font-medium">Sign in</a>
                 </p>
             </div>
+            <div class="mt-4 text-center">
+                <p class="text-lg text-gray-400 dark:text-gray-500">
+                    Having trouble signing in or signing up?
+                    <a href="{{ route('guest.tickets.create') }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1 text-green-600 hover:underline font-medium">
+                     
+                        Create a ticket
+                    </a>
+                </p>
+            </div>
         </div>
     </div>
 </body>
+
 </html>
