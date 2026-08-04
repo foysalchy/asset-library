@@ -16,17 +16,23 @@ class HomeController extends Controller
     {
         $user = Auth::user();
 
-        $latestAssets = Asset::with(['media' => fn($q) => $q->where('media_type', 'image')->orderBy('sort_order')->limit(1)])
-            ->where('status', 'active')
-            ->orderBy('sort_order')
-            ->limit(8)
-            ->select('id', 'title', 'slug', 'status', 'sort_order')
-            ->get();
+        $latestAssets = Asset::with(['media' => function($q) {
+            $q->where('media_type', 'image')->orderBy('sort_order');
+        }])
+        // এটি আলাদাভাবে শুধু ইমেজের সংখ্যা গুনে নিয়ে আসবে
+        ->withCount(['media as static_count' => function($q) {
+            $q->where('media_type', 'image');
+        }])
+        ->where('status', 'active')
+        ->orderBy('sort_order')
+        ->limit(8)
+        ->select('id', 'title', 'slug', 'status', 'sort_order')
+        ->get();
 
         $concerns = Project::CONCERNS;
 
         $projects = Project::where('status', 'active')
-          
+
             ->orderBy('name')
             ->get();
 

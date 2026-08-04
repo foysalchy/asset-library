@@ -1,5 +1,5 @@
 <?php
-    $siteSetting = \App\Models\SiteSetting::first();
+$siteSetting = \App\Models\SiteSetting::first();
 
 ?>
 
@@ -51,49 +51,49 @@
         <nav class="hidden lg:flex items-stretch gap-0">
 
             <?php if(auth()->guard()->guest()): ?>
-                <a href="<?php echo e(route('frontend.signin')); ?>"
-                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
-                    <i class="fas fa-sign-in-alt text-lg"></i>
-                    <span class="text-sm tracking-wide">Sign In</span>
-                </a>
+            <a href="<?php echo e(route('frontend.signin')); ?>"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
+                <i class="fas fa-sign-in-alt text-lg"></i>
+                <span class="text-sm tracking-wide">Sign In</span>
+            </a>
 
-                <a href="<?php echo e(route('frontend.signup')); ?>"
-                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
-                    <i class="fas fa-user-plus text-lg"></i>
-                    <span class="text-sm tracking-wide">Sign Up</span>
-                </a>
+            <a href="<?php echo e(route('frontend.signup')); ?>"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
+                <i class="fas fa-user-plus text-lg"></i>
+                <span class="text-sm tracking-wide">Sign Up</span>
+            </a>
             <?php endif; ?>
 
             <?php if(auth()->guard()->check()): ?>
-                <a href="<?php echo e(route('profile.index')); ?>"
-                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40 <?php echo e(request()->routeIs('profile.index') ? 'border-white' : 'border-transparent hover:border-white/40'); ?>">
+            <a href="<?php echo e(route('profile.index')); ?>"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40 <?php echo e(request()->routeIs('profile.index') ? 'border-white' : 'border-transparent hover:border-white/40'); ?>">
 
 
-                    <img src="<?php echo e(Auth::user()->avatar_url ?? asset('./images/user/images.png')); ?>" alt="Profile"
-                        class="w-6 h-6 rounded-full object-cover border border-white/50">
+                <img src="<?php echo e(Auth::user()->avatar_url ?? asset('./images/user/images.png')); ?>" alt="Profile"
+                    class="w-6 h-6 rounded-full object-cover border border-white/50">
 
-                    <span class="text-sm tracking-wide"><?php echo e(Auth::user()->name); ?></span>
-                </a>
+                <span class="text-sm tracking-wide"><?php echo e(Auth::user()->name); ?></span>
+            </a>
 
-                <form id="logout-form" action="<?php echo e(route('frontend.logout')); ?>" method="POST" class="hidden">
-                    <?php echo csrf_field(); ?>
-                </form>
-                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-red-400 transition-colors border-b-2 border-transparent hover:border-white/40">
-                    <i class="fas fa-power-off text-lg"></i>
-                    <span class="text-sm tracking-wide">Logout</span>
-                </a>
+            <form id="logout-form" action="<?php echo e(route('frontend.logout')); ?>" method="POST" class="hidden">
+                <?php echo csrf_field(); ?>
+            </form>
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-red-400 transition-colors border-b-2 border-transparent hover:border-white/40">
+                <i class="fas fa-power-off text-lg"></i>
+                <span class="text-sm tracking-wide">Logout</span>
+            </a>
             <?php endif; ?>
             <a href="<?php echo e(route('bookmark.list')); ?>"
                 class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40 <?php echo e(request()->routeIs('bookmark.list') ? 'border-white' : 'border-transparent hover:border-white/40'); ?>">
                 <div class="relative">
                     <i class="fa-regular fa-bookmark text-lg"></i>
                     <?php if($bookmarkCount > 0): ?>
-                        <span
-                            class="absolute -top-2 -right-2 bg-white text-[#003b7a] text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                            <?php echo e($bookmarkCount > 99 ? '99+' : $bookmarkCount); ?>
+                    <span
+                        class="absolute -top-2 -right-2 bg-white text-[#003b7a] text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                        <?php echo e($bookmarkCount > 99 ? '99+' : $bookmarkCount); ?>
 
-                        </span>
+                    </span>
                     <?php endif; ?>
                 </div>
                 <span class="text-sm tracking-wide flex items-center gap-1">Bookmark</span>
@@ -104,11 +104,11 @@
                     <div class="relative">
                         <i class="fa-regular fa-bell text-lg"></i>
                         <?php if($unreadCount > 0): ?>
-                            <span id="notifBadge"
-                                class="absolute -top-2 -right-2 bg-white text-[#003b7a] text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                                <?php echo e($unreadCount > 99 ? '99+' : $unreadCount); ?>
+                        <span id="notifBadge"
+                            class="absolute -top-2 -right-2 bg-white text-[#003b7a] text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                            <?php echo e($unreadCount > 99 ? '99+' : $unreadCount); ?>
 
-                            </span>
+                        </span>
                         <?php endif; ?>
                     </div>
                     <span class="text-sm tracking-wide">Notification</span>
@@ -122,78 +122,79 @@
                     <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                         <span class="text-sm font-semibold text-gray-700">Notifications</span>
                         <?php if($unreadCount > 0): ?>
-                            <button onclick="markAllRead()"
-                                class="text-[11px] text-[#0071c5] font-semibold hover:underline">
-                                Mark all as read
-                            </button>
+                        <button onclick="markAllRead()"
+                            class="text-[11px] text-[#0071c5] font-semibold hover:underline">
+                            Mark all as read
+                        </button>
                         <?php endif; ?>
                     </div>
 
                     <!-- List -->
                     <div class="max-h-80 overflow-y-auto divide-y divide-gray-50">
                         <?php $__empty_1 = true; $__currentLoopData = $notifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notif): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                            <?php
-                                // check notification by user
-                                $userId = auth()->id();
-                                $readBy = $notif->read_by ?? []; //
-                                $isRead = in_array($userId, $readBy);
-                            ?>
+                        <?php
+                        // check notification by user
+                        $userId = auth()->id();
+                        $readBy = $notif->read_by ?? []; //
+                        $isRead = in_array($userId, $readBy);
+                        ?>
 
-                            <a href="<?php echo e($notif->url); ?>" onclick="markRead(event, <?php echo e($notif->id); ?>, '<?php echo e($notif->url); ?>')"
-                                id="notif-<?php echo e($notif->id); ?>" 
-                                class="flex items-start gap-3 px-4 py-4 transition-all border-b border-gray-100
+                        <a href="<?php echo e($notif->url); ?>" onclick="markRead(event, <?php echo e($notif->id); ?>, '<?php echo e($notif->url); ?>')"
+                            id="notif-<?php echo e($notif->id); ?>" 
+                            class="flex items-start gap-3 px-4 py-4 transition-all border-b border-gray-100
                                             <?php echo e(!$isRead ? 'bg-[#f0f7ff] border-l-4 border-l-[#0071c5]' : 'bg-white opacity-50'); ?> hover:bg-gray-50">
 
-                                <div
-                                    class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5
+                            <div
+                                class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5
                                                 <?php echo e($notif->type === 'asset' ? 'bg-blue-100 text-blue-600' : 'bg-teal-100 text-teal-600'); ?>">
-                                    <i
-                                        class="fa-solid <?php echo e($notif->type === 'asset' ? 'fa-file' : 'fa-bullhorn'); ?> text-xs"></i>
-                                </div>
-
-                                <div class="flex-1 min-w-0">
-                                    <p
-                                        class="text-[13px] leading-snug <?php echo e(!$isRead ? 'font-bold text-gray-900' : 'font-normal text-gray-500'); ?>">
-                                        <?php echo e($notif->title); ?>
-
-                                    </p>
-                                    <p class="text-[11px] text-gray-400 mt-1">
-                                        <?php echo e($notif->created_at->diffForHumans()); ?>
-
-                                    </p>
-                                </div>
-
-                                <?php if(!$isRead): ?>
-                                    <div class="unread-dot w-2.5 h-2.5 bg-[#0071c5] rounded-full shrink-0 mt-2"></div>
-                                <?php endif; ?>
-                            </a>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                            <div class="px-4 py-10 text-center text-sm text-gray-400">
-                                No notifications yet
+                                <i
+                                    class="fa-solid <?php echo e($notif->type === 'asset' ? 'fa-file' : 'fa-bullhorn'); ?> text-xs"></i>
                             </div>
+
+                            <div class="flex-1 min-w-0">
+                                <p
+                                    class="text-[13px] leading-snug <?php echo e(!$isRead ? 'font-bold text-gray-900' : 'font-normal text-gray-500'); ?>">
+                                    <?php echo e($notif->title); ?>
+
+                                </p>
+                                <p class="text-[11px] text-gray-400 mt-1">
+                                    <?php echo e($notif->created_at->diffForHumans()); ?>
+
+                                </p>
+                            </div>
+
+                            <?php if(!$isRead): ?>
+                            <div class="unread-dot w-2.5 h-2.5 bg-[#0071c5] rounded-full shrink-0 mt-2"></div>
+                            <?php endif; ?>
+                        </a>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                        <div class="px-4 py-10 text-center text-sm text-gray-400">
+                            No notifications yet
+                        </div>
                         <?php endif; ?>
                     </div>
                 </div>
             </div>
             <?php if(auth()->user()?->isSuperAdmin()): ?>
-                <a href="<?php echo e(route('dashboard')); ?>"
-                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
-                    <i class="fa-solid fa-gauge text-lg"></i>
-                    <span class="text-sm tracking-wide flex items-center gap-1">Admin Dashboard</span>
-                </a>
+            <a href="<?php echo e(route('dashboard')); ?>"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
+                <i class="fa-solid fa-gauge text-lg"></i>
+                <span class="text-sm tracking-wide flex items-center gap-1">Admin Dashboard</span>
+            </a>
             <?php else: ?>
-                <a href="<?php echo e(route('tickets.index')); ?>"
-                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
-                    <i class="fa-regular fa-circle-question text-lg"></i>
-                    <span class="text-sm tracking-wide flex items-center gap-1">Help</span>
-                </a>
-                <!-- Tutorial (Desktop) -->
-                <a href="javascript:void(0)" id="tutorial-trigger"
-                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
-                    <i class="fa-brands fa-readme text-lg"></i>
-                    <span class="text-sm tracking-wide">Tutorial</span>
-                </a>
+            <a href="<?php echo e(route('tickets.index')); ?>"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
+                <i class="fa-regular fa-circle-question text-lg"></i>
+                <span class="text-sm tracking-wide flex items-center gap-1">Support</span>
+            </a>
+            <!-- Tutorial (Desktop) -->
+            <a href="javascript:void(0)" id="tutorial-trigger"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
+                <i class="fa-brands fa-readme text-lg"></i>
+                <span class="text-sm tracking-wide">Tutorial</span>
+            </a>
             <?php endif; ?>
+
         </nav>
         <!-- ── MOBILE NAV DRAWER (সব ডিভাইসে নিখুঁত কাজ করবে) ── -->
         <div x-show="mobileMenu" x-transition:enter="transition ease-out duration-300"
@@ -224,25 +225,25 @@
 
                     <div class="pt-6 space-y-4">
                         <?php if(auth()->guard()->guest()): ?>
-                            <a href="<?php echo e(route('frontend.signin')); ?>" class="flex items-center gap-3"><i
-                                    class="fas fa-sign-in-alt"></i> Sign In</a>
+                        <a href="<?php echo e(route('frontend.signin')); ?>" class="flex items-center gap-3"><i
+                                class="fas fa-sign-in-alt"></i> Sign In</a>
                         <?php endif; ?>
                         <?php if(auth()->guard()->check()): ?>
-                            <a href="<?php echo e(route('profile.index')); ?>" class="flex items-center gap-3">
-                                <img src="<?php echo e(Auth::user()->avatar_url ?? asset('./images/user/owner.jpg')); ?>"
-                                    class="w-8 h-8 rounded-full">
-                                <span><?php echo e(Auth::user()->name); ?></span>
-                            </a>
+                        <a href="<?php echo e(route('profile.index')); ?>" class="flex items-center gap-3">
+                            <img src="<?php echo e(Auth::user()->avatar_url ?? asset('./images/user/owner.jpg')); ?>"
+                                class="w-8 h-8 rounded-full">
+                            <span><?php echo e(Auth::user()->name); ?></span>
+                        </a>
                         <?php endif; ?>
 
                         <a href="<?php echo e(route('bookmark.list')); ?>" class="flex items-center justify-between">
                             <span><i class="fa-regular fa-bookmark mr-2"></i> Saved Items</span>
                             <?php if($bookmarkCount > 0): ?> <span
-                            class="bg-red-500 px-2 rounded-full text-xs"><?php echo e($bookmarkCount); ?></span> <?php endif; ?>
+                                class="bg-red-500 px-2 rounded-full text-xs"><?php echo e($bookmarkCount); ?></span> <?php endif; ?>
                         </a>
 
                         <a href="<?php echo e(route('tickets.index')); ?>" class="flex items-center gap-3"><i
-                                class="fa-regular fa-circle-question"></i> Help Center</a>
+                                class="fa-regular fa-circle-question"></i> Support Center</a>
 
                         <a href="javascript:void(0)" id="tutorial-trigger-mobile"
                             class="text-lg font-medium border-b border-white/10 pb-2 flex items-center gap-2">
@@ -251,10 +252,10 @@
 
 
                         <?php if(auth()->guard()->check()): ?>
-                            <button onclick="document.getElementById('logout-form').submit();"
-                                class="text-red-400 font-bold pt-4 text-left">
-                                <i class="fas fa-power-off mr-2"></i> Logout
-                            </button>
+                        <button onclick="document.getElementById('logout-form').submit();"
+                            class="text-red-400 font-bold pt-4 text-left">
+                            <i class="fas fa-power-off mr-2"></i> Logout
+                        </button>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -363,7 +364,9 @@
                     videoIframe.src = "";
                     videoIframe.src = videoSrc;
                 }
-                setTimeout(() => { popup.style.display = "none"; }, 700);
+                setTimeout(() => {
+                    popup.style.display = "none";
+                }, 700);
             });
         }
     });
