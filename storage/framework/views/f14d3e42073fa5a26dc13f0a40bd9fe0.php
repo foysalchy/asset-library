@@ -59,6 +59,11 @@
 <?php unset($__componentOriginalb0886da97c39b6523320c208185b9dbc); ?>
 <?php endif; ?>
     <?php echo $__env->yieldPushContent('scripts'); ?>
+
+    
+<?php echo $__env->make('frontend.layouts.partials.fcm', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
+</script>
     <script>
         function toggleBookmark(btn, type, id) {
             fetch('/bookmark', {

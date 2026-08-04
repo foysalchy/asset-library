@@ -38,6 +38,16 @@
                 </p>
             </div>
         </div>
+        <div class="mt-2 flex flex-wrap items-end gap-3 px-4 py-2 rounded-lg max-w-fit">
+            <span class="flex items-center gap-2 text-sm md:text-lg text-white">
+                <i class="fa-solid fa-triangle-exclamation text-yellow-500"></i>
+                <span>This platform is currently under <strong>Testing</strong>. Please report any issues:</span>
+            </span>
+            <a href="{{ route('tickets.create') }}"
+            class="bg-white text-[#003b7a] px-3 py-1 rounded shadow-md text-sm font-bold hover:bg-gray-100 transition-all flex items-center gap-1">
+                <i class="fa-solid fa-plus-circle"></i> Create Ticket
+            </a>
+        </div>
 
         <!-- SEARCH BAR — overlapping bottom -->
         <div class="absolute bottom-0 left-0 right-0 px-4 lg:px-6 mb-4 lg:mb-6">
