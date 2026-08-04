@@ -19,7 +19,7 @@
                     <?php echo method_field('PUT'); ?>
                     <?php if(session('status')): ?>
                     <div class="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded">
-                        Pro updated successfully.
+                        Profile updated successfully.
                     </div>
                     <?php endif; ?>
                     <!-- Avatar Upload -->

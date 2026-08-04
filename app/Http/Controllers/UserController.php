@@ -24,23 +24,59 @@ class UserController extends Controller
     {
         $query = User::query()->with('roles');
 
-        if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                    ->orWhere('email', 'like', '%' . $request->search . '%');
-            });
-        }
-
+        // Status filter
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
+        // Role filter
         if ($request->filled('role_id')) {
-            $query->whereHas('roles', fn($q) => $q->where('roles.id', $request->role_id));
+            $query->whereHas('roles', function ($q) use ($request) {
+                $q->where('roles.id', $request->role_id);
+            });
         }
 
-        $users = $query->orderByDesc('created_at')->paginate(10)->withQueryString();
-        $roles = Role::orderBy('label')->get();
+  
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        // ✅ Date range filter
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        // ✅ Sort
+        switch ($request->get('sort', 'newest')) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('name', 'desc');
+                break;
+
+            default: // newest
+                $query->orderBy('created_at', 'desc');
+        }
+
+        // ✅ Per page
+        $perPage = in_array($request->get('per_page'), [10, 25, 50, 100])
+            ? $request->per_page
+            : 10;
+
+        $users = $query->paginate($perPage)->withQueryString();
+        $roles = Role::all();
 
         return view('users.index', compact('users', 'roles'));
     }
