@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Mail\NewContentMail;
+use App\Models\FcmToken;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
@@ -28,6 +29,18 @@ class NotificationService
         // সব user এ mail
         foreach (User::all() as $user) {
             Mail::to($user->email)->send(new NewContentMail($type, $title, $url));
+        }
+
+
+        $tokens = FcmToken::pluck('token')->toArray();
+
+        if (!empty($tokens)) {
+            app(PushNotificationService::class)->sendToTokens(
+                tokens: $tokens,
+                title: 'New ' . ucfirst($type) . ' Added',
+                body: $title,
+                url: $url
+            );
         }
     }
 }

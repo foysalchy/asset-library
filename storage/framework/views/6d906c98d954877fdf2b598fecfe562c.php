@@ -78,7 +78,7 @@
         
         <div class="flex flex-col sm:flex-row items-center justify-between py-6 px-6 gap-4 text-[#0071c5]">
             <div class="flex items-center gap-4 w-full sm:w-auto">
-                <a href="<?php echo e(route('assets.show', $asset->slug)); ?>" class="hover:opacity-70">
+                <a href="<?php echo e(url()->previous()); ?>" class="hover:opacity-70">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </a>
                 <div>
@@ -289,7 +289,7 @@ $mediaData = $asset->media
     const TRACK_URL       = "<?php echo e(route('download-logs.track')); ?>";
     const CSRF_TOKEN      = document.querySelector('meta[name=csrf-token]').content;
 
-    async function trackDownload() {
+    async function trackDownload(fileName = null) {
         try {
             await fetch(TRACK_URL, {
                 method: 'POST',
@@ -300,6 +300,8 @@ $mediaData = $asset->media
                 body: JSON.stringify({
                     model:    'asset',
                     model_id: ASSET_ID,
+                    file_name: fileName,        
+                    file_type: 'edited_content',
                 }),
             });
         } catch(e) {
@@ -653,7 +655,7 @@ $mediaData = $asset->media
 
             downloadCurrent() {
                 this.deselectText();
-                trackDownload(); // ✅ clean call
+       // ✅ clean call
 
                 if (!this.baseImage || this.texts.length === 0) return;
 
@@ -667,73 +669,72 @@ $mediaData = $asset->media
                     this.drawText(fullCtx, text, index, 1);
                 });
 
-                const name = MEDIA_DATA[this.activeIndex]?.original_name ?? 'image';
+                const fileName = MEDIA_DATA[this.activeIndex]?.original_name ?? 'image';
+                trackDownload(fileName);                    
                 const link = document.createElement('a');
-                link.download = name.replace(/\.[^.]+$/, '') + '_edited.png';
+                link.download = fileName.replace(/\.[^.]+$/, '') + '_edited.png';
                 link.href = fullCanvas.toDataURL('image/png');
                 link.click();
             },
 
-            async downloadBatch(type) {
-                if (this.selectedForDownload.length === 0) return;
+       async downloadBatch(type) {
+    if (this.selectedForDownload.length === 0) return;
+    this.isDownloading = true;
 
-                this.isDownloading = true;
-                trackDownload();
-                const zip = type === 'zip' ? new JSZip() : null;
+    const zip = type === 'zip' ? new JSZip() : null;
 
-                for (let i = 0; i < this.selectedForDownload.length; i++) {
-                    const index = this.selectedForDownload[i];
-                    this.downloadProgress = `Processing ${i + 1}/${this.selectedForDownload.length}`;
+    for (let i = 0; i < this.selectedForDownload.length; i++) {
+        const index = this.selectedForDownload[i];
+        this.downloadProgress = `Processing ${i + 1}/${this.selectedForDownload.length}`;
 
-                    const data = MEDIA_DATA[index];
-                    const img = new Image();
-                    img.src = this.imageCache[index] || data.base64_url;
-                    await new Promise(r => img.onload = r);
+        const data = MEDIA_DATA[index];
+  console.log('Tracking file:', data.original_name);
+        // ✅ প্রতিটা image এর জন্য আলাদা track
+         await trackDownload(data.original_name ?? 'image');
 
-                    const finalCanvas = document.createElement('canvas');
-                    finalCanvas.width = img.naturalWidth;
-                    finalCanvas.height = img.naturalHeight;
-                    const fCtx = finalCanvas.getContext('2d');
-                    fCtx.drawImage(img, 0, 0);
+        const img = new Image();
+        img.src = this.imageCache[index] || data.base64_url;
+        await new Promise(r => img.onload = r);
 
-                    // Draw texts (from currently active array if active index, else from saved allTexts)
-                    const textsToDraw = (index === this.activeIndex) ? this.texts : this.allTexts[index];
-                    if (textsToDraw && textsToDraw.length > 0) {
-                        textsToDraw.forEach((text, idx) => this.drawText(fCtx, text, idx, 1));
-                    }
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width  = img.naturalWidth;
+        finalCanvas.height = img.naturalHeight;
+        const fCtx = finalCanvas.getContext('2d');
+        fCtx.drawImage(img, 0, 0);
 
-                    const dataUrl = finalCanvas.toDataURL('image/png');
-                    const fileName = (data.original_name.replace(/\.[^.]+$/, '')) + '_edited.png';
+        const textsToDraw = (index === this.activeIndex) ? this.texts : this.allTexts[index];
+        if (textsToDraw && textsToDraw.length > 0) {
+            textsToDraw.forEach((text, idx) => this.drawText(fCtx, text, idx, 1));
+        }
 
-                    if (type === 'zip') {
-                        const base64Data = dataUrl.split(',')[1];
-                        zip.file(fileName, base64Data, {
-                            base64: true
-                        });
-                    } else {
-                        const link = document.createElement('a');
-                        link.download = fileName;
-                        link.href = dataUrl;
-                        link.click();
-                        await new Promise(r => setTimeout(r, 400));
-                    }
-                }
+        const dataUrl  = finalCanvas.toDataURL('image/png');
+        const fileName = (data.original_name.replace(/\.[^.]+$/, '')) + '_edited.png';
 
-                if (type === 'zip') {
-                    this.downloadProgress = "Zipping files...";
-                    const content = await zip.generateAsync({
-                        type: "blob"
-                    });
-                    const link = document.createElement('a');
-                    link.download = <?php echo \Illuminate\Support\Js::from($asset->title)->toHtml() ?> + ".zip";
-                    link.href = URL.createObjectURL(content);
-                    link.click();
-                }
+        if (type === 'zip') {
+            const base64Data = dataUrl.split(',')[1];
+            zip.file(fileName, base64Data, { base64: true });
+        } else {
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href     = dataUrl;
+            link.click();
+            await new Promise(r => setTimeout(r, 400));
+        }
+    }
 
-                this.isDownloading = false;
-                this.downloadModalOpen = false;
-                this.downloadProgress = '';
-            }
+    if (type === 'zip') {
+        this.downloadProgress = "Zipping files...";
+        const content = await zip.generateAsync({ type: "blob" });
+        const link    = document.createElement('a');
+        link.download = <?php echo \Illuminate\Support\Js::from($asset->title)->toHtml() ?> + ".zip";
+        link.href     = URL.createObjectURL(content);
+        link.click();
+    }
+
+    this.isDownloading    = false;
+    this.downloadModalOpen = false;
+    this.downloadProgress  = '';
+},
         };
     }
 </script>

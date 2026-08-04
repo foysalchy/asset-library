@@ -4,22 +4,20 @@
   
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 xl:grid-cols-4 mt-4" syle="margin-top:40px">
 
-    
-    <div class="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-      <div class="flex items-center justify-center w-12 h-12 bg-blue-50 rounded-xl dark:bg-blue-900/20">
-        <svg class="text-blue-500" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-        </svg>
-      </div>
-      <div class="flex items-end justify-between mt-5">
-        <div>
-          <span class="text-sm text-gray-500 dark:text-gray-400">Campaigns</span>
-          <h4 class="mt-2 font-bold text-gray-800 text-2xl dark:text-white/90"><?php echo e($stats['campaigns']); ?></h4>
-        </div>
-        <a href="<?php echo e(route('campaigns.index')); ?>"
-          class="text-xs text-blue-500 hover:underline">View all</a>
-      </div>
+  
+<div class="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
+  <div class="flex items-center justify-center w-12 h-12 bg-blue-50 rounded-xl dark:bg-blue-900/20">
+    <svg class="text-blue-500" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" />
+    </svg>
+  </div>
+  <div class="flex items-end justify-between mt-5">
+    <div>
+      <span class="text-sm text-gray-500 dark:text-gray-400">Total Downloads</span>
+      <h4 class="mt-2 font-bold text-gray-800 text-2xl dark:text-white/90"><?php echo e($stats['total_downloads']); ?></h4>
     </div>
+  </div>
+</div>
 
     
     <div class="rounded-xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
@@ -75,69 +73,64 @@
         <a href="<?php echo e(route('projects.index')); ?>"
           class="text-xs text-amber-500 hover:underline">View all</a>
       </div>
-    </div>
+  </div>
 
   </div>
 
   
   <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
 
-    
-    <div class="rounded-xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
-      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">Recent Campaigns</h3>
-        <a href="<?php echo e(route('campaigns.index')); ?>"
-          class="text-xs text-blue-500 hover:underline">View all</a>
+
+<div class="rounded-xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+  <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+    <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">Top Downloaders</h3>
+  </div>
+  <div class="divide-y divide-gray-100 dark:divide-gray-800">
+    <?php $__empty_1 = true; $__currentLoopData = $topDownloaders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $entry): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+    <div class="flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
+
+      
+      <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0
+          <?php echo e($index === 0 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'); ?>">
+        <?php echo e($index + 1); ?>
+
+      </span>
+
+      
+      <?php if($entry->user?->avatar_url): ?>
+      <img src="<?php echo e($entry->user->avatar_url); ?>" alt="<?php echo e($entry->user->name); ?>"
+        class="w-9 h-9 rounded-full object-cover shrink-0 border border-gray-200 dark:border-gray-700">
+      <?php else: ?>
+      <div class="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0 text-blue-600 dark:text-blue-400 text-sm font-semibold">
+        <?php echo e(strtoupper(substr($entry->user->name ?? '?', 0, 1))); ?>
+
       </div>
-      <div class="divide-y divide-gray-100 dark:divide-gray-800">
-        <?php $__empty_1 = true; $__currentLoopData = $recentCampaigns; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $campaign): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-        <div class="flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
+      <?php endif; ?>
 
-          
-          <?php if($campaign->thumbnail): ?>
-          <img src="<?php echo e($campaign->thumbnail_url); ?>" alt="<?php echo e($campaign->title); ?>"
-            class="w-10 h-10 rounded-lg object-cover shrink-0 border border-gray-200 dark:border-gray-700">
-          <?php else: ?>
-          <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-            <svg class="text-blue-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-            </svg>
-          </div>
-          <?php endif; ?>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-gray-800 dark:text-white/90 truncate">
+          <?php echo e($entry->user->name ?? 'Unknown User'); ?>
 
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-gray-800 dark:text-white/90 truncate">
-              <?php echo e($campaign->title); ?>
+        </p>
+        <p class="text-xs text-gray-400 mt-0.5">
+          <?php echo e($entry->user->email ?? ''); ?>
 
-            </p>
-            <p class="text-xs text-gray-400 mt-0.5">
-              <?php echo e($campaign->created_at->diffForHumans()); ?>
-
-            </p>
-          </div>
-
-          
-          <?php
-          $statusClass = match($campaign->status) {
-          'active' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-          'draft' => 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
-          'expired' => 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
-          default => 'bg-gray-100 text-gray-600',
-          };
-          ?>
-          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize shrink-0 <?php echo e($statusClass); ?>">
-            <?php echo e($campaign->status); ?>
-
-          </span>
-
-        </div>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-        <div class="px-6 py-10 text-center">
-          <p class="text-sm text-gray-400">No campaigns yet.</p>
-        </div>
-        <?php endif; ?>
+        </p>
       </div>
+
+      
+      <span class="text-sm font-semibold text-blue-600 dark:text-blue-400 shrink-0">
+        <?php echo e($entry->total_downloads); ?> <span class="text-xs font-normal text-gray-400">downloads</span>
+      </span>
+
     </div>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+    <div class="px-6 py-10 text-center">
+      <p class="text-sm text-gray-400">No downloads recorded yet.</p>
+    </div>
+    <?php endif; ?>
+  </div>
+</div>
 
     
     <div class="rounded-xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-white/[0.03]">

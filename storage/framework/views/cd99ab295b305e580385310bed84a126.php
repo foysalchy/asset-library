@@ -1,4 +1,4 @@
-{{-- resources/views/layouts/partials/fcm.blade.php --}}
+
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js"></script>
 
@@ -13,15 +13,15 @@
 
     try {
         const FIREBASE_CONFIG = {
-            apiKey:            @json(config('services.firebase.api_key')),
-            authDomain:        @json(config('services.firebase.auth_domain')),
-            projectId:         @json(config('services.firebase.project_id')),
-            storageBucket:     @json(config('services.firebase.storage_bucket')),
-            messagingSenderId: @json(config('services.firebase.sender_id')),
-            appId:             @json(config('services.firebase.app_id')),
+            apiKey:            <?php echo json_encode(config('services.firebase.api_key'), 15, 512) ?>,
+            authDomain:        <?php echo json_encode(config('services.firebase.auth_domain'), 15, 512) ?>,
+            projectId:         <?php echo json_encode(config('services.firebase.project_id'), 15, 512) ?>,
+            storageBucket:     <?php echo json_encode(config('services.firebase.storage_bucket'), 15, 512) ?>,
+            messagingSenderId: <?php echo json_encode(config('services.firebase.sender_id'), 15, 512) ?>,
+            appId:             <?php echo json_encode(config('services.firebase.app_id'), 15, 512) ?>,
         };
-        const VAPID_KEY  = @json(config('services.firebase.vapid_key'));
-        const FCM_URL    = @json(route('fcm.token'));
+        const VAPID_KEY  = <?php echo json_encode(config('services.firebase.vapid_key'), 15, 512) ?>;
+        const FCM_URL    = <?php echo json_encode(route('fcm.token'), 15, 512) ?>;
         const CSRF_TOKEN = document.querySelector('meta[name=csrf-token]')?.content;
 
         if (!('serviceWorker' in navigator)) {
@@ -102,4 +102,4 @@
         setTimeout(() => toast.querySelector('#fcm-toast')?.remove(), 5000);
     }
 })();
-</script>
+</script><?php /**PATH C:\laragon\www\asset-management\resources\views/frontend/layouts/partials/fcm.blade.php ENDPATH**/ ?>

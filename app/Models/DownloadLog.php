@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DownloadLog extends Model
 {
-    protected $fillable = ['user_id', 'model', 'model_id', 'count', 'ip_address'];
+    protected $fillable = ['user_id', 'model', 'model_id','file_name','file_type', 'count', 'ip_address'];
 
     public function user()
     {

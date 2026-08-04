@@ -1,5 +1,5 @@
 @php
-    $siteSetting = \App\Models\SiteSetting::first();
+$siteSetting = \App\Models\SiteSetting::first();
 
 @endphp
 
@@ -51,48 +51,48 @@
         <nav class="hidden lg:flex items-stretch gap-0">
 
             @guest
-                <a href="{{ route('frontend.signin') }}"
-                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
-                    <i class="fas fa-sign-in-alt text-lg"></i>
-                    <span class="text-sm tracking-wide">Sign In</span>
-                </a>
+            <a href="{{ route('frontend.signin') }}"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
+                <i class="fas fa-sign-in-alt text-lg"></i>
+                <span class="text-sm tracking-wide">Sign In</span>
+            </a>
 
-                <a href="{{ route('frontend.signup') }}"
-                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
-                    <i class="fas fa-user-plus text-lg"></i>
-                    <span class="text-sm tracking-wide">Sign Up</span>
-                </a>
+            <a href="{{ route('frontend.signup') }}"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
+                <i class="fas fa-user-plus text-lg"></i>
+                <span class="text-sm tracking-wide">Sign Up</span>
+            </a>
             @endguest
 
             @auth
-                <a href="{{ route('profile.index') }}"
-                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40 {{ request()->routeIs('profile.index') ? 'border-white' : 'border-transparent hover:border-white/40' }}">
+            <a href="{{ route('profile.index') }}"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40 {{ request()->routeIs('profile.index') ? 'border-white' : 'border-transparent hover:border-white/40' }}">
 
 
-                    <img src="{{ Auth::user()->avatar_url ?? asset('./images/user/images.png') }}" alt="Profile"
-                        class="w-6 h-6 rounded-full object-cover border border-white/50">
+                <img src="{{ Auth::user()->avatar_url ?? asset('./images/user/images.png') }}" alt="Profile"
+                    class="w-6 h-6 rounded-full object-cover border border-white/50">
 
-                    <span class="text-sm tracking-wide">{{ Auth::user()->name }}</span>
-                </a>
+                <span class="text-sm tracking-wide">{{ Auth::user()->name }}</span>
+            </a>
 
-                <form id="logout-form" action="{{ route('frontend.logout') }}" method="POST" class="hidden">
-                    @csrf
-                </form>
-                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-red-400 transition-colors border-b-2 border-transparent hover:border-white/40">
-                    <i class="fas fa-power-off text-lg"></i>
-                    <span class="text-sm tracking-wide">Logout</span>
-                </a>
+            <form id="logout-form" action="{{ route('frontend.logout') }}" method="POST" class="hidden">
+                @csrf
+            </form>
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-red-400 transition-colors border-b-2 border-transparent hover:border-white/40">
+                <i class="fas fa-power-off text-lg"></i>
+                <span class="text-sm tracking-wide">Logout</span>
+            </a>
             @endauth
             <a href="{{ route('bookmark.list') }}"
                 class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40 {{ request()->routeIs('bookmark.list') ? 'border-white' : 'border-transparent hover:border-white/40' }}">
                 <div class="relative">
                     <i class="fa-regular fa-bookmark text-lg"></i>
                     @if ($bookmarkCount > 0)
-                        <span
-                            class="absolute -top-2 -right-2 bg-white text-[#003b7a] text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                            {{ $bookmarkCount > 99 ? '99+' : $bookmarkCount }}
-                        </span>
+                    <span
+                        class="absolute -top-2 -right-2 bg-white text-[#003b7a] text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                        {{ $bookmarkCount > 99 ? '99+' : $bookmarkCount }}
+                    </span>
                     @endif
                 </div>
                 <span class="text-sm tracking-wide flex items-center gap-1">Bookmark</span>
@@ -103,24 +103,15 @@
                     <div class="relative">
                         <i class="fa-regular fa-bell text-lg"></i>
                         @if ($unreadCount > 0)
-                            <span id="notifBadge"
-                                class="absolute -top-2 -right-2 bg-white text-[#003b7a] text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                                {{ $unreadCount > 99 ? '99+' : $unreadCount }}
-                            </span>
+                        <span id="notifBadge"
+                            class="absolute -top-2 -right-2 bg-white text-[#003b7a] text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                            {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                        </span>
                         @endif
                     </div>
                     <span class="text-sm tracking-wide">Notification</span>
                 </button>
-@auth
-<button id="push-bell-btn"
-        onclick="initPushNotification()"
-        class="text-gray-400 hover:text-[#0071c5] transition-colors p-2 rounded-lg"
-        title="Enable Notifications">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
-    </svg>
-</button>
-@endauth
+
                 <!-- Dropdown -->
                 <div id="notifDropdown"
                     class="hidden absolute right-0 top-full mt-1 w-80 bg-white shadow-xl border border-gray-100 rounded-sm z-50">
@@ -129,76 +120,77 @@
                     <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                         <span class="text-sm font-semibold text-gray-700">Notifications</span>
                         @if ($unreadCount > 0)
-                            <button onclick="markAllRead()"
-                                class="text-[11px] text-[#0071c5] font-semibold hover:underline">
-                                Mark all as read
-                            </button>
+                        <button onclick="markAllRead()"
+                            class="text-[11px] text-[#0071c5] font-semibold hover:underline">
+                            Mark all as read
+                        </button>
                         @endif
                     </div>
 
                     <!-- List -->
                     <div class="max-h-80 overflow-y-auto divide-y divide-gray-50">
                         @forelse($notifications as $notif)
-                            @php
-                                // check notification by user
-                                $userId = auth()->id();
-                                $readBy = $notif->read_by ?? []; //
-                                $isRead = in_array($userId, $readBy);
-                            @endphp
+                        @php
+                        // check notification by user
+                        $userId = auth()->id();
+                        $readBy = $notif->read_by ?? []; //
+                        $isRead = in_array($userId, $readBy);
+                        @endphp
 
-                            <a href="{{ $notif->url }}" onclick="markRead(event, {{ $notif->id }}, '{{ $notif->url }}')"
-                                id="notif-{{ $notif->id }}" {{-- unread --}}
-                                class="flex items-start gap-3 px-4 py-4 transition-all border-b border-gray-100
+                        <a href="{{ $notif->url }}" onclick="markRead(event, {{ $notif->id }}, '{{ $notif->url }}')"
+                            id="notif-{{ $notif->id }}" {{-- unread --}}
+                            class="flex items-start gap-3 px-4 py-4 transition-all border-b border-gray-100
                                             {{ !$isRead ? 'bg-[#f0f7ff] border-l-4 border-l-[#0071c5]' : 'bg-white opacity-50' }} hover:bg-gray-50">
 
-                                <div
-                                    class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5
+                            <div
+                                class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5
                                                 {{ $notif->type === 'asset' ? 'bg-blue-100 text-blue-600' : 'bg-teal-100 text-teal-600' }}">
-                                    <i
-                                        class="fa-solid {{ $notif->type === 'asset' ? 'fa-file' : 'fa-bullhorn' }} text-xs"></i>
-                                </div>
-
-                                <div class="flex-1 min-w-0">
-                                    <p
-                                        class="text-[13px] leading-snug {{ !$isRead ? 'font-bold text-gray-900' : 'font-normal text-gray-500' }}">
-                                        {{ $notif->title }}
-                                    </p>
-                                    <p class="text-[11px] text-gray-400 mt-1">
-                                        {{ $notif->created_at->diffForHumans() }}
-                                    </p>
-                                </div>
-
-                                @if (!$isRead)
-                                    <div class="unread-dot w-2.5 h-2.5 bg-[#0071c5] rounded-full shrink-0 mt-2"></div>
-                                @endif
-                            </a>
-                        @empty
-                            <div class="px-4 py-10 text-center text-sm text-gray-400">
-                                No notifications yet
+                                <i
+                                    class="fa-solid {{ $notif->type === 'asset' ? 'fa-file' : 'fa-bullhorn' }} text-xs"></i>
                             </div>
+
+                            <div class="flex-1 min-w-0">
+                                <p
+                                    class="text-[13px] leading-snug {{ !$isRead ? 'font-bold text-gray-900' : 'font-normal text-gray-500' }}">
+                                    {{ $notif->title }}
+                                </p>
+                                <p class="text-[11px] text-gray-400 mt-1">
+                                    {{ $notif->created_at->diffForHumans() }}
+                                </p>
+                            </div>
+
+                            @if (!$isRead)
+                            <div class="unread-dot w-2.5 h-2.5 bg-[#0071c5] rounded-full shrink-0 mt-2"></div>
+                            @endif
+                        </a>
+                        @empty
+                        <div class="px-4 py-10 text-center text-sm text-gray-400">
+                            No notifications yet
+                        </div>
                         @endforelse
                     </div>
                 </div>
             </div>
             @if(auth()->user()?->isSuperAdmin())
-                <a href="{{ route('dashboard') }}"
-                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
-                    <i class="fa-solid fa-gauge text-lg"></i>
-                    <span class="text-sm tracking-wide flex items-center gap-1">Admin Dashboard</span>
-                </a>
+            <a href="{{ route('dashboard') }}"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
+                <i class="fa-solid fa-gauge text-lg"></i>
+                <span class="text-sm tracking-wide flex items-center gap-1">Admin Dashboard</span>
+            </a>
             @else
-                <a href="{{ route('tickets.index') }}"
-                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
-                    <i class="fa-regular fa-circle-question text-lg"></i>
-                    <span class="text-sm tracking-wide flex items-center gap-1">Help</span>
-                </a>
-                <!-- Tutorial (Desktop) -->
-                <a href="javascript:void(0)" id="tutorial-trigger"
-                    class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
-                    <i class="fa-brands fa-readme text-lg"></i>
-                    <span class="text-sm tracking-wide">Tutorial</span>
-                </a>
+            <a href="{{ route('tickets.index') }}"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
+                <i class="fa-regular fa-circle-question text-lg"></i>
+                <span class="text-sm tracking-wide flex items-center gap-1">Help</span>
+            </a>
+            <!-- Tutorial (Desktop) -->
+            <a href="javascript:void(0)" id="tutorial-trigger"
+                class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
+                <i class="fa-brands fa-readme text-lg"></i>
+                <span class="text-sm tracking-wide">Tutorial</span>
+            </a>
             @endif
+          
         </nav>
         <!-- ── MOBILE NAV DRAWER (সব ডিভাইসে নিখুঁত কাজ করবে) ── -->
         <div x-show="mobileMenu" x-transition:enter="transition ease-out duration-300"
@@ -229,21 +221,21 @@
 
                     <div class="pt-6 space-y-4">
                         @guest
-                            <a href="{{ route('frontend.signin') }}" class="flex items-center gap-3"><i
-                                    class="fas fa-sign-in-alt"></i> Sign In</a>
+                        <a href="{{ route('frontend.signin') }}" class="flex items-center gap-3"><i
+                                class="fas fa-sign-in-alt"></i> Sign In</a>
                         @endguest
                         @auth
-                            <a href="{{ route('profile.index') }}" class="flex items-center gap-3">
-                                <img src="{{ Auth::user()->avatar_url ?? asset('./images/user/owner.jpg')}}"
-                                    class="w-8 h-8 rounded-full">
-                                <span>{{ Auth::user()->name }}</span>
-                            </a>
+                        <a href="{{ route('profile.index') }}" class="flex items-center gap-3">
+                            <img src="{{ Auth::user()->avatar_url ?? asset('./images/user/owner.jpg')}}"
+                                class="w-8 h-8 rounded-full">
+                            <span>{{ Auth::user()->name }}</span>
+                        </a>
                         @endauth
 
                         <a href="{{ route('bookmark.list') }}" class="flex items-center justify-between">
                             <span><i class="fa-regular fa-bookmark mr-2"></i> Saved Items</span>
                             @if($bookmarkCount > 0) <span
-                            class="bg-red-500 px-2 rounded-full text-xs">{{ $bookmarkCount }}</span> @endif
+                                class="bg-red-500 px-2 rounded-full text-xs">{{ $bookmarkCount }}</span> @endif
                         </a>
 
                         <a href="{{ route('tickets.index') }}" class="flex items-center gap-3"><i
@@ -256,10 +248,10 @@
 
 
                         @auth
-                            <button onclick="document.getElementById('logout-form').submit();"
-                                class="text-red-400 font-bold pt-4 text-left">
-                                <i class="fas fa-power-off mr-2"></i> Logout
-                            </button>
+                        <button onclick="document.getElementById('logout-form').submit();"
+                            class="text-red-400 font-bold pt-4 text-left">
+                            <i class="fas fa-power-off mr-2"></i> Logout
+                        </button>
                         @endauth
                     </div>
                 </div>
@@ -368,7 +360,9 @@
                     videoIframe.src = "";
                     videoIframe.src = videoSrc;
                 }
-                setTimeout(() => { popup.style.display = "none"; }, 700);
+                setTimeout(() => {
+                    popup.style.display = "none";
+                }, 700);
             });
         }
     });

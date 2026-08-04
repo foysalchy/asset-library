@@ -101,19 +101,39 @@ class DownloadLogController extends Controller
     }
     public function track(Request $request)
     {
+        \Log::info('Track request:', $request->all());
+
         $request->validate([
-            'model'    => ['required', 'string', 'in:campaign,asset'],
-            'model_id' => ['required', 'integer'],
+            'model'     => ['required', 'string', 'in:campaign,asset'],
+            'model_id'  => ['required', 'integer'],
+            'file_name' => ['nullable', 'string'],
+            'file_type' => ['nullable', 'string'],
         ]);
 
-        DownloadLog::updateOrCreate(
+        \Log::info('Track validated:', [
+            'user_id'   => auth()->id(),
+            'model'     => $request->model,
+            'model_id'  => $request->model_id,
+            'file_name' => $request->file_name,
+            'file_type' => $request->file_type,
+        ]);
+
+        $log = DownloadLog::updateOrCreate(
             [
-                'user_id'  => auth()->id(),
-                'model'    => $request->model,
-                'model_id' => $request->model_id,
+                'user_id'   => auth()->id(),
+                'model'     => $request->model,
+                'model_id'  => $request->model_id,
+                'file_name' => $request->file_name,
             ],
-            ['ip_address' => $request->ip()]
-        )->increment('count');
+            [
+                'file_type'  => $request->file_type ?? 'edited_content',
+                'ip_address' => request()->ip(),
+            ]
+        );
+
+        \Log::info('Log created/updated:', $log->toArray());
+
+        $log->increment('count');
 
         return response()->json(['success' => true]);
     }

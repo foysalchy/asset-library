@@ -41,8 +41,12 @@ class FileController extends Controller
             return $this->downloadImagesAsZip($model);
         }
 
-        $this->logDownload($type, $id);
-
+   $this->logDownload(
+        $type,
+        $id,
+        $model->file_original_name ?? basename($model->$field),
+        $type . '_file'
+    );
         $filePath = $model->$field;
 
         if (str_starts_with($filePath, 'drive:')) {
@@ -611,23 +615,25 @@ class FileController extends Controller
             abort(500, 'Error streaming file: ' . $e->getMessage());
         }
     }
-    private function logDownload(string $type, string $id): void
-    {
-        try {
-            DownloadLog::updateOrCreate(
-                [
-                    'user_id'  => auth()->id(),
-                    'model'    => $type,
-                    'model_id' => $id,
-                ],
-                [
-                    'ip_address' => request()->ip(),
-                ]
-            )->increment('count');
-        } catch (\Exception $e) {
-            Log::error('Download log error: ' . $e->getMessage());
-        }
+private function logDownload(string $type, string $id, ?string $fileName = null, ?string $fileType = null): void
+{
+    try {
+        DownloadLog::updateOrCreate(
+            [
+                'user_id'   => auth()->id(),
+                'model'     => $type,
+                'model_id'  => $id,
+                'file_name' => $fileName,   
+                'file_type' => $fileType,
+            ],
+            [
+                'ip_address' => request()->ip(),
+            ]
+        )->increment('count');
+    } catch (\Exception $e) {
+        \Log::error('Download log error: ' . $e->getMessage());
     }
+}
     public function downloadVideo(Asset $asset, AssetMedia $media)
     {
         if ($media->asset_id !== $asset->id || $media->media_type !== 'video') {

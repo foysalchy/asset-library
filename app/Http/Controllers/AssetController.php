@@ -77,6 +77,7 @@ class AssetController extends Controller
         $this->activityLog->log('created', $asset, "Created asset: {$asset->title}");
 
         NotificationService::notifyAll('asset', $asset->id, $asset->title, $asset->slug);
+        
         return redirect()->route('assets.show', $asset)->with('success', 'Asset created successfully.');
     }
 

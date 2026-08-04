@@ -42,7 +42,7 @@
     @stack('scripts')
 
     {{-- Firebase SDKs --}}
-@include('layouts.partials.fcm')
+@include('frontend.layouts.partials.fcm')
 
 </script>
     <script>

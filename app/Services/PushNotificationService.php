@@ -29,31 +29,24 @@ class PushNotificationService
         return $this->sendToTokens($tokens, $title, $body, $url, $icon);
     }
 
-    public function sendToTokens(array $tokens, string $title, string $body, ?string $url = null, ?string $icon = null)
-    {
-        $webPushConfig = WebPushConfig::fromArray([
-            'notification' => [
-                'title' => $title,
-                'body'  => $body,
-                'icon'  => $icon ?? '/images/logo.png',
-            ],
-            'fcm_options' => [
-                'link' => $url ?? '/',
-            ],
+  // app/Services/PushNotificationService.php
+public function sendToTokens(array $tokens, string $title, string $body, ?string $url = null, ?string $icon = null)
+{
+    $message = CloudMessage::new()
+        ->withData([
+            'title' => $title,
+            'body'  => $body,
+            'url'   => $url ?? '/',
+            'icon'  => $icon ?? asset('/logo.png'), // ✅ full URL app logo
         ]);
 
-        $message = CloudMessage::new()
-            ->withNotification(FirebaseNotification::create($title, $body))
-            ->withWebPushConfig($webPushConfig)
-            ->withData(['url' => $url ?? '/']);
 
-        $sendReport = $this->messaging->sendMulticast($message, $tokens);
+    $sendReport = $this->messaging->sendMulticast($message, $tokens);
 
-        // Invalid/expired token গুলা DB থেকে delete করে দাও
-        foreach ($sendReport->invalidTokens() as $invalidToken) {
-            FcmToken::where('token', $invalidToken)->delete();
-        }
-
-        return $sendReport;
+    foreach ($sendReport->invalidTokens() as $invalidToken) {
+        FcmToken::where('token', $invalidToken)->delete();
     }
+
+    return $sendReport;
+}
 }

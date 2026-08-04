@@ -14,12 +14,21 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage(function (payload) {
-    const { title, body, icon } = payload.notification || {};
-    self.registration.showNotification(title || 'Notification', {
-        body: body || '',
-        icon: icon || '/images/logo.png',
-        data: payload.data,
+// public/firebase-messaging-sw.js
+messaging.onBackgroundMessage(function(payload) {
+
+
+    const data = payload.data || {};
+    const title = data.title || 'New Notification';
+    const body  = data.body  || '';
+    const url   = data.url   || '/';
+    const icon  = data.icon  || '/logo.png';
+
+    self.registration.showNotification(title, {
+        body: body,
+        icon: icon,
+        badge: icon,
+        data: { url: url },
     });
 });
 

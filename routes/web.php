@@ -175,6 +175,7 @@ Route::prefix('')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [FrontendAuthController::class, 'index'])->name('profile.index');
         Route::put('/profile/update', [FrontendAuthController::class, 'update'])->name('profile.update');
+            Route::put('/password', [FrontendAuthController::class, 'updatePassword'])->name('password.update');
         Route::get('/assets/{asset:slug}/edit-content', [AssetController::class, 'editContent'])
             ->name('assets.edit-content');
         Route::get('/drive/media/{media}/base64', [FileController::class, 'base64Image'])

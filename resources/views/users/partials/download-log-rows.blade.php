@@ -7,7 +7,7 @@
         </div>
         <div class="flex-1 min-w-0">
             <p class="text-sm text-gray-700 dark:text-gray-300">
-                Downloaded <span class="font-medium">{{ $log->title }}</span>
+                 <span class="font-medium">{{$log->file_name. "-" ?? ""}}{{ $log->title }}</span>
                 @if($log->count > 1)
                     <span class="text-xs text-gray-400">({{ $log->count }} times)</span>
                 @endif

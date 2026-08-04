@@ -7,7 +7,7 @@
         </div>
         <div class="flex-1 min-w-0">
             <p class="text-sm text-gray-700 dark:text-gray-300">
-                Downloaded <span class="font-medium"><?php echo e($log->title); ?></span>
+                 <span class="font-medium"><?php echo e($log->file_name. "-" ?? ""); ?><?php echo e($log->title); ?></span>
                 <?php if($log->count > 1): ?>
                     <span class="text-xs text-gray-400">(<?php echo e($log->count); ?> times)</span>
                 <?php endif; ?>
