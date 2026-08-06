@@ -185,7 +185,7 @@ $siteSetting = \App\Models\SiteSetting::first();
             <a href="<?php echo e(route('tickets.index')); ?>"
                 class="flex flex-col items-center justify-center gap-[5px] px-5 py-2.5 text-white hover:text-white transition-colors border-b-2 border-transparent hover:border-white/40">
                 <i class="fa-regular fa-circle-question text-lg"></i>
-                <span class="text-sm tracking-wide flex items-center gap-1">Help</span>
+                <span class="text-sm tracking-wide flex items-center gap-1">Support</span>
             </a>
             <!-- Tutorial (Desktop) -->
             <a href="javascript:void(0)" id="tutorial-trigger"
@@ -194,7 +194,7 @@ $siteSetting = \App\Models\SiteSetting::first();
                 <span class="text-sm tracking-wide">Tutorial</span>
             </a>
             <?php endif; ?>
-          
+
         </nav>
         <!-- ── MOBILE NAV DRAWER (সব ডিভাইসে নিখুঁত কাজ করবে) ── -->
         <div x-show="mobileMenu" x-transition:enter="transition ease-out duration-300"
@@ -243,7 +243,7 @@ $siteSetting = \App\Models\SiteSetting::first();
                         </a>
 
                         <a href="<?php echo e(route('tickets.index')); ?>" class="flex items-center gap-3"><i
-                                class="fa-regular fa-circle-question"></i> Help Center</a>
+                                class="fa-regular fa-circle-question"></i> Support Center</a>
 
                         <a href="javascript:void(0)" id="tutorial-trigger-mobile"
                             class="text-lg font-medium border-b border-white/10 pb-2 flex items-center gap-2">
@@ -370,4 +370,5 @@ $siteSetting = \App\Models\SiteSetting::first();
             });
         }
     });
-</script><?php /**PATH C:\laragon\www\asset-management\resources\views/frontend/partials/header.blade.php ENDPATH**/ ?>
+</script>
+<?php /**PATH C:\laragon\www\asset-management\resources\views/frontend/partials/header.blade.php ENDPATH**/ ?>
