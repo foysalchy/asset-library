@@ -86,16 +86,16 @@ class FrontendAuthController extends Controller
             'employee_id'    => $request->employee_id,
             'password' => Hash::make($request->password),
             'status'   => 'active',
+            'email_verified_at'   => now(),
         ]);
 
         // Frontend user role assign
         $role = Role::where('name', 'frontend_user')->first();
         if ($role) $user->roles()->attach($role->id);
 
-        event(new Registered($user));
         auth()->login($user);
 
-        return redirect()->route('verification.notice');
+        return redirect('/home');
     }
 
     public function showSignin()

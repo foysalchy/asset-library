@@ -166,14 +166,7 @@
 
                 <!-- ── Assets Section ── -->
                 <div id="assets" class="mb-8">
-                    <div class="flex items-center gap-2 mb-1">
-                        <h2 class="text-[22px] font-light text-gray-800">Assets</h2>
-                        <button type="button" aria-label="Toggle Assets section"
-                            class="w-6 h-6 rounded-full border-2 border-[#0071c5] text-[#0071c5] flex items-center justify-center text-xs hover:bg-blue-50 transition-colors"
-                            onclick="toggleSection('assetsGrid', this)">
-                            <i class="fas fa-plus text-[10px]"></i>
-                        </button>
-                    </div>
+            
 
                     <div id="assetsGrid" class="hidden">
                         @if ($assets->count() > 0)
@@ -230,18 +223,7 @@
 
 <script>
     // ── Toggle section open/close ──
-    function toggleSection(sectionId, btn) {
-        const section = document.getElementById(sectionId);
-        const icon = btn.querySelector('i');
 
-        section.classList.toggle('hidden');
-        const isHidden = section.classList.contains('hidden');
-
-        icon.classList.toggle('fa-plus', isHidden);
-        icon.classList.toggle('fa-minus', !isHidden);
-
-        localStorage.setItem(sectionId, isHidden ? 'hidden' : 'visible');
-    }
     // ── Selection logic ──
     function updateActionBar() {
         const checked = document.querySelectorAll('.item-checkbox:checked');
