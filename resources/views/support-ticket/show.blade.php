@@ -44,11 +44,17 @@
                         </svg>
                     </a>
                     <div class="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium shrink-0">
-                        {{ strtoupper(substr($ticket->user->name, 0, 1)) }}
+                        {{ strtoupper(substr($ticket->display_name, 0, 1)) }}
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $ticket->subject }}</p>
-                        <p class="text-xs text-gray-400 dark:text-gray-500">#{{ $ticket->id }} · {{ $ticket->user->name }} · {{ $ticket->created_at->format('d M Y') }}</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500">
+                            #{{ $ticket->id }} · {{ $ticket->display_name }}
+                            @if(!$ticket->user_id)
+                                <span class="text-amber-500">(Guest)</span>
+                            @endif
+                            · {{ $ticket->created_at->format('d M Y') }}
+                        </p>
                     </div>
                     <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium {{ $s['class'] }} shrink-0">
                         {{ $s['label'] }}
@@ -68,14 +74,14 @@
                 <div class="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-gray-50 dark:bg-white/[0.01]" id="chatBox">
 
                     <!-- Original message -->
-                    @if($ticket->user_id === auth()->id())
+                    @if($ticket->user_id && $ticket->user_id === auth()->id())
                         <!-- My ticket — right -->
                         <div class="flex items-end gap-2 flex-row-reverse">
                             <div class="w-7 h-7 rounded-full bg-[#001e3e] flex items-center justify-center text-white text-xs font-medium shrink-0">
-                                {{ strtoupper(substr($ticket->user->name, 0, 1)) }}
+                                {{ strtoupper(substr($ticket->display_name, 0, 1)) }}
                             </div>
                             <div class="max-w-[68%]">
-                                <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 mr-1 text-right">{{ $ticket->user->name }} · {{ $ticket->created_at->diffForHumans() }}</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 mr-1 text-right">{{ $ticket->display_name }} · {{ $ticket->created_at->diffForHumans() }}</p>
                                 <div class="bg-[#0071c5] px-4 py-2.5 rounded-tl-2xl rounded-bl-2xl rounded-br-2xl">
                                     <p class="text-sm text-white leading-relaxed">{{ $ticket->description }}</p>
                                 </div>
@@ -86,13 +92,19 @@
                             </div>
                         </div>
                     @else
-                        <!-- Other user ticket — left -->
+                        <!-- Other user / Guest ticket — left -->
                         <div class="flex items-end gap-2">
                             <div class="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-medium shrink-0">
-                                {{ strtoupper(substr($ticket->user->name, 0, 1)) }}
+                                {{ strtoupper(substr($ticket->display_name, 0, 1)) }}
                             </div>
                             <div class="max-w-[68%]">
-                                <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 ml-1">{{ $ticket->user->name }} · {{ $ticket->created_at->diffForHumans() }}</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 ml-1">
+                                    {{ $ticket->display_name }}
+                                    @if(!$ticket->user_id)
+                                        <span class="text-amber-500">(Guest)</span>
+                                    @endif
+                                    · {{ $ticket->created_at->diffForHumans() }}
+                                </p>
                                 <div class="bg-white dark:bg-white/10 border border-gray-200 dark:border-gray-700 px-4 py-2.5 rounded-tr-2xl rounded-br-2xl rounded-bl-2xl">
                                     <p class="text-sm text-gray-800 dark:text-white/90 leading-relaxed">{{ $ticket->description }}</p>
                                 </div>
@@ -110,10 +122,10 @@
                             <!-- My message — right -->
                             <div class="flex items-end gap-2 flex-row-reverse">
                                 <div class="w-7 h-7 rounded-full bg-[#001e3e] flex items-center justify-center text-white text-xs font-medium shrink-0">
-                                    {{ strtoupper(substr($reply->user->name, 0, 1)) }}
+                                    {{ strtoupper(substr($reply->display_name, 0, 1)) }}
                                 </div>
                                 <div class="max-w-[68%]">
-                                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 mr-1 text-right">{{ $reply->user->name }} · {{ $reply->created_at->diffForHumans() }}</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 mr-1 text-right">{{ $reply->display_name }} · {{ $reply->created_at->diffForHumans() }}</p>
                                     <div class="bg-[#0071c5] px-4 py-2.5 rounded-tl-2xl rounded-bl-2xl rounded-br-2xl">
                                         <p class="text-sm text-white leading-relaxed">{{ $reply->message }}</p>
                                     </div>
@@ -127,10 +139,10 @@
                             <!-- Other message — left -->
                             <div class="flex items-end gap-2">
                                 <div class="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-medium shrink-0">
-                                    {{ strtoupper(substr($reply->user->name, 0, 1)) }}
+                                    {{ strtoupper(substr($reply->display_name, 0, 1)) }}
                                 </div>
                                 <div class="max-w-[68%]">
-                                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 ml-1">{{ $reply->user->name }} · {{ $reply->created_at->diffForHumans() }}</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 ml-1">{{ $reply->display_name }} · {{ $reply->created_at->diffForHumans() }}</p>
                                     <div class="bg-white dark:bg-white/10 border border-gray-200 dark:border-gray-700 px-4 py-2.5 rounded-tr-2xl rounded-br-2xl rounded-bl-2xl">
                                         <p class="text-sm text-gray-800 dark:text-white/90 leading-relaxed">{{ $reply->message }}</p>
                                     </div>
@@ -184,8 +196,6 @@
 
             </div>
         </div>
-
-
 
     </div>
 </div>

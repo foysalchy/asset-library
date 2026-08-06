@@ -42,12 +42,20 @@
                         </svg>
                     </a>
                     <div class="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium shrink-0">
-                        <?php echo e(strtoupper(substr($ticket->user->name, 0, 1))); ?>
+                        <?php echo e(strtoupper(substr($ticket->display_name, 0, 1))); ?>
 
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-gray-900 dark:text-white truncate"><?php echo e($ticket->subject); ?></p>
-                        <p class="text-xs text-gray-400 dark:text-gray-500">#<?php echo e($ticket->id); ?> · <?php echo e($ticket->user->name); ?> · <?php echo e($ticket->created_at->format('d M Y')); ?></p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500">
+                            #<?php echo e($ticket->id); ?> · <?php echo e($ticket->display_name); ?>
+
+                            <?php if(!$ticket->user_id): ?>
+                                <span class="text-amber-500">(Guest)</span>
+                            <?php endif; ?>
+                            · <?php echo e($ticket->created_at->format('d M Y')); ?>
+
+                        </p>
                     </div>
                     <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium <?php echo e($s['class']); ?> shrink-0">
                         <?php echo e($s['label']); ?>
@@ -68,15 +76,15 @@
                 <div class="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-gray-50 dark:bg-white/[0.01]" id="chatBox">
 
                     <!-- Original message -->
-                    <?php if($ticket->user_id === auth()->id()): ?>
+                    <?php if($ticket->user_id && $ticket->user_id === auth()->id()): ?>
                         <!-- My ticket — right -->
                         <div class="flex items-end gap-2 flex-row-reverse">
                             <div class="w-7 h-7 rounded-full bg-[#001e3e] flex items-center justify-center text-white text-xs font-medium shrink-0">
-                                <?php echo e(strtoupper(substr($ticket->user->name, 0, 1))); ?>
+                                <?php echo e(strtoupper(substr($ticket->display_name, 0, 1))); ?>
 
                             </div>
                             <div class="max-w-[68%]">
-                                <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 mr-1 text-right"><?php echo e($ticket->user->name); ?> · <?php echo e($ticket->created_at->diffForHumans()); ?></p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 mr-1 text-right"><?php echo e($ticket->display_name); ?> · <?php echo e($ticket->created_at->diffForHumans()); ?></p>
                                 <div class="bg-[#0071c5] px-4 py-2.5 rounded-tl-2xl rounded-bl-2xl rounded-br-2xl">
                                     <p class="text-sm text-white leading-relaxed"><?php echo e($ticket->description); ?></p>
                                 </div>
@@ -87,14 +95,22 @@
                             </div>
                         </div>
                     <?php else: ?>
-                        <!-- Other user ticket — left -->
+                        <!-- Other user / Guest ticket — left -->
                         <div class="flex items-end gap-2">
                             <div class="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-medium shrink-0">
-                                <?php echo e(strtoupper(substr($ticket->user->name, 0, 1))); ?>
+                                <?php echo e(strtoupper(substr($ticket->display_name, 0, 1))); ?>
 
                             </div>
                             <div class="max-w-[68%]">
-                                <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 ml-1"><?php echo e($ticket->user->name); ?> · <?php echo e($ticket->created_at->diffForHumans()); ?></p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 ml-1">
+                                    <?php echo e($ticket->display_name); ?>
+
+                                    <?php if(!$ticket->user_id): ?>
+                                        <span class="text-amber-500">(Guest)</span>
+                                    <?php endif; ?>
+                                    · <?php echo e($ticket->created_at->diffForHumans()); ?>
+
+                                </p>
                                 <div class="bg-white dark:bg-white/10 border border-gray-200 dark:border-gray-700 px-4 py-2.5 rounded-tr-2xl rounded-br-2xl rounded-bl-2xl">
                                     <p class="text-sm text-gray-800 dark:text-white/90 leading-relaxed"><?php echo e($ticket->description); ?></p>
                                 </div>
@@ -112,11 +128,11 @@
                             <!-- My message — right -->
                             <div class="flex items-end gap-2 flex-row-reverse">
                                 <div class="w-7 h-7 rounded-full bg-[#001e3e] flex items-center justify-center text-white text-xs font-medium shrink-0">
-                                    <?php echo e(strtoupper(substr($reply->user->name, 0, 1))); ?>
+                                    <?php echo e(strtoupper(substr($reply->display_name, 0, 1))); ?>
 
                                 </div>
                                 <div class="max-w-[68%]">
-                                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 mr-1 text-right"><?php echo e($reply->user->name); ?> · <?php echo e($reply->created_at->diffForHumans()); ?></p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 mr-1 text-right"><?php echo e($reply->display_name); ?> · <?php echo e($reply->created_at->diffForHumans()); ?></p>
                                     <div class="bg-[#0071c5] px-4 py-2.5 rounded-tl-2xl rounded-bl-2xl rounded-br-2xl">
                                         <p class="text-sm text-white leading-relaxed"><?php echo e($reply->message); ?></p>
                                     </div>
@@ -130,11 +146,11 @@
                             <!-- Other message — left -->
                             <div class="flex items-end gap-2">
                                 <div class="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-medium shrink-0">
-                                    <?php echo e(strtoupper(substr($reply->user->name, 0, 1))); ?>
+                                    <?php echo e(strtoupper(substr($reply->display_name, 0, 1))); ?>
 
                                 </div>
                                 <div class="max-w-[68%]">
-                                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 ml-1"><?php echo e($reply->user->name); ?> · <?php echo e($reply->created_at->diffForHumans()); ?></p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 ml-1"><?php echo e($reply->display_name); ?> · <?php echo e($reply->created_at->diffForHumans()); ?></p>
                                     <div class="bg-white dark:bg-white/10 border border-gray-200 dark:border-gray-700 px-4 py-2.5 rounded-tr-2xl rounded-br-2xl rounded-bl-2xl">
                                         <p class="text-sm text-gray-800 dark:text-white/90 leading-relaxed"><?php echo e($reply->message); ?></p>
                                     </div>
@@ -189,8 +205,6 @@
             </div>
         </div>
 
-
-
     </div>
 </div>
 
@@ -212,5 +226,4 @@
 <?php $__env->stopPush(); ?>
 
 <?php $__env->stopSection(); ?>
-
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\asset-management\resources\views/support-ticket/show.blade.php ENDPATH**/ ?>

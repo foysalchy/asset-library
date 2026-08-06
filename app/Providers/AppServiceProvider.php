@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\View;
 use App\Models\Bookmark;
 use App\Models\Notification;
 use Illuminate\Support\Facades\URL;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -21,12 +22,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        require_once app_path('helpers.php');
 
-      
-    if (app()->environment('production')) {
-        URL::forceScheme('https');
-    }
- 
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         Blade::directive('permission', function ($expression) {
             return "<?php if(auth()->check() && auth()->user()->hasPermission({$expression})): ?>";
         });
@@ -46,6 +47,7 @@ class AppServiceProvider extends ServiceProvider
                 // সব notification যেগুলো এই user পড়েনি
                 $notifications = Notification::latest()->take(10)->get();
                 $unreadCount   = $notifications->filter(fn($n) => !$n->isReadBy($userId))->count();
+                
             }
 
             $view->with(compact('bookmarkCount', 'notifications', 'unreadCount'));

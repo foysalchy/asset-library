@@ -826,6 +826,7 @@ retry(index) {
                         accept="video/mp4,video/quicktime,video/webm"
                         class="hidden" @change="addVideos($event)">
                 </div>
+                
             </div>
         </div>
 

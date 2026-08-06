@@ -101,6 +101,9 @@
                                 </div>
                                 Keep me logged in
                             </label>
+                            <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:underline font-medium">
+                                Forgot password?
+                            </a>
                         </div>
                     </div>
 
@@ -118,15 +121,16 @@
                     Doesn't have an account?
                     <a href="{{ route('signup') }}" class="text-blue-600 hover:underline font-medium">Sign up</a>
                 </p>
+
             </div>
-             <div class="mt-4 text-center">
+            <div class="mt-4 text-center">
                 <p class="text-lg text-gray-400 dark:text-gray-500">
                     Having trouble signing in or signing up?
                     <a href="{{ route('guest.tickets.create') }}"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="inline-flex items-center gap-1 text-green-600 hover:underline font-medium">
-                  
+
                         Create a ticket
                     </a>
                 </p>

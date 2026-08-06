@@ -32,4 +32,8 @@ class TicketReply extends Model
     {
         return $this->attributes['image'] ? Storage::url($this->attributes['image']) : null;
     }
+    public function getDisplayNameAttribute()
+    {
+        return $this->user->name ?? 'Support Team';
+    }
 }

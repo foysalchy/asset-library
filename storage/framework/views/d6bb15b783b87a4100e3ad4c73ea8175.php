@@ -81,12 +81,15 @@
                             <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
                                 User</th>
                             <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                                Read</th>
+                            <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
                                 Status</th>
                             <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
                                 Replies</th>
                             <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
                                 Date</th>
-                            <th class="relative px-4 py-3"><span class="sr-only">Actions</span></th>
+                            <th class="px-4 py-3 text-center font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                                Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -126,7 +129,24 @@
                                 <p class="text-xs text-gray-400 mt-0.5"><?php echo e($ticket->phone); ?></p>
                             </td>
                             <?php endif; ?>
-
+   <td class="py-3 px-4">
+                <?php if($ticket->is_read): ?>
+                    <span class="inline-flex items-center gap-1 text-xs text-gray-400">
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
+                        </svg>
+                        Read
+                    </span>
+                <?php else: ?>
+                    <span class="inline-flex items-center gap-1 text-xs font-semibold text-blue-600">
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        New
+                    </span>
+                <?php endif; ?>
+            </td>
                             
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span

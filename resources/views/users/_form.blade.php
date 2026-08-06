@@ -70,7 +70,8 @@
         </div>
 
         {{-- Roles --}}
-@if(!$user->roles->contains('name', 'super_admin'))
+        {{-- Roles --}}
+        @if(!$isEdit || !$user->roles->contains('name', 'super_admin'))
         <div class="rounded-xl border border-gray-100 bg-gray-50/50 p-5 dark:border-gray-700 dark:bg-gray-800/40">
             <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Assign Roles</h4>
 

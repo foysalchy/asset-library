@@ -1,0 +1,10 @@
+<?php
+
+use App\Helpers\SiteSettingsHelper;
+
+if (!function_exists('site_settings')) {
+    function site_settings()
+    {
+        return SiteSettingsHelper::get();
+    }
+}

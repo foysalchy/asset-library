@@ -20,6 +20,7 @@ use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DownloadLogController;
 use App\Http\Controllers\FcmController;
+use App\Http\Controllers\Frontend\EmailVerificationController;
 use Google\Service\Storage;
 use Illuminate\Support\Facades\Storage as FacadesStorage;
 
@@ -170,11 +171,32 @@ Route::prefix('')->group(function () {
     // Guest only
     Route::get('/', [FrontendAuthController::class, 'showSignin'])->name('signin');
     Route::post('/', [FrontendAuthController::class, 'signin']);
+
     Route::middleware('guest')->group(function () {
         Route::get('/signup', [FrontendAuthController::class, 'showSignup'])->name('signup');
         Route::post('/signup', [FrontendAuthController::class, 'signup'])->name('signup');
+        Route::get('/forgot-password', [FrontendAuthController::class, 'showLinkRequestForm'])->name('password.request');
+        Route::post('/forgot-password', [FrontendAuthController::class, 'sendResetLinkEmail'])->name('password.email');
+        Route::get('/reset-password/{token}', [FrontendAuthController::class, 'showResetForm'])->name('password.reset');
+        Route::post('/reset-password', [FrontendAuthController::class, 'reset'])->name('password.reset.update');
     });
+
     Route::middleware('auth')->group(function () {
+
+        Route::get('/email/verify', [EmailVerificationController::class, 'notice'])
+            ->name('verification.notice');
+
+        Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+            ->middleware(['signed', 'throttle:6,1'])
+            ->name('verification.verify');
+
+        Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend'])
+            ->middleware('throttle:6,1')
+            ->name('verification.send');
+    });
+
+    Route::middleware(['auth', 'verified'])->group(function () {
+
         Route::get('/profile', [FrontendAuthController::class, 'index'])->name('profile.index');
         Route::put('/profile/update', [FrontendAuthController::class, 'update'])->name('profile.update');
         Route::put('/password', [FrontendAuthController::class, 'updatePassword'])->name('password.update');

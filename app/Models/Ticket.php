@@ -16,11 +16,14 @@ class Ticket extends Model
         'subject',
         'description',
         'image',
-        'status'
+        'status',
+        'read_at'
     ];
 
     protected $casts = [
         'status' => 'integer',
+            'read_at' => 'datetime',
+
     ];
     const STATUS_PENDING        = 0;
     const STATUS_OPEN = 1;
@@ -58,5 +61,22 @@ class Ticket extends Model
     public function getImageUrlAttribute(): ?string
     {
         return $this->attributes['image'] ? Storage::url($this->attributes['image']) : null;
+    }
+    public function getDisplayNameAttribute()
+    {
+        return $this->user?->name ?? $this->name ?? 'Guest';
+    }
+
+
+    public function getIsReadAttribute(): bool
+    {
+        return !is_null($this->read_at);
+    }
+
+    public function markAsRead(): void
+    {
+        if (!$this->read_at) {
+            $this->update(['read_at' => now()]);
+        }
     }
 }

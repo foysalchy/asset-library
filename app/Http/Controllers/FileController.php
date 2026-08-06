@@ -41,12 +41,12 @@ class FileController extends Controller
             return $this->downloadImagesAsZip($model);
         }
 
-   $this->logDownload(
-        $type,
-        $id,
-        $model->file_original_name ?? basename($model->$field),
-        $type . '_file'
-    );
+        $this->logDownload(
+            $type,
+            $id,
+            $model->file_original_name ?? basename($model->$field),
+            $type . '_file'
+        );
         $filePath = $model->$field;
 
         if (str_starts_with($filePath, 'drive:')) {
@@ -63,12 +63,11 @@ class FileController extends Controller
 
     private function downloadImagesAsZip($model): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        $images = $model->media()
-            ->where('media_type', 'image')
+        $mediaItems = $model->media()
             ->where('file_path', 'like', 'drive:%')
             ->get();
 
-        if ($images->isEmpty()) {
+        if ($mediaItems->isEmpty()) {
             abort(404, 'No files available for download.');
         }
 
@@ -78,13 +77,13 @@ class FileController extends Controller
         $client->refreshToken(config('filesystems.disks.google_drive.refreshToken'));
         $service = new \Google\Service\Drive($client);
 
-        $zipName = \Str::slug($model->title ?? 'download') . '-images.zip';
+        $zipName = \Str::slug($model->title ?? 'download') . '-files.zip';
         $tmpZip  = sys_get_temp_dir() . '/' . \Str::uuid() . '.zip';
 
         $zip = new \ZipArchive();
         $zip->open($tmpZip, \ZipArchive::CREATE);
 
-        foreach ($images as $index => $media) {
+        foreach ($mediaItems as $index => $media) {
             $fileId = str_replace('drive:', '', $media->file_path);
 
             try {
@@ -92,20 +91,28 @@ class FileController extends Controller
                 $meta     = $service->files->get($fileId, ['fields' => 'name, mimeType']);
                 $content  = $response->getBody()->getContents();
 
-                $ext      = explode('/', $meta->getMimeType())[1] ?? 'jpg';
-                $filename = ($media->file_original_name ?? 'image-' . ($index + 1)) ?: 'image-' . ($index + 1);
+                // ✅ image/video দুটোর জন্যই filename বানাও
+                $filename = $media->file_original_name ?? null;
+
+                if (!$filename) {
+                    $ext      = explode('/', $meta->getMimeType())[1] ?? 'bin';
+                    $filename = $media->media_type . '_' . ($index + 1) . '.' . $ext;
+                }
 
                 $zip->addFromString($filename, $content);
             } catch (\Exception $e) {
-                \Log::error('ZIP image error: ' . $e->getMessage());
+                \Log::error('ZIP media error (ID: ' . $media->id . '): ' . $e->getMessage());
             }
         }
 
         $zip->close();
 
-        // Log download
-        $type = class_basename($model) === 'Campaign' ? 'campaign' : 'asset';
-        $this->logDownload($type, $model->id);
+        $this->logDownload(
+            class_basename($model) === 'Campaign' ? 'campaign' : 'asset',
+            $model->id,
+            $zipName,
+            'zip_download'
+        );
 
         return response()->streamDownload(function () use ($tmpZip) {
             readfile($tmpZip);
@@ -615,25 +622,25 @@ class FileController extends Controller
             abort(500, 'Error streaming file: ' . $e->getMessage());
         }
     }
-private function logDownload(string $type, string $id, ?string $fileName = null, ?string $fileType = null): void
-{
-    try {
-        DownloadLog::updateOrCreate(
-            [
-                'user_id'   => auth()->id(),
-                'model'     => $type,
-                'model_id'  => $id,
-                'file_name' => $fileName,   
-                'file_type' => $fileType,
-            ],
-            [
-                'ip_address' => request()->ip(),
-            ]
-        )->increment('count');
-    } catch (\Exception $e) {
-        \Log::error('Download log error: ' . $e->getMessage());
+    private function logDownload(string $type, string $id, ?string $fileName = null, ?string $fileType = null): void
+    {
+        try {
+            DownloadLog::updateOrCreate(
+                [
+                    'user_id'   => auth()->id(),
+                    'model'     => $type,
+                    'model_id'  => $id,
+                    'file_name' => $fileName,
+                    'file_type' => $fileType,
+                ],
+                [
+                    'ip_address' => request()->ip(),
+                ]
+            )->increment('count');
+        } catch (\Exception $e) {
+            \Log::error('Download log error: ' . $e->getMessage());
+        }
     }
-}
     public function downloadVideo(Asset $asset, AssetMedia $media)
     {
         if ($media->asset_id !== $asset->id || $media->media_type !== 'video') {

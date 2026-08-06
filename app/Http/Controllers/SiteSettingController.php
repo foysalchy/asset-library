@@ -7,6 +7,7 @@ use App\Services\FileUploadService;
 use Illuminate\Http\Request;
 use App\Helpers\FileUploadHelper;
 use App\Services\ActivityLogService;
+use Illuminate\Support\Facades\Cache;
 
 class SiteSettingController extends Controller
 {
@@ -48,6 +49,7 @@ class SiteSettingController extends Controller
         }
 
         $setting->update($data);
+        Cache::forget('site_settings');
         $this->activityLog->log('updated', $setting, "Updated site settings");
 
         return back()->with('success', 'Settings updated successfully.');

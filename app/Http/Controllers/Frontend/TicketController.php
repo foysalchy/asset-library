@@ -154,6 +154,7 @@ class TicketController extends Controller
     public function showAdmin(Ticket $ticket)
     {
         $ticket->load('replies.user', 'user');
+        $ticket->markAsRead();
         return view('support-ticket.show', compact('ticket'));
     }
     public function adminReply(Request $request, Ticket $ticket)

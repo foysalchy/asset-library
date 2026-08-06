@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\Ticket;
 use Illuminate\Support\Facades\Auth;
 
 class MenuHelper
@@ -92,16 +93,31 @@ class MenuHelper
         ];
 
         // Permission filter
-        return array_filter($items, function ($item) use ($user) {
-            if ($item['permission'] === null) return true;
-            return $user->hasPermission($item['permission']);
-        });
+      foreach ($items as $key => $item) {
+            if ($item['name'] === 'Support Ticket') {
+                $items[$key]['badge'] = self::getUnreadTicketCount();
+            }
+        }
+
+        return $items;
     }
 
     public static function isActive(string $path): bool
     {
         return request()->url() === $path
             || str_starts_with(request()->url(), rtrim($path, '/') . '/');
+    }
+
+      protected static function getUnreadTicketCount(): int
+    {
+        static $count = null; // ✅ static variable — একই request-e দ্বিতীয়বার call হলে DB hit হবে না
+
+        if ($count === null) {
+            $count = Ticket::whereNull('read_at')
+                ->count();
+        }
+
+        return $count;
     }
     public static function getIconSvg($iconName)
     {

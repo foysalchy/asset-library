@@ -112,6 +112,7 @@ class UserController extends Controller
             'password'   => Hash::make($request->password),
             'status'     => $request->status,
             'avatar'     => $avatarPath,
+            'email_verified_at'     => now(),
             'created_by' => auth()->id(),
         ]);
 

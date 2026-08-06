@@ -9,8 +9,13 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password as FacadesPassword;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password as PasswordRule;   // 
+use Illuminate\Validation\Rules;
+use App\Notifications\CustomResetPasswordNotification;
+use Illuminate\Auth\Events\Registered;
 
 class FrontendAuthController extends Controller
 {
@@ -48,11 +53,11 @@ class FrontendAuthController extends Controller
 
         return back()->with('success', 'Profile updated successfully.');
     }
-     public function updatePassword(Request $request)
+    public function updatePassword(Request $request)
     {
         $request->validateWithBag('updatePassword', [
             'current_password' => ['required', 'current_password'],
-            'password' => ['required', Password::defaults(), 'confirmed'],
+            'password' => ['required', PasswordRule::defaults(), 'confirmed'],
         ]);
 
         $request->user()->update([
@@ -86,8 +91,11 @@ class FrontendAuthController extends Controller
         // Frontend user role assign
         $role = Role::where('name', 'frontend_user')->first();
         if ($role) $user->roles()->attach($role->id);
-        return redirect()->route('signin')
-            ->with('success', 'Your account has been created successfully.');
+
+        event(new Registered($user));
+        auth()->login($user);
+
+        return redirect()->route('verification.notice');
     }
 
     public function showSignin()
@@ -117,6 +125,10 @@ class FrontendAuthController extends Controller
             return back()->withErrors(['email' => 'Please use admin panel.']);
         }
 
+        // ✅ Email verification check
+        if (!Auth::user()->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice');
+        }
 
         return redirect('/home');
     }
@@ -127,5 +139,78 @@ class FrontendAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('signin');
+    }
+
+    public function showLinkRequestForm()
+    {
+        return view('frontend.auth.forgot-password');
+    }
+
+    /**
+     * Reset link email এ পাঠাও
+     */
+    public function sendResetLinkEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return back()->with(
+                'success',
+                'A password reset link has been sent to your email address. If you don\'t see it in your inbox within a few minutes, please check your Spam or Junk folder.'
+            );
+        }
+
+        $token = FacadesPassword::createToken($user); // ✅ ekhon thik Facade use hবে
+
+        $user->notify(new CustomResetPasswordNotification($token));
+
+        return back()->with(
+            'success',
+            'A password reset link has been sent to your email address. If you don\'t see it in your inbox within a few minutes, please check your Spam or Junk folder.'
+        );
+    }
+
+    /**
+     * Reset password form দেখাও
+     */
+    public function showResetForm(Request $request, $token)
+    {
+        return view('frontend.auth.reset-password', [
+            'token' => $token,
+            'email' => $request->email,
+        ]);
+    }
+
+    /**
+     * Password reset koro
+     */
+    public function reset(Request $request)
+    {
+        $request->validate([
+            'token'    => 'required',
+            'email'    => 'required|email',
+            'password' => ['required', 'confirmed', PasswordRule::defaults()],
+        ]);
+
+        $status = FacadesPassword::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password),
+                ])->setRememberToken(Str::random(60));
+
+                $user->save();
+            }
+        );
+
+        if ($status === FacadesPassword::PASSWORD_RESET) {
+            return redirect()->route('signin')->with('success', 'Your password has been reset successfully. Please sign in.');
+        }
+
+        return back()->withErrors(['email' => __($status)]);
     }
 }
