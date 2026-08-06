@@ -36,15 +36,24 @@ unset($__defined_vars, $__key, $__value); ?>
         onclick="window.location='<?php echo e(route('asset.details', $asset->slug)); ?>'">
         <!-- Banner Area -->
         <div class="relative min-h-[200px] bg-gradient-to-br from-[#001e3e] to-[#003366] overflow-hidden">
-        <?php
-            $staticCount = $asset->media->where('media_type', 'image')->count();
-        ?>
+            <?php
+                $staticCount = $asset->media->where('media_type', 'image')->count();
+                $videoCount = $asset->media->where('media_type', 'video')->count();
+            ?>
 
-        <?php if($staticCount > 1): ?>
-            <div class="absolute top-2 <?php echo e($selectable ? 'left-12' : 'left-3'); ?> z-20  backdrop-blur-sm text-white text-base font-bold px-2 py-1 rounded">
-                <span><?php echo e($staticCount); ?> Static More</span>
+            <div class="absolute top-2 <?php echo e($selectable ? 'left-12' : 'left-3'); ?> z-20">
+                <?php if($videoCount > 1): ?>
+                    <div
+                        class="bg-red-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                        <span><?php echo e($videoCount); ?> Videos</span>
+                    </div>
+                <?php elseif($videoCount == 0 && $staticCount > 1): ?>
+                    <div
+                        class="bg-red-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                        <span><?php echo e($staticCount); ?> Static More</span>
+                    </div>
+                <?php endif; ?>
             </div>
-        <?php endif; ?>
             <?php if($selectable): ?>
                 <input type="checkbox"
                     class="item-checkbox absolute top-3 left-4 z-30 w-5 h-5 cursor-pointer accent-[#0071c5]"
@@ -85,8 +94,8 @@ unset($__defined_vars, $__key, $__value); ?>
             </h3>
 
             <p class="text-[#757575] text-sm">
-                Topics:
-                <span class="font-normal text-gray-500"><?php echo e($asset->project->name ?? 'General'); ?></span>
+                Concern:
+                <span class="font-normal text-gray-500"><?php echo e($asset->project->concern_name ?? 'General'); ?></span>
             </p>
 
             <div class="mb-8 flex flex-wrap gap-2 mt-2">

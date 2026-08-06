@@ -16,6 +16,10 @@ class Project extends Model
         'right_aid_hospital'  => 'Right Aid Hospital',
     ];
 
+public function getConcernNameAttribute()
+{
+    return self::CONCERNS[$this->concern] ?? $this->concern;
+}
 
     // Helper for Logo URL
     public function getLogoUrlAttribute()

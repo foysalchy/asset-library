@@ -16,18 +16,17 @@ class HomeController extends Controller
     {
         $user = Auth::user();
 
-        $latestAssets = Asset::with(['media' => function($q) {
+        $latestAssets = Asset::with(['media' => function ($q) {
             $q->where('media_type', 'image')->orderBy('sort_order');
         }])
-        // এটি আলাদাভাবে শুধু ইমেজের সংখ্যা গুনে নিয়ে আসবে
-        ->withCount(['media as static_count' => function($q) {
-            $q->where('media_type', 'image');
-        }])
-        ->where('status', 'active')
-        ->orderBy('sort_order')
-        ->limit(8)
-        ->select('id', 'title', 'slug', 'status', 'sort_order')
-        ->get();
+            ->withCount(['media as static_count' => function ($q) {
+                $q->where('media_type', 'image');
+            }])
+            ->where('status', 'active')
+            ->orderBy('sort_order')
+            ->limit(8)
+            ->select('id', 'title', 'slug', 'status', 'sort_order')
+            ->get();
 
         $concerns = Project::CONCERNS;
 
@@ -40,14 +39,25 @@ class HomeController extends Controller
             ->orderBy('name')
             ->get();
 
-
+        $latestVideos = Asset::whereHas('media', function ($q) {
+            $q->where('media_type', 'video');
+        })
+            ->with(['media' => function ($q) {
+                $q->orderBy('sort_order');
+            }])
+            ->where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->limit(8)
+            ->select('id', 'title', 'slug', 'status', 'sort_order', 'project_id')
+            ->get();
 
         return view('frontend.index', compact(
             'latestAssets',
             'concerns',
             'projects',
             'assetTypes',
-            'user'
+            'user',
+            'latestVideos',
         ));
     }
     public function campaignDetails($slug)
@@ -132,6 +142,15 @@ class HomeController extends Controller
                 $campaignQuery->whereJsonContains('languages', $request->lang);
                 $assetQuery->whereRaw('1 = 0');
             }
+            // নতুন যোগ করা লজিক: ভিডিও ফিল্টার
+if ($request->has('video_only')) {
+    $assetQuery->whereHas('media', function($q) {
+        $q->where('media_type', 'video');
+    });
+    // ভিডিও মোডে থাকলে ক্যাম্পেইন দেখানোর দরকার নেই
+    $campaignQuery->whereRaw('1 = 0');
+}
+
         }
 
         $sort = $request->get('sort', 'latest');
