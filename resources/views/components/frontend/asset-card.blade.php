@@ -8,15 +8,24 @@
         onclick="window.location='{{ route('asset.details', $asset->slug) }}'">
         <!-- Banner Area -->
         <div class="relative min-h-[200px] bg-gradient-to-br from-[#001e3e] to-[#003366] overflow-hidden">
-        @php
-            $staticCount = $asset->media->where('media_type', 'image')->count();
-        @endphp
+            @php
+                $staticCount = $asset->media->where('media_type', 'image')->count();
+                $videoCount = $asset->media->where('media_type', 'video')->count();
+            @endphp
 
-        @if($staticCount > 1)
-            <div class="absolute top-2 {{ $selectable ? 'left-12' : 'left-3' }} z-20  backdrop-blur-sm text-white text-base font-bold px-2 py-1 rounded">
-                <span>{{ $staticCount }} Static More</span>
+            <div class="absolute top-2 {{ $selectable ? 'left-12' : 'left-3' }} z-20">
+                @if($videoCount > 1)
+                    <div
+                        class="bg-red-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                        <span>{{ $videoCount }} Videos</span>
+                    </div>
+                @elseif($videoCount == 0 && $staticCount > 1)
+                    <div
+                        class="bg-red-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                        <span>{{ $staticCount }} Static More</span>
+                    </div>
+                @endif
             </div>
-        @endif
             @if($selectable)
                 <input type="checkbox"
                     class="item-checkbox absolute top-3 left-4 z-30 w-5 h-5 cursor-pointer accent-[#0071c5]"
@@ -56,8 +65,8 @@
             </h3>
 
             <p class="text-[#757575] text-sm">
-                Topics:
-                <span class="font-normal text-gray-500">{{ $asset->project->name ?? 'General' }}</span>
+                Concern:
+                <span class="font-normal text-gray-500">{{ $asset->project->concern_name ?? 'General' }}</span>
             </p>
 
             <div class="mb-8 flex flex-wrap gap-2 mt-2">

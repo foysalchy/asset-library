@@ -168,7 +168,54 @@
         </div>
     </div>
 </section>
+<!-- ── Latest Video Assets Section ── -->
+@if(isset($latestVideos) && $latestVideos->count() > 0)
+<section class="container mx-auto px-6 py-12 border-t border-gray-100">
+    <!-- ── Latest Video Assets Section ── -->
+<div class="flex items-center gap-3 mb-8">
+    <a href="{{ route('home.filter', ['video_only' => 1]) }}">
+        <h2 class="text-xl lg:text-3xl text-[#0071c5] underline">
+            Latest Video Assets
+        </h2>
+    </a>
 
+    <a href="{{ route('home.filter', ['video_only' => 1]) }}" aria-label="View all videos"
+        class="bg-[#00aeef] text-white w-7 h-7 flex items-center justify-center shrink-0">
+        <i class="fas fa-arrow-right text-xs"></i>
+    </a>
+
+    <a href="{{ route('home.filter', ['video_only' => 1]) }}"
+        class="ml-auto inline-flex items-center gap-2 bg-[#0071c5] text-white text-xs lg:text-sm font-bold px-4 py-2 hover:bg-[#005ea3] transition-all">
+        View All Videos
+        <i class="fas fa-arrow-right text-xs"></i>
+    </a>
+</div>
+
+    <div class="relative group container mx-auto px-6">
+        <!-- Swiper Prev Button (Unique Class) -->
+        <div class="absolute -left-5 top-1/2 -translate-y-1/2 z-30 lg:flex">
+            <div class="video-prev w-11 h-11 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-[#0071c5] cursor-pointer transition-all">
+                <i class="fa-solid fa-chevron-left text-lg"></i>
+            </div>
+        </div>
+
+        <div class="swiper videoSwiper overflow-hidden">
+            <div class="swiper-wrapper">
+                @foreach ($latestVideos as $asset)
+                    <x-frontend.asset-card :asset="$asset" :swiper="true" />
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Swiper Next Button (Unique Class) -->
+        <div class="absolute -right-5 top-1/2 -translate-y-1/2 z-30 lg:flex">
+            <div class="video-next w-11 h-11 bg-white border border-gray-200 rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-[#0071c5] cursor-pointer transition-all">
+                <i class="fa-solid fa-chevron-right text-lg"></i>
+            </div>
+        </div>
+    </div>
+</section>
+@endif
 @endsection
 @push('scripts')
 <script>

@@ -79,4 +79,19 @@ document.addEventListener('DOMContentLoaded', () => {
             },
         });
     }
+    // Latest Video Assets
+    if (document.querySelector('.videoSwiper')) {
+        new Swiper(".videoSwiper", {
+            slidesPerView: 1,
+            spaceBetween: 24,
+            navigation: {
+                nextEl: ".video-next",
+                prevEl: ".video-prev",
+            },
+            breakpoints: {
+                640: { slidesPerView: 2 },
+                1024: { slidesPerView: 4 },
+            },
+        });
+    }
 });
