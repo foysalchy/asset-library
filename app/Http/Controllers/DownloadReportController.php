@@ -24,13 +24,9 @@ class DownloadReportController extends Controller
             $query->where('model', $request->model);
         }
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->whereHas('user', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
-            });
-        }
+      if ($request->filled('user_id')) {
+        $query->where('user_id', $request->user_id);
+    }
 
         $logs = $query->orderByDesc('updated_at')->paginate(20)->withQueryString();
 
