@@ -32,8 +32,7 @@ unset($__defined_vars, $__key, $__value); ?>
 <div class="swiper-slide h-auto pb-5">
     <?php endif; ?>
 
-    <div class="bg-white border border-gray-100 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col h-full group cursor-pointer"
-        onclick="window.location='<?php echo e(route('asset.details', $asset->slug)); ?>'">
+    <div class="bg-white border border-gray-100 shadow-md hover:shadow-lg transition-all duration-300 flex flex-col h-full group/card cursor-pointer" onclick="window.location='<?php echo e(route('asset.details', $asset->slug)); ?>'">
         <!-- Banner Area -->
         <div class="relative min-h-[200px] h-[200px]  overflow-hidden ">
             <?php
@@ -63,9 +62,9 @@ unset($__defined_vars, $__key, $__value); ?>
 
             <?php if($asset->media->first()?->media_type === 'image'): ?>
             <img src="<?php echo e($asset->media->first()->url); ?>" alt="<?php echo e($asset->title); ?>"
-                class="inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                class="inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105">
             <?php elseif($asset->media->first()?->media_type === 'video'): ?>
-            <div class="relative inset-0 w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center overflow-hidden transition-transform duration-500 group-hover:scale-105">
+            <div class="relative inset-0 w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center overflow-hidden transition-transform duration-500 group-hover/card:scale-105">
                 <svg width="100%" height="100%" viewBox="0 0 400 300" class="absolute inset-0 opacity-20" preserveAspectRatio="xMidYMid slice">
                     <defs>
                         <pattern id="grid-<?php echo e($asset->id); ?>" width="40" height="40" patternUnits="userSpaceOnUse">
