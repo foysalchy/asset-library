@@ -159,7 +159,7 @@ unset($__errorArgs, $__bag); ?>
                                 <td class="px-6 py-4">
                                     <a href="<?php echo e(route($log->model . '.details', $item->slug)); ?>"
                                         class="text-sm font-semibold text-[#0071c5] hover:underline">
-                                        <?php echo e($item->title); ?>
+                                        <?php echo e($log->file_name ?? $item->title); ?>
 
                                     </a>
                                 </td>

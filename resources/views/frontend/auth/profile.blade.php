@@ -146,7 +146,7 @@
                                 <td class="px-6 py-4">
                                     <a href="{{ route($log->model . '.details', $item->slug) }}"
                                         class="text-sm font-semibold text-[#0071c5] hover:underline">
-                                        {{ $item->title }}
+                                        {{ $log->file_name ?? $item->title }}
                                     </a>
                                 </td>
                                 <td class="px-6 py-4">
