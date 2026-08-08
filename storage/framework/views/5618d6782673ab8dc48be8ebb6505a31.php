@@ -3,24 +3,24 @@
 <div class="p-4 mx-auto w-full md:p-6">
 
 
-<div class="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
-    <div>
-        <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">Download Report</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-            <?php echo e($startDate->format('d M Y')); ?> — <?php echo e($endDate->format('d M Y')); ?>
+    <div class="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">Download Report</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                <?php echo e($startDate->format('d M Y')); ?> — <?php echo e($endDate->format('d M Y')); ?>
 
-        </p>
+            </p>
+        </div>
+
+        
+        <a href="<?php echo e(route('reports.downloads.pdf', request()->query())); ?>"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" />
+            </svg>
+            Download PDF
+        </a>
     </div>
-
-    
-    <a href="<?php echo e(route('reports.downloads.pdf', request()->query())); ?>"
-        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors">
-        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"/>
-        </svg>
-        Download PDF
-    </a>
-</div>
 
     
     <div class="rounded-xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-white/[0.03] p-4 mb-5">
@@ -74,23 +74,75 @@
                 <input type="hidden" name="date_to" value="<?php echo e(request('date_to')); ?>">
                 <?php endif; ?>
 
-                <select name="model" onchange="document.getElementById('filterForm').submit()"
-                    class="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                    <option value="">All Types</option>
-                    <option value="Asset" <?php echo e(request('model') === 'Asset' ? 'selected' : ''); ?>>Asset</option>
-                    <option value="Campaign" <?php echo e(request('model') === 'Campaign' ? 'selected' : ''); ?>>Campaign</option>
-                </select>
 
-                <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Search user..."
-                    class="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+             <div class="relative" x-data="{
+        open: false,
+        search: '<?php echo e(optional($users->firstWhere('id', request('user_id')))->name ?? ''); ?>',
+        selectedId: '<?php echo e(request('user_id')); ?>',
+        users: <?php echo e($users->map(fn($u) => ['id' => $u->id, 'name' => $u->name, 'email' => $u->email])->toJson()); ?>,
 
+        get filteredUsers() {
+            if (!this.search) return this.users;
+            return this.users.filter(u =>
+                u.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                u.email.toLowerCase().includes(this.search.toLowerCase())
+            );
+        },
+
+        selectUser(user) {
+            this.search = user.name;
+            this.selectedId = user.id;
+            this.open = false;
+            document.getElementById('userIdInput').value = user.id;
+            document.getElementById('filterForm').submit();
+        },
+
+        clearSelection() {
+            this.search = '';
+            this.selectedId = '';
+            document.getElementById('userIdInput').value = '';
+            document.getElementById('filterForm').submit();
+        }
+     }"
+     @click.outside="open = false">
+
+    <input type="text" x-model="search" @focus="open = true" @input="open = true"
+        placeholder="Search & select user..."
+        autocomplete="off"
+        class="h-10 rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 w-80">
+
+    <input type="hidden" name="user_id" id="userIdInput" :value="selectedId">
+
+    <div x-show="open" x-cloak
+        class="absolute z-50 mt-1 w-80 max-h-60 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900">
+
+        <template x-if="filteredUsers.length === 0">
+            <p class="px-3 py-2 text-sm text-gray-400">No users found.</p>
+        </template>
+
+        <template x-for="user in filteredUsers" :key="user.id">
+            <div @click="selectUser(user)"
+                class="px-3 py-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300">
+                <p class="font-medium" x-text="user.name"></p>
+                <p class="text-xs text-gray-400" x-text="user.email"></p>
+            </div>
+        </template>
+
+        <template x-if="selectedId">
+            <div @click="clearSelection()"
+                class="px-3 py-2 text-sm cursor-pointer text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 border-t border-gray-100 dark:border-gray-800">
+                Clear selection
+            </div>
+        </template>
+    </div>
+</div>
                 
                 <input type="hidden" name="current_filter" value="<?php echo e($filter); ?>">
 
-                <button type="button" onclick="submitWithCurrentFilter()"
-                    class="h-10 px-4 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800">
-                    Filter
-                </button>
+                <a href="<?php echo e(route('reports.downloads', ['filter' => $filter])); ?>"
+                    class="h-10 flex items-center px-4 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800">
+                    Reset Filter
+                </a>
 
                 <?php if(request()->anyFilled(['search', 'model'])): ?>
                 <a href="<?php echo e(route('reports.downloads', ['filter' => $filter])); ?>"
@@ -216,6 +268,29 @@
         form.appendChild(filterInput);
         form.submit();
     }
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const userSearchInput = document.getElementById('userSearchInput');
+        const userIdInput = document.getElementById('userIdInput');
+        const userList = document.getElementById('userList');
+
+        const usersMap = {};
+        Array.from(userList.options).forEach(opt => {
+            usersMap[opt.value] = opt.dataset.id;
+        });
+
+        userSearchInput.addEventListener('input', function() {
+            const matchedId = usersMap[this.value];
+
+            if (matchedId) {
+                userIdInput.value = matchedId;
+                document.getElementById('filterForm').submit(); // ✅ user select korার সাথে সাথেই filter apply
+            } else {
+                userIdInput.value = '';
+            }
+        });
+    });
 </script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\asset-management\resources\views/reports/downloads.blade.php ENDPATH**/ ?>

@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\DownloadLog;
-use Barryvdh\DomPDF\Facade\Pdf;  
-    use Illuminate\Http\Request;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class DownloadReportController extends Controller
@@ -36,7 +37,9 @@ class DownloadReportController extends Controller
         $totalDownloads = (clone $query)->sum('count');
         $uniqueUsers    = (clone $query)->distinct('user_id')->count('user_id');
         $uniqueAssets   = (clone $query)->distinct('model_id')->count('model_id');
-
+        $users = User::select('id', 'name', 'email')
+            ->orderBy('name')
+            ->get();
         return view('reports.downloads', compact(
             'logs',
             'filter',
@@ -44,7 +47,8 @@ class DownloadReportController extends Controller
             'endDate',
             'totalDownloads',
             'uniqueUsers',
-            'uniqueAssets'
+            'uniqueAssets',
+            'users'
         ));
     }
 
