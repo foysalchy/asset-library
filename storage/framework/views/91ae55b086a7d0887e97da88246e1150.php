@@ -64,13 +64,26 @@ unset($__defined_vars, $__key, $__value); ?>
                 style="background-image: radial-gradient(circle, #00aeef 1px, transparent 1px); background-size: 20px 20px;">
             </div>
 
-            <?php if($asset->media->first()?->media_type === 'image'): ?>
-                <img src="<?php echo e($asset->media->first()->url); ?>" alt="<?php echo e($asset->title); ?>"
-                    class="inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-            <?php else: ?>
-                <img src="<?php echo e(asset('./images/cards/card-01.png')); ?>" alt="default"
-                    class="inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-            <?php endif; ?>
+          <?php if($asset->media->first()?->media_type === 'image'): ?>
+    <img src="<?php echo e($asset->media->first()->url); ?>" alt="<?php echo e($asset->title); ?>"
+        class="inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+<?php else: ?>
+    <div class="relative inset-0 w-full h-full overflow-hidden">
+        <img src="<?php echo e(asset('./images/cards/card-01.png')); ?>" alt="default"
+            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+
+        <?php if($asset->media->first()?->media_type === 'video'): ?>
+        <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center"
+                style="background: rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.6);">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="white" class="ml-1">
+                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                </svg>
+            </div>
+        </div>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
 
             <?php $bookmarked = $asset->isBookmarkedBy(auth()->id()); ?>
             <button onclick="event.stopPropagation(); toggleBookmark(this, 'asset', <?php echo e($asset->id); ?>)"
