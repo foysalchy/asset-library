@@ -129,7 +129,6 @@
 
         </span>
         <?php endif; ?>
-        <p class="site-name"><?php echo e($settings->site_name ?? config('app.name')); ?></p>
         <p class="report-title">Download Report</p>
         <p class="period"><?php echo e($startDate->format('d M Y')); ?> — <?php echo e($endDate->format('d M Y')); ?></p>
         <p class="generated">Generated on <?php echo e(now()->format('d M Y, h:i A')); ?></p>

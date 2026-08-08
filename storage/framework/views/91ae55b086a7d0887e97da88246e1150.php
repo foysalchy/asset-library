@@ -36,15 +36,24 @@ unset($__defined_vars, $__key, $__value); ?>
         onclick="window.location='<?php echo e(route('asset.details', $asset->slug)); ?>'">
         <!-- Banner Area -->
         <div class="relative min-h-[200px] bg-gradient-to-br from-[#001e3e] to-[#003366] overflow-hidden">
-        <?php
-            $staticCount = $asset->media->where('media_type', 'image')->count();
-        ?>
+            <?php
+                $staticCount = $asset->media->where('media_type', 'image')->count();
+                $videoCount = $asset->media->where('media_type', 'video')->count();
+            ?>
 
-        <?php if($staticCount > 1): ?>
-            <div class="absolute top-2 <?php echo e($selectable ? 'left-12' : 'left-3'); ?> z-20  backdrop-blur-sm text-white text-base font-bold px-2 py-1 rounded">
-                <span><?php echo e($staticCount); ?> Static More</span>
+            <div class="absolute top-2 <?php echo e($selectable ? 'left-12' : 'left-3'); ?> z-20">
+                <?php if($videoCount > 1): ?>
+                    <div
+                        class="bg-red-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                        <span><?php echo e($videoCount); ?> Videos</span>
+                    </div>
+                <?php elseif($videoCount == 0 && $staticCount > 1): ?>
+                    <div
+                        class="bg-red-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                        <span><?php echo e($staticCount); ?> Static More</span>
+                    </div>
+                <?php endif; ?>
             </div>
-        <?php endif; ?>
             <?php if($selectable): ?>
                 <input type="checkbox"
                     class="item-checkbox absolute top-3 left-4 z-30 w-5 h-5 cursor-pointer accent-[#0071c5]"
@@ -55,13 +64,34 @@ unset($__defined_vars, $__key, $__value); ?>
                 style="background-image: radial-gradient(circle, #00aeef 1px, transparent 1px); background-size: 20px 20px;">
             </div>
 
-            <?php if($asset->media->first()?->media_type === 'image'): ?>
-                <img src="<?php echo e($asset->media->first()->url); ?>" alt="<?php echo e($asset->title); ?>"
-                    class="inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-            <?php else: ?>
-                <img src="<?php echo e(asset('./images/cards/card-01.png')); ?>" alt="default"
-                    class="inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-            <?php endif; ?>
+           <?php if($asset->media->first()?->media_type === 'image'): ?>
+    <img src="<?php echo e($asset->media->first()->url); ?>" alt="<?php echo e($asset->title); ?>"
+        class="inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+<?php elseif($asset->media->first()?->media_type === 'video'): ?>
+    <div class="relative inset-0 w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center overflow-hidden transition-transform duration-500 group-hover:scale-105">
+        <svg width="100%" height="100%" viewBox="0 0 400 300" class="absolute inset-0 opacity-20" preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <pattern id="grid-<?php echo e($asset->id); ?>" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="0.5"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid-<?php echo e($asset->id); ?>)"/>
+        </svg>
+
+        <div class="relative z-10 flex flex-col items-center justify-center gap-2">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center"
+                style="background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.4);">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="white" class="ml-1">
+                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                </svg>
+            </div>
+            <span class="text-white/70 text-[10px] tracking-wider uppercase font-medium">Video</span>
+        </div>
+    </div>
+<?php else: ?>
+    <img src="<?php echo e(asset('./images/cards/card-01.png')); ?>" alt="default"
+        class="inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+<?php endif; ?>
 
             <?php $bookmarked = $asset->isBookmarkedBy(auth()->id()); ?>
             <button onclick="event.stopPropagation(); toggleBookmark(this, 'asset', <?php echo e($asset->id); ?>)"
@@ -85,8 +115,8 @@ unset($__defined_vars, $__key, $__value); ?>
             </h3>
 
             <p class="text-[#757575] text-sm">
-                Topics:
-                <span class="font-normal text-gray-500"><?php echo e($asset->project->name ?? 'General'); ?></span>
+                Concern:
+                <span class="font-normal text-gray-500"><?php echo e($asset->project->concern_name ?? 'General'); ?></span>
             </p>
 
             <div class="mb-8 flex flex-wrap gap-2 mt-2">

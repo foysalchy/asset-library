@@ -128,7 +128,6 @@
             {{ strtoupper(substr($settings->site_name ?? 'Bhaiya Asset', 0, 1)) }}
         </span>
         @endif
-        <p class="site-name">{{ $settings->site_name ?? config('app.name') }}</p>
         <p class="report-title">Download Report</p>
         <p class="period">{{ $startDate->format('d M Y') }} — {{ $endDate->format('d M Y') }}</p>
         <p class="generated">Generated on {{ now()->format('d M Y, h:i A') }}</p>
