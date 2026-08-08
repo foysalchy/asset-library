@@ -28,10 +28,11 @@
                         fill="" />
                 </svg>
             </button>
-               <a href="/home" class=" text-gray-500">
-                View Site
+            <a href="/home"
+                class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-[#0071c5] border border-gray-200 hover:border-[#0071c5]/30 bg-white hover:bg-blue-50 rounded-lg px-3 py-1.5 transition-colors">
+                <i class="fas fa-arrow-up-right-from-square text-xs"></i>
+                View Frontend Site
             </a>
-
 
             <!-- Mobile Menu Toggle Button (visible below xl) -->
             <button
@@ -69,7 +70,7 @@
                 </svg>
             </button>
 
-         
+
         </div>
 
         <!-- Application Menu (mobile) and Right Side Actions (desktop) -->

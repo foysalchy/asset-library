@@ -154,6 +154,9 @@ $siteSetting = \App\Models\SiteSetting::first();
                                     class="text-[13px] leading-snug {{ !$isRead ? 'font-bold text-gray-900' : 'font-normal text-gray-500' }}">
                                     {{ $notif->title }}
                                 </p>
+                                <span class="block text-xs text-gray-400 mt-0.5 leading-snug">
+    {{ $notif->message }}
+</span>
                                 <p class="text-[11px] text-gray-400 mt-1">
                                     {{ $notif->created_at->diffForHumans() }}
                                 </p>

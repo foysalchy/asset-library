@@ -14,11 +14,8 @@ class BookmarkController extends Controller
             $q->where('user_id', auth()->id());
         })->with('media')->latest()->get();
 
-        $campaigns = \App\Models\Campaign::whereHas('bookmarks', function ($q) {
-            $q->where('user_id', auth()->id());
-        })->with('project')->latest()->get();
-
-        return view('frontend.bookmarks', compact('assets', 'campaigns'));
+  
+        return view('frontend.bookmarks', compact('assets'));
     }
 
     public function toggle(Request $request)

@@ -43,11 +43,14 @@ class AppServiceProvider extends ServiceProvider
             if (auth()->check()) {
                 $userId = auth()->id();
                 $bookmarkCount = Bookmark::where('user_id', $userId)->count();
+                $recentNotifications = Notification::latest()->take(50)->get();
 
-                // সব notification যেগুলো এই user পড়েনি
-                $notifications = Notification::latest()->take(10)->get();
-                $unreadCount   = $notifications->filter(fn($n) => !$n->isReadBy($userId))->count();
-                
+                $notifications = $recentNotifications
+                    ->reject(fn($n) => $n->isReadBy($userId))
+                    ->take(10)
+                    ->values();
+
+                $unreadCount = Notification::get()->filter(fn($n) => !$n->isReadBy($userId))->count();;
             }
 
             $view->with(compact('bookmarkCount', 'notifications', 'unreadCount'));

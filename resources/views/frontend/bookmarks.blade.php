@@ -8,9 +8,7 @@
         <div id="assets" class="mb-12">
             <div class="flex items-center gap-2 mb-1">
                 <h2 class="text-[22px] font-light text-gray-800">Bookmarked Assets ({{ $assets->count() }})</h2>
-                <button type="button" class="w-6 h-6 rounded-full border-2 border-[#0071c5] text-[#0071c5] flex items-center justify-center text-xs" onclick="toggleSection('assetsGrid', this)">
-                    <i class="fas fa-minus text-[10px]"></i>
-                </button>
+              
             </div>
 
             <div id="assetsGrid">
@@ -27,26 +25,7 @@
         </div>
         <hr class="border-gray-300 mb-6" />
 
-        <!-- ── Campaigns Section ── -->
-        <div id="campaigns">
-            <div class="flex items-center gap-2 mb-1">
-                <h2 class="text-[22px] font-light text-gray-800">Bookmarked Campaigns ({{ $campaigns->count() }})</h2>
-                <button type="button" class="w-6 h-6 rounded-full border-2 border-[#0071c5] text-[#0071c5] flex items-center justify-center text-xs" onclick="toggleSection('campaignsGrid', this)">
-                    <i class="fas fa-minus text-[10px]"></i>
-                </button>
-            </div>
-            <div id="campaignsGrid">
-                @if($campaigns->count() > 0)
-                    <div id="campaignsCardGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        @foreach($campaigns as $campaign)
-                            <x-frontend.campaign-card :campaign="$campaign" :selectable="true" />
-                        @endforeach
-                    </div>
-                @else
-                    <p class="text-gray-400 italic py-10 text-center bg-white border border-dashed rounded-lg">No bookmarked campaigns found.</p>
-                @endif
-            </div>
-        </div>
+
     </section>
 @endsection
 

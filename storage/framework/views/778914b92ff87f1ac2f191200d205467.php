@@ -157,6 +157,10 @@ $siteSetting = \App\Models\SiteSetting::first();
                                     <?php echo e($notif->title); ?>
 
                                 </p>
+                                <span class="block text-xs text-gray-400 mt-0.5 leading-snug">
+    <?php echo e($notif->message); ?>
+
+</span>
                                 <p class="text-[11px] text-gray-400 mt-1">
                                     <?php echo e($notif->created_at->diffForHumans()); ?>
 

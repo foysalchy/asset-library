@@ -46,69 +46,69 @@
     </div>
 
     <!-- SEARCH BAR — overlapping bottom -->
-    <div class="absolute bottom-0 left-0 right-0 px-4 lg:px-6 mb-4 lg:mb-6">
-        <form action="{{ route('home.filter') }}" method="GET"
-            class="container mx-auto bg-white border border-gray-200 flex flex-col lg:flex-row items-stretch lg:items-center shadow-lg">
+<div class="absolute bottom-0 left-0 right-0 px-4 lg:px-6 mb-4 lg:mb-6">
+    <form action="{{ route('home.filter') }}" method="GET"
+        class="container mx-auto bg-white border border-gray-200 flex flex-col lg:flex-row items-stretch lg:items-center shadow-lg">
 
-            <div class="flex-1 flex items-center px-4 border-b lg:border-b-0 lg:border-r border-gray-200">
-                <i class="fas fa-search text-[#3293e3] mr-3"></i>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search..."
-                    class="w-full py-3 lg:py-4 outline-none text-sm text-gray-600 bg-transparent" />
+        <div class="flex-1 flex items-center px-4 border-b lg:border-b-0 lg:border-r border-gray-200">
+            <i class="fas fa-search text-[#3293e3] mr-3"></i>
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search..."
+                class="w-full py-3 lg:py-4 outline-none text-sm text-gray-600 bg-transparent" />
+        </div>
+
+        <div class="grid grid-cols-2 lg:flex items-center divide-x divide-gray-100 lg:divide-gray-200 border-b lg:border-b-0">
+            <div class="px-2 lg:px-5 min-w-0">
+                <label for="concern-select" class="sr-only">Filter by Concern</label>
+                <select name="concern" id="concern-select" aria-label="Filter by Concern"
+                    class="w-full outline-none text-[12px] lg:text-sm font-medium text-gray-600 bg-transparent py-3 lg:py-4">
+                    <option value="">Concern</option>
+                    @foreach ($concerns as $key => $name)
+                    <option value="{{ $key }}" {{ request('concern') == $key ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                    @endforeach
+                </select>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:flex items-center divide-x divide-gray-100 lg:divide-gray-200 border-b lg:border-b-0">
-                <div class="px-2 lg:px-5">
-                    <label for="concern-select" class="sr-only">Filter by Concern</label>
-                    <select name="concern" id="concern-select" aria-label="Filter by Concern"
-                        class="w-full outline-none text-[12px] lg:text-sm font-medium text-gray-600 bg-transparent py-3 lg:py-4">
-                        <option value="">Concern</option>
-                        @foreach ($concerns as $key => $name)
-                        <option value="{{ $key }}" {{ request('concern') == $key ? 'selected' : '' }}>
-                            {{ $name }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="px-5">
-                    <label for="project-select" class="sr-only">Filter by Project</label>
-                    <select name="project" id="project-select" aria-label="Filter by project"
-                        class="outline-none text-sm font-medium text-gray-600 bg-transparent cursor-pointer py-4 min-w-[90px]">
-                        <option value="">Project</option>
-                        @foreach ($projects as $project)
-                        <option value="{{ $project->id }}" data-key="{{$project->concern}}"
-                            {{ request('project') == $project->id ? 'selected' : '' }}>{{ $project->name }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="px-5">
-                    <label for="type-select" class="sr-only">Filter by Asset Type</label>
-                    <select name="type" id="type-select" aria-label="Filter by type"
-                        class="outline-none text-sm font-medium text-gray-600 bg-transparent cursor-pointer py-4 min-w-[100px]">
-                        <option value="">Asset Type</option>
-                        @foreach ($assetTypes as $type)
-                        <option value="{{ $type->id }}" {{ request('type') == $type->id ? 'selected' : '' }}>
-                            {{ $type->name }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
+            <div class="px-2 lg:px-5 min-w-0">
+                <label for="project-select" class="sr-only">Filter by Project</label>
+                <select name="project" id="project-select" aria-label="Filter by project"
+                    class="w-full outline-none text-[12px] lg:text-sm font-medium text-gray-600 bg-transparent cursor-pointer py-3 lg:py-4 lg:min-w-[90px]">
+                    <option value="">Project</option>
+                    @foreach ($projects as $project)
+                    <option value="{{ $project->id }}" data-key="{{$project->concern}}"
+                        {{ request('project') == $project->id ? 'selected' : '' }}>{{ $project->name }}
+                    </option>
+                    @endforeach
+                </select>
             </div>
 
-            <div class="flex items-center gap-2 lg:gap-4 px-4 py-2 lg:py-3 bg-gray-50 lg:bg-transparent">
-                <button type="submit"
-                    class="flex-1 bg-[#0071c5] text-white px-4 lg:px-8 py-2 lg:py-2.5 text-xs lg:text-sm font-bold">
-                    Search
-                </button>
-                <a href="{{ route('home.index') }}"
-                    class="text-[#0071c5] text-[10px] lg:text-sm font-semibold whitespace-nowrap">
-                    Reset
-                </a>
+            <div class="px-2 lg:px-5 min-w-0">
+                <label for="type-select" class="sr-only">Filter by Asset Type</label>
+                <select name="type" id="type-select" aria-label="Filter by type"
+                    class="w-full outline-none text-[12px] lg:text-sm font-medium text-gray-600 bg-transparent cursor-pointer py-3 lg:py-4 lg:min-w-[100px]">
+                    <option value="">Asset Type</option>
+                    @foreach ($assetTypes as $type)
+                    <option value="{{ $type->id }}" {{ request('type') == $type->id ? 'selected' : '' }}>
+                        {{ $type->name }}
+                    </option>
+                    @endforeach
+                </select>
             </div>
-        </form>
-    </div>
+        </div>
+
+        <div class="flex items-center gap-2 lg:gap-4 px-4 py-2 lg:py-3 bg-gray-50 lg:bg-transparent">
+            <button type="submit"
+                class="flex-1 bg-[#0071c5] text-white px-4 lg:px-8 py-2 lg:py-2.5 text-xs lg:text-sm font-bold">
+                Search
+            </button>
+            <a href="{{ route('home.index') }}"
+                class="text-[#0071c5] text-[10px] lg:text-sm font-semibold whitespace-nowrap">
+                Reset
+            </a>
+        </div>
+    </form>
+</div>
 </section>       
 
 <!-- ── Latest Marketing Assets Section ── -->

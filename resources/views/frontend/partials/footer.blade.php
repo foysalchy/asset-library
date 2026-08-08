@@ -10,8 +10,8 @@
                 <div class="flex items-center gap-2.5 mb-4">
 
                     <div>
-                        <div class="text-xl font-bold text-white leading-none">Bhaiya Asset </div>
-                        <div class="text-sm text-[#90caf9] mt-0.5">Asset Management Platform</div>
+                        <div class="text-xl font-bold text-white leading-none">{{ $settings->site_name ?? 'Bhaiya Asset' }}</div>
+                        <div class="text-sm text-[#90caf9] mt-0.5">{{ $settings->slogan ?? 'Asset Management Platform' }}  </div>
                     </div>
                 </div>
                 <p class="text-sm text-white/55 leading-relaxed mb-5">

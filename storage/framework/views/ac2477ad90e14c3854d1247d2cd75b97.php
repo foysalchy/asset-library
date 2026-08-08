@@ -46,72 +46,72 @@
     </div>
 
     <!-- SEARCH BAR — overlapping bottom -->
-    <div class="absolute bottom-0 left-0 right-0 px-4 lg:px-6 mb-4 lg:mb-6">
-        <form action="<?php echo e(route('home.filter')); ?>" method="GET"
-            class="container mx-auto bg-white border border-gray-200 flex flex-col lg:flex-row items-stretch lg:items-center shadow-lg">
+<div class="absolute bottom-0 left-0 right-0 px-4 lg:px-6 mb-4 lg:mb-6">
+    <form action="<?php echo e(route('home.filter')); ?>" method="GET"
+        class="container mx-auto bg-white border border-gray-200 flex flex-col lg:flex-row items-stretch lg:items-center shadow-lg">
 
-            <div class="flex-1 flex items-center px-4 border-b lg:border-b-0 lg:border-r border-gray-200">
-                <i class="fas fa-search text-[#3293e3] mr-3"></i>
-                <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Search..."
-                    class="w-full py-3 lg:py-4 outline-none text-sm text-gray-600 bg-transparent" />
+        <div class="flex-1 flex items-center px-4 border-b lg:border-b-0 lg:border-r border-gray-200">
+            <i class="fas fa-search text-[#3293e3] mr-3"></i>
+            <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Search..."
+                class="w-full py-3 lg:py-4 outline-none text-sm text-gray-600 bg-transparent" />
+        </div>
+
+        <div class="grid grid-cols-2 lg:flex items-center divide-x divide-gray-100 lg:divide-gray-200 border-b lg:border-b-0">
+            <div class="px-2 lg:px-5 min-w-0">
+                <label for="concern-select" class="sr-only">Filter by Concern</label>
+                <select name="concern" id="concern-select" aria-label="Filter by Concern"
+                    class="w-full outline-none text-[12px] lg:text-sm font-medium text-gray-600 bg-transparent py-3 lg:py-4">
+                    <option value="">Concern</option>
+                    <?php $__currentLoopData = $concerns; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $name): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($key); ?>" <?php echo e(request('concern') == $key ? 'selected' : ''); ?>>
+                        <?php echo e($name); ?>
+
+                    </option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:flex items-center divide-x divide-gray-100 lg:divide-gray-200 border-b lg:border-b-0">
-                <div class="px-2 lg:px-5">
-                    <label for="concern-select" class="sr-only">Filter by Concern</label>
-                    <select name="concern" id="concern-select" aria-label="Filter by Concern"
-                        class="w-full outline-none text-[12px] lg:text-sm font-medium text-gray-600 bg-transparent py-3 lg:py-4">
-                        <option value="">Concern</option>
-                        <?php $__currentLoopData = $concerns; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $name): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <option value="<?php echo e($key); ?>" <?php echo e(request('concern') == $key ? 'selected' : ''); ?>>
-                            <?php echo e($name); ?>
+            <div class="px-2 lg:px-5 min-w-0">
+                <label for="project-select" class="sr-only">Filter by Project</label>
+                <select name="project" id="project-select" aria-label="Filter by project"
+                    class="w-full outline-none text-[12px] lg:text-sm font-medium text-gray-600 bg-transparent cursor-pointer py-3 lg:py-4 lg:min-w-[90px]">
+                    <option value="">Project</option>
+                    <?php $__currentLoopData = $projects; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $project): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($project->id); ?>" data-key="<?php echo e($project->concern); ?>"
+                        <?php echo e(request('project') == $project->id ? 'selected' : ''); ?>><?php echo e($project->name); ?>
 
-                        </option>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </select>
-                </div>
-
-                <div class="px-5">
-                    <label for="project-select" class="sr-only">Filter by Project</label>
-                    <select name="project" id="project-select" aria-label="Filter by project"
-                        class="outline-none text-sm font-medium text-gray-600 bg-transparent cursor-pointer py-4 min-w-[90px]">
-                        <option value="">Project</option>
-                        <?php $__currentLoopData = $projects; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $project): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <option value="<?php echo e($project->id); ?>" data-key="<?php echo e($project->concern); ?>"
-                            <?php echo e(request('project') == $project->id ? 'selected' : ''); ?>><?php echo e($project->name); ?>
-
-                        </option>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </select>
-                </div>
-
-                <div class="px-5">
-                    <label for="type-select" class="sr-only">Filter by Asset Type</label>
-                    <select name="type" id="type-select" aria-label="Filter by type"
-                        class="outline-none text-sm font-medium text-gray-600 bg-transparent cursor-pointer py-4 min-w-[100px]">
-                        <option value="">Asset Type</option>
-                        <?php $__currentLoopData = $assetTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <option value="<?php echo e($type->id); ?>" <?php echo e(request('type') == $type->id ? 'selected' : ''); ?>>
-                            <?php echo e($type->name); ?>
-
-                        </option>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </select>
-                </div>
+                    </option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
             </div>
 
-            <div class="flex items-center gap-2 lg:gap-4 px-4 py-2 lg:py-3 bg-gray-50 lg:bg-transparent">
-                <button type="submit"
-                    class="flex-1 bg-[#0071c5] text-white px-4 lg:px-8 py-2 lg:py-2.5 text-xs lg:text-sm font-bold">
-                    Search
-                </button>
-                <a href="<?php echo e(route('home.index')); ?>"
-                    class="text-[#0071c5] text-[10px] lg:text-sm font-semibold whitespace-nowrap">
-                    Reset
-                </a>
+            <div class="px-2 lg:px-5 min-w-0">
+                <label for="type-select" class="sr-only">Filter by Asset Type</label>
+                <select name="type" id="type-select" aria-label="Filter by type"
+                    class="w-full outline-none text-[12px] lg:text-sm font-medium text-gray-600 bg-transparent cursor-pointer py-3 lg:py-4 lg:min-w-[100px]">
+                    <option value="">Asset Type</option>
+                    <?php $__currentLoopData = $assetTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($type->id); ?>" <?php echo e(request('type') == $type->id ? 'selected' : ''); ?>>
+                        <?php echo e($type->name); ?>
+
+                    </option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
             </div>
-        </form>
-    </div>
+        </div>
+
+        <div class="flex items-center gap-2 lg:gap-4 px-4 py-2 lg:py-3 bg-gray-50 lg:bg-transparent">
+            <button type="submit"
+                class="flex-1 bg-[#0071c5] text-white px-4 lg:px-8 py-2 lg:py-2.5 text-xs lg:text-sm font-bold">
+                Search
+            </button>
+            <a href="<?php echo e(route('home.index')); ?>"
+                class="text-[#0071c5] text-[10px] lg:text-sm font-semibold whitespace-nowrap">
+                Reset
+            </a>
+        </div>
+    </form>
+</div>
 </section>       
 
 <!-- ── Latest Marketing Assets Section ── -->
