@@ -8,16 +8,21 @@
     <title>Sign Up</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+    @php $settings = site_settings(); @endphp
 
 <body class="bg-gray-50 dark:bg-gray-950 min-h-screen flex items-center justify-center p-4 font-['Outfit']">
 
     <div class="w-full max-w-md">
         {{-- Logo --}}
-        <div class="flex justify-center mb-8">
-            <div class="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg">
-                <svg width="24" height="24" viewBox="0 0 20 20" fill="white">
-                    <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9v-2h2v2zm0-4H9V5h2v4z" />
-                </svg>
+       <div class="flex justify-center mb-8">
+            <div class="w-32 px-4 py-3   bg-gray-200 flex items-center justify-center">
+                @if($settings && $settings->logo)
+                <img src="{{ url($settings->logo_url) }}" alt="{{ $settings->site_name }}">
+                @else
+                <span style="color:#fff; font-size:24px; font-weight:bold;">
+                    {{ strtoupper(substr($settings->site_name ?? 'Bhaiya Asset', 0, 1)) }}
+                </span>
+                @endif
             </div>
         </div>
         @if($errors->any())
@@ -93,7 +98,7 @@
                 <p class="text-lg text-gray-400 dark:text-gray-500">
                     Having trouble signing in or signing up?
                     <a href="{{ route('guest.tickets.create') }}"
-                        target="_blank"
+
                         rel="noopener noreferrer"
                         class="inline-flex items-center gap-1 text-green-600 hover:underline font-medium">
                      

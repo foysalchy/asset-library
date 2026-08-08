@@ -77,6 +77,12 @@ class MenuHelper
                 'path'       => route('download-logs.index'),
                 'permission' => 'activity_logs.view',
             ],
+            [
+                'icon'       => 'download-logs',
+                'name'       => 'Download Report',
+                'path'       => route('reports.downloads'),
+                'permission' => 'activity_logs.view',
+            ],
 
             [
                 'icon'       => 'settings',

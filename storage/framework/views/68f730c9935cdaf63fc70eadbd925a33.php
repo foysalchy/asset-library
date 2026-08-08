@@ -54,14 +54,7 @@
                         class="h-[38px] w-full rounded-lg border border-gray-300 bg-transparent py-2 pl-[38px] pr-3 text-sm text-gray-800 placeholder:text-gray-400 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 sm:w-[200px]" />
                 </div>
 
-                
-                <select name="model"
-                    onchange="document.getElementById('filter-form').submit()"
-                    class="h-[38px] rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-800 focus:border-blue-300 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                    <option value="">All Types</option>
-                    <option value="campaign" <?php echo e(request('model') === 'campaign' ? 'selected' : ''); ?>>Campaign</option>
-                    <option value="asset" <?php echo e(request('model') === 'asset'    ? 'selected' : ''); ?>>Asset</option>
-                </select>
+        
 
                 
                 <select name="user_id"

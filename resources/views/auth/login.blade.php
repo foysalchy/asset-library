@@ -8,19 +8,25 @@
     <meta name="robots" content="noindex, nofollow">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+    @php $settings = site_settings(); @endphp
 
 <body class="bg-gray-50 dark:bg-gray-950 min-h-screen flex items-center justify-center p-4">
 
     <div class="w-full max-w-md">
 
         {{-- Logo --}}
-        <div class="flex justify-center mb-8">
-            <div class="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center">
-                <svg width="24" height="24" viewBox="0 0 20 20" fill="white">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" />
-                </svg>
+           <div class="flex justify-center mb-8">
+            <div class="w-32 px-4 py-3   bg-gray-200 flex items-center justify-center">
+                @if($settings && $settings->logo)
+                <img src="{{ url($settings->logo_url) }}" alt="{{ $settings->site_name }}">
+                @else
+                <span style="color:#fff; font-size:24px; font-weight:bold;">
+                    {{ strtoupper(substr($settings->site_name ?? 'Bhaiya Asset', 0, 1)) }}
+                </span>
+                @endif
             </div>
         </div>
+
 
         {{-- Card --}}
         <div class="rounded-xl border border-gray-100 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">

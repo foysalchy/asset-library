@@ -8,6 +8,7 @@
     <meta name="robots" content="noindex, nofollow">
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
 </head>
+<?php $settings = site_settings(); ?>
 
 <body class="bg-gray-50 dark:bg-gray-950 min-h-screen flex items-center justify-center p-4">
 
@@ -15,10 +16,15 @@
 
         
         <div class="flex justify-center mb-8">
-            <div class="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center">
-                <svg width="24" height="24" viewBox="0 0 20 20" fill="white">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" />
-                </svg>
+            <div class="w-32 px-4 py-3   bg-gray-200 flex items-center justify-center">
+                <?php if($settings && $settings->logo): ?>
+                <img src="<?php echo e(url($settings->logo_url)); ?>" alt="<?php echo e($settings->site_name); ?>">
+                <?php else: ?>
+                <span style="color:#fff; font-size:24px; font-weight:bold;">
+                    <?php echo e(strtoupper(substr($settings->site_name ?? 'Bhaiya Asset', 0, 1))); ?>
+
+                </span>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -141,7 +147,7 @@ unset($__errorArgs, $__bag); ?>" />
                 <p class="text-lg text-gray-400 dark:text-gray-500">
                     Having trouble signing in or signing up?
                     <a href="<?php echo e(route('guest.tickets.create')); ?>"
-                        target="_blank"
+                  
                         rel="noopener noreferrer"
                         class="inline-flex items-center gap-1 text-green-600 hover:underline font-medium">
 

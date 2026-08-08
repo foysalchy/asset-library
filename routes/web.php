@@ -19,10 +19,13 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DownloadLogController;
+use App\Http\Controllers\DownloadReportController;
 use App\Http\Controllers\FcmController;
 use App\Http\Controllers\Frontend\EmailVerificationController;
 use Google\Service\Storage;
 use Illuminate\Support\Facades\Storage as FacadesStorage;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 // dashboard pages
 
@@ -80,6 +83,8 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware([
         'index'   => 'permission:dashboard.view',
     ]);
+    Route::get('/reports/downloads', [DownloadReportController::class, 'index'])->name('reports.downloads')->middleware('permission:activity_logs.view');;
+    Route::get('/reports/downloads/pdf', [DownloadReportController::class, 'exportPdf'])->name('reports.downloads.pdf')->middleware('permission:activity_logs.view'); // ✅ notun route
 
     Route::resource('projects', ProjectController::class)
         ->middleware([

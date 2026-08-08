@@ -8,6 +8,7 @@
     <meta name="robots" content="noindex, nofollow">
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
 </head>
+<?php $settings = site_settings(); ?>
 
 <body class="bg-gray-50 dark:bg-gray-950 min-h-screen flex items-center justify-center p-4">
 
@@ -15,10 +16,15 @@
 
         
         <div class="flex justify-center mb-8">
-            <div class="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center">
-                <svg width="24" height="24" viewBox="0 0 20 20" fill="white">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" />
-                </svg>
+            <div class="w-32 px-4 py-3   bg-gray-200 flex items-center justify-center">
+                <?php if($settings && $settings->logo): ?>
+                <img src="<?php echo e(url($settings->logo_url)); ?>" alt="<?php echo e($settings->site_name); ?>">
+                <?php else: ?>
+                <span style="color:#fff; font-size:24px; font-weight:bold;">
+                    <?php echo e(strtoupper(substr($settings->site_name ?? 'Bhaiya Asset', 0, 1))); ?>
+
+                </span>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -57,8 +63,10 @@
             </div>
             <?php endif; ?>
 
-            <form action="<?php echo e(route('guest.tickets.store')); ?>" method="POST" enctype="multipart/form-data">
+<form action="<?php echo e(route('guest.tickets.store')); ?>" method="POST" enctype="multipart/form-data" id="guestTicketForm">
                 <?php echo csrf_field(); ?>
+                <input type="hidden" name="recaptcha_token" id="recaptcha_token">
+
                 <div class="space-y-5">
 
                     
@@ -78,7 +86,7 @@ endif;
 unset($__errorArgs, $__bag); ?>" />
                     </div>
 
-            
+
                     
                     <div>
                         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
@@ -158,11 +166,10 @@ unset($__errorArgs, $__bag); ?>"><?php echo e(old('description')); ?></textarea>
                     </div>
 
                     
-                    <button type="submit"
-                        class="flex w-full items-center justify-center rounded-lg bg-blue-500 px-4 py-3 text-sm font-medium text-white shadow-theme-xs hover:bg-blue-600 transition-colors">
-                        Submit Support Ticket
-                    </button>
-
+                 <button type="button" id="submitBtn"
+        class="flex w-full items-center justify-center rounded-lg bg-blue-500 px-4 py-3 text-sm font-medium text-white shadow-theme-xs hover:bg-blue-600 transition-colors">
+        Submit Support Ticket
+    </button>
                 </div>
             </form>
 
@@ -171,7 +178,49 @@ unset($__errorArgs, $__bag); ?>"><?php echo e(old('description')); ?></textarea>
             </p>
         </div>
     </div>
+<script src="https://www.google.com/recaptcha/api.js?render=<?php echo e(config('services.recaptcha.site_key')); ?>"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const submitBtn = document.getElementById('submitBtn');
+        const form = document.getElementById('guestTicketForm');
 
+        console.log('Form element:', form);
+        console.log('Submit button element:', submitBtn);
+
+        if (!form) {
+            console.error('Form with id "guestTicketForm" NOT FOUND in DOM');
+            return;
+        }
+
+        if (!submitBtn) {
+            console.error('Button with id "submitBtn" NOT FOUND in DOM');
+            return;
+        }
+
+        submitBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            console.log('Submit button clicked');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            grecaptcha.ready(function () {
+                grecaptcha.execute('<?php echo e(config('services.recaptcha.site_key')); ?>', { action: 'guest_ticket_submit' })
+                    .then(function (token) {
+                        console.log('Token generated:', token);
+                        document.getElementById('recaptcha_token').value = token;
+                        form.submit();
+                    })
+                    .catch(function (error) {
+                        console.error('reCAPTCHA execute error:', error);
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Submit Support Ticket';
+                        alert('Verification failed: ' + error);
+                    });
+            });
+        });
+    });
+</script>
     <script>
         function previewFile() {
             const file = document.getElementById('ticketImage').files[0];

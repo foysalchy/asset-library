@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use App\Models\TicketReply;
 use Illuminate\Http\Request;
+use App\Rules\Recaptcha;
+
 
 class TicketController extends Controller
 {
@@ -55,13 +57,15 @@ class TicketController extends Controller
     }
     public function guestStore(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'subject'     => 'required|string|max:255',
             'phone'   =>
             'required|string|regex:/^\+?[0-9\s\-()]{7,18}$/',
 
             'description' => 'required|string',
             'image'       => 'nullable|image|max:2048',
+            'recaptcha_token' => ['required', new Recaptcha()],
+
         ]);
 
         $data = [
@@ -75,6 +79,8 @@ class TicketController extends Controller
             $data['image'] = $request->file('image')->store('tickets', 'public');
         }
 
+        unset($validated['recaptcha_token']);
+        
         Ticket::create($data);
 
         return redirect()->back()->with('success', 'Ticket submitted successfully.');
