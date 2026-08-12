@@ -9,18 +9,23 @@
     <meta name="robots" content="noindex, nofollow">
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
 </head>
+    <?php $settings = site_settings(); ?>
 
 <body class="bg-gray-50 dark:bg-gray-950 min-h-screen flex items-center justify-center p-4">
 
     <div class="w-full max-w-md">
 
         
-        <div class="flex justify-center mb-8">
-            <div class="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center">
-                <svg width="24" height="24" viewBox="0 0 20 20" fill="white">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                </svg>
+       <div class="flex justify-center mb-8">
+            <div class="w-32 px-4 py-3   bg-gray-200 flex items-center justify-center">
+                <?php if($settings && $settings->logo): ?>
+                <img src="<?php echo e(url($settings->logo_url)); ?>" alt="<?php echo e($settings->site_name); ?>">
+                <?php else: ?>
+                <span style="color:#fff; font-size:24px; font-weight:bold;">
+                    <?php echo e(strtoupper(substr($settings->site_name ?? 'Bhaiya Asset', 0, 1))); ?>
+
+                </span>
+                <?php endif; ?>
             </div>
         </div>
 

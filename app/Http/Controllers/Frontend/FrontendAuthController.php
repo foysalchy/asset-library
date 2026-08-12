@@ -15,8 +15,8 @@ use Illuminate\Support\Facades\Password as FacadesPassword;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as PasswordRule;
-use Illuminate\Validation\Rules;
-use Illuminate\Auth\Events\Registered;
+use App\Http\Controllers\Frontend\EmailVerificationController;
+
 
 class FrontendAuthController extends Controller
 {
@@ -82,21 +82,23 @@ class FrontendAuthController extends Controller
         ]);
 
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'employee_id'    => $request->employee_id,
-            'password' => Hash::make($request->password),
-            'status'   => 'active',
-            'email_verified_at'   => now(),
+            'name'              => $request->name,
+            'email'             => $request->email,
+            'employee_id'       => $request->employee_id,
+            'password'          => Hash::make($request->password),
+            'status'            => 'active',
+
         ]);
 
-        // Frontend user role assign
         $role = Role::where('name', 'frontend_user')->first();
         if ($role) $user->roles()->attach($role->id);
 
         auth()->login($user);
 
-        return redirect('/home');
+        app(EmailVerificationController::class)->sendVerificationEmail($user);
+
+        return redirect()->route('verification.notice')
+            ->with('success', 'Account created! Please check your email to verify your account.');
     }
 
     public function showSignin()
@@ -109,29 +111,24 @@ class FrontendAuthController extends Controller
     {
         $request->validate([
             'email'    => ['required', 'email'],
-            'password' => ['required'],
+            'password' => ['required', 'string'],
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-            return back()->withInput()->withErrors(['email' => 'Invalid credentials.']);
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return back()
+                ->withErrors(['email' => 'Invalid credentials.'])
+                ->onlyInput('email');
         }
 
-        if (Auth::user()->status === 'inactive') {
-            Auth::logout();
-            return back()->withErrors(['email' => 'Your account is deactivated.']);
-        }
+        auth()->login($user, $request->boolean('remember'));
 
-        if (Auth::user()->isSuperAdmin()) {
-            Auth::logout();
-            return back()->withErrors(['email' => 'Please use admin panel.']);
-        }
-
-        // ✅ Email verification check
-        if (!Auth::user()->hasVerifiedEmail()) {
+        if (!$user->hasVerifiedEmail()) {
             return redirect()->route('verification.notice');
         }
 
-        return redirect('/home');
+        return redirect()->intended('/home');
     }
 
     public function logout(Request $request)
