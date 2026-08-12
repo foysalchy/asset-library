@@ -9,12 +9,13 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password as FacadesPassword;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Password as PasswordRule;   // 
+use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\Rules;
-use App\Notifications\CustomResetPasswordNotification;
 use Illuminate\Auth\Events\Registered;
 
 class FrontendAuthController extends Controller
@@ -147,7 +148,8 @@ class FrontendAuthController extends Controller
     }
 
     /**
-     * Reset link email এ পাঠাও
+     * Reset link email এ পাঠাও - এখন নিজের mailer API ব্যবহার করে,
+     * Laravel এর ডিফল্ট SMTP notification এর বদলে।
      */
     public function sendResetLinkEmail(Request $request)
     {
@@ -155,23 +157,52 @@ class FrontendAuthController extends Controller
             'email' => 'required|email',
         ]);
 
+        $successMessage = 'A password reset link has been sent to your email address. If you don\'t see it in your inbox within a few minutes, please check your Spam or Junk folder.';
+
         $user = User::where('email', $request->email)->first();
 
+        // Same response whether the user exists or not - avoids leaking
+        // which emails are registered in the system.
         if (!$user) {
-            return back()->with(
-                'success',
-                'A password reset link has been sent to your email address. If you don\'t see it in your inbox within a few minutes, please check your Spam or Junk folder.'
-            );
+            return back()->with('success', $successMessage);
         }
 
-        $token = FacadesPassword::createToken($user); // ✅ ekhon thik Facade use hবে
+        $token = FacadesPassword::createToken($user);
 
-        $user->notify(new CustomResetPasswordNotification($token));
+        $resetLink = route('password.reset', [
+            'token' => $token,
+            'email' => $user->email,
+        ]);
 
-        return back()->with(
-            'success',
-            'A password reset link has been sent to your email address. If you don\'t see it in your inbox within a few minutes, please check your Spam or Junk folder.'
-        );
+        try {
+            $response = Http::timeout(30)
+                ->withHeaders([
+                    'X-API-Key' => config('services.mailer.key'),
+                ])
+                ->post(config('services.mailer.url'), [
+                    'type'    => 'verification',
+                    'to'      => $user->email,
+                    'subject' => 'Reset Your Password',
+                    'data'    => [
+                        'eyebrow'           => 'Password Reset',
+                        'heading'           => 'Reset your password',
+                        'name'              => $user->name,
+                        'message'           => 'We received a request to reset your password. Click the button below to choose a new one. This link is valid for a limited time and can only be used once.',
+                        'button_text'       => 'Reset Password',
+                        'verification_link' => $resetLink,
+                    ],
+                ]);
+
+            if (!$response->successful()) {
+                Log::error('Mailer API failed for password reset: ' . $response->body());
+            }
+        } catch (\Throwable $e) {
+            // Mailer service unreachable/timeout - don't break the user flow,
+            // just log it so it can be investigated.
+            Log::error('Mailer API exception for password reset: ' . $e->getMessage());
+        }
+
+        return back()->with('success', $successMessage);
     }
 
     /**
