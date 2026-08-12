@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use App\Http\Controllers\Frontend\EmailVerificationController;
-
+use App\Rules\Recaptcha;
 
 class FrontendAuthController extends Controller
 {
@@ -79,6 +79,8 @@ class FrontendAuthController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'recaptcha_token' => ['required', new Recaptcha()],  
+
         ]);
 
         $user = User::create([
@@ -112,6 +114,8 @@ class FrontendAuthController extends Controller
         $request->validate([
             'email'    => ['required', 'email'],
             'password' => ['required', 'string'],
+            'recaptcha_token' => ['required', new Recaptcha()],
+
         ]);
 
         $user = User::where('email', $request->email)->first();

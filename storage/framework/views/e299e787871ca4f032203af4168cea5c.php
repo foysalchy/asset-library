@@ -40,14 +40,16 @@
                 <p class="text-lg text-gray-500 dark:text-gray-400 mt-1">Join us today! Please enter your details.</p>
             </div>
 
-            <form action="<?php echo e(route('signup')); ?>" method="POST">
-                <?php echo csrf_field(); ?>
-                <div class="space-y-4">
-                    
-                    <div>
-                        <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Full Name</label>
-                        <input type="text" name="name" value="<?php echo e(old('name')); ?>" placeholder="Enter Your Name" required
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white <?php $__errorArgs = ['name'];
+     <form action="<?php echo e(route('signup')); ?>" method="POST" id="signupForm">
+    <?php echo csrf_field(); ?>
+    <input type="hidden" name="recaptcha_token" id="recaptcha_token_signup">
+
+    <div class="space-y-4">
+        
+        <div>
+            <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Full Name</label>
+            <input type="text" name="name" value="<?php echo e(old('name')); ?>" placeholder="Enter Your Name" required
+                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white <?php $__errorArgs = ['name'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -55,7 +57,7 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" />
-                        <?php $__errorArgs = ['name'];
+            <?php $__errorArgs = ['name'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -63,13 +65,13 @@ $message = $__bag->first($__errorArgs[0]); ?> <p class="text-sm text-red-500 mt-
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                    </div>
+        </div>
 
-                    
-                    <div>
-                        <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Email Address</label>
-                        <input type="email" name="email" value="<?php echo e(old('email')); ?>" placeholder="test@gmail.com" required
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white <?php $__errorArgs = ['email'];
+        
+        <div>
+            <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Email Address</label>
+            <input type="email" name="email" value="<?php echo e(old('email')); ?>" placeholder="test@gmail.com" required
+                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white <?php $__errorArgs = ['email'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -77,7 +79,7 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" />
-                        <?php $__errorArgs = ['email'];
+            <?php $__errorArgs = ['email'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -85,11 +87,11 @@ $message = $__bag->first($__errorArgs[0]); ?> <p class="text-sm text-red-500 mt-
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                    </div>
-                    <div>
-                        <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Employee Id</label>
-                        <input type="text" name="employee_id" value="<?php echo e(old('employee_id')); ?>" placeholder="Enter Employee Id" required
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white <?php $__errorArgs = ['employee_id'];
+        </div>
+        <div>
+            <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Employee Id</label>
+            <input type="text" name="employee_id" value="<?php echo e(old('employee_id')); ?>" placeholder="Enter Employee Id" required
+                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white <?php $__errorArgs = ['employee_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -97,7 +99,7 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" />
-                        <?php $__errorArgs = ['employee_id'];
+            <?php $__errorArgs = ['employee_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -105,13 +107,13 @@ $message = $__bag->first($__errorArgs[0]); ?> <p class="text-sm text-red-500 mt-
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                    </div>
+        </div>
 
-                    
-                    <div>
-                        <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Password</label>
-                        <input type="password" name="password" placeholder="••••••••" required
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white <?php $__errorArgs = ['password'];
+        
+        <div>
+            <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Password</label>
+            <input type="password" name="password" placeholder="••••••••" required
+                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white <?php $__errorArgs = ['password'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -119,7 +121,7 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" />
-                        <?php $__errorArgs = ['password'];
+            <?php $__errorArgs = ['password'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -127,22 +129,23 @@ $message = $__bag->first($__errorArgs[0]); ?> <p class="text-sm text-red-500 mt-
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                    </div>
+        </div>
 
-                    
-                    <div>
-                        <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Confirm Password</label>
-                        <input type="password" name="password_confirmation" placeholder="••••••••" required
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white" />
-                    </div>
+        
+        <div>
+            <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Confirm Password</label>
+            <input type="password" name="password_confirmation" placeholder="••••••••" required
+                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white" />
+        </div>
 
-                    
-                    <button type="submit"
-                        class="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white shadow-md hover:bg-blue-700 transition-all">
-                        Create Account
-                    </button>
-                </div>
-            </form>
+        
+        <button type="button" id="signupSubmitBtn"
+            class="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white shadow-md hover:bg-blue-700 transition-all">
+            Create Account
+        </button>
+    </div>
+</form>
+
 
             
             <div class="mt-6 text-center">
@@ -166,5 +169,37 @@ unset($__errorArgs, $__bag); ?>
         </div>
     </div>
 </body>
+<script src="https://www.google.com/recaptcha/api.js?render=<?php echo e(config('services.recaptcha.site_key')); ?>"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('signupSubmitBtn');
+        const form = document.getElementById('signupForm');
 
+        if (!btn || !form) {
+            console.error('Signup: button or form not found in DOM');
+            return;
+        }
+
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            btn.disabled = true;
+            btn.textContent = 'Please wait...';
+
+            grecaptcha.ready(function () {
+                grecaptcha.execute('<?php echo e(config('services.recaptcha.site_key')); ?>', { action: 'signup' })
+                    .then(function (token) {
+                        document.getElementById('recaptcha_token_signup').value = token;
+                        form.submit();
+                    })
+                    .catch(function (error) {
+                        console.error('reCAPTCHA error:', error);
+                        btn.disabled = false;
+                        btn.textContent = 'Create Account';
+                        alert('Verification failed. Please try again.');
+                    });
+            });
+        });
+    });
+</script>
 </html><?php /**PATH C:\laragon\www\asset-management\resources\views/frontend/auth/signup.blade.php ENDPATH**/ ?>

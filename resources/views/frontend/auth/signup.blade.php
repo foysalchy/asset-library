@@ -39,53 +39,56 @@
                 <p class="text-lg text-gray-500 dark:text-gray-400 mt-1">Join us today! Please enter your details.</p>
             </div>
 
-            <form action="{{ route('signup') }}" method="POST">
-                @csrf
-                <div class="space-y-4">
-                    {{-- Full Name --}}
-                    <div>
-                        <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Full Name</label>
-                        <input type="text" name="name" value="{{ old('name') }}" placeholder="Enter Your Name" required
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white @error('name') border-red-500 @enderror" />
-                        @error('name') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
-                    </div>
+     <form action="{{ route('signup') }}" method="POST" id="signupForm">
+    @csrf
+    <input type="hidden" name="recaptcha_token" id="recaptcha_token_signup">
 
-                    {{-- Email --}}
-                    <div>
-                        <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Email Address</label>
-                        <input type="email" name="email" value="{{ old('email') }}" placeholder="test@gmail.com" required
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white @error('email') border-red-500 @enderror" />
-                        @error('email') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Employee Id</label>
-                        <input type="text" name="employee_id" value="{{ old('employee_id') }}" placeholder="Enter Employee Id" required
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white @error('employee_id') border-red-500 @enderror" />
-                        @error('employee_id') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
-                    </div>
+    <div class="space-y-4">
+        {{-- Full Name --}}
+        <div>
+            <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Full Name</label>
+            <input type="text" name="name" value="{{ old('name') }}" placeholder="Enter Your Name" required
+                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white @error('name') border-red-500 @enderror" />
+            @error('name') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+        </div>
 
-                    {{-- Password --}}
-                    <div>
-                        <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Password</label>
-                        <input type="password" name="password" placeholder="••••••••" required
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white @error('password') border-red-500 @enderror" />
-                        @error('password') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
-                    </div>
+        {{-- Email --}}
+        <div>
+            <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Email Address</label>
+            <input type="email" name="email" value="{{ old('email') }}" placeholder="test@gmail.com" required
+                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white @error('email') border-red-500 @enderror" />
+            @error('email') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+        </div>
+        <div>
+            <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Employee Id</label>
+            <input type="text" name="employee_id" value="{{ old('employee_id') }}" placeholder="Enter Employee Id" required
+                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white @error('employee_id') border-red-500 @enderror" />
+            @error('employee_id') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+        </div>
 
-                    {{-- Confirm Password --}}
-                    <div>
-                        <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Confirm Password</label>
-                        <input type="password" name="password_confirmation" placeholder="••••••••" required
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white" />
-                    </div>
+        {{-- Password --}}
+        <div>
+            <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Password</label>
+            <input type="password" name="password" placeholder="••••••••" required
+                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white @error('password') border-red-500 @enderror" />
+            @error('password') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+        </div>
 
-                    {{-- Submit --}}
-                    <button type="submit"
-                        class="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white shadow-md hover:bg-blue-700 transition-all">
-                        Create Account
-                    </button>
-                </div>
-            </form>
+        {{-- Confirm Password --}}
+        <div>
+            <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Confirm Password</label>
+            <input type="password" name="password_confirmation" placeholder="••••••••" required
+                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white" />
+        </div>
+
+        {{-- Submit --}}
+        <button type="button" id="signupSubmitBtn"
+            class="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white shadow-md hover:bg-blue-700 transition-all">
+            Create Account
+        </button>
+    </div>
+</form>
+
 
             {{-- Login Link --}}
             <div class="mt-6 text-center">
@@ -109,5 +112,37 @@
         </div>
     </div>
 </body>
+<script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('signupSubmitBtn');
+        const form = document.getElementById('signupForm');
 
+        if (!btn || !form) {
+            console.error('Signup: button or form not found in DOM');
+            return;
+        }
+
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            btn.disabled = true;
+            btn.textContent = 'Please wait...';
+
+            grecaptcha.ready(function () {
+                grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', { action: 'signup' })
+                    .then(function (token) {
+                        document.getElementById('recaptcha_token_signup').value = token;
+                        form.submit();
+                    })
+                    .catch(function (error) {
+                        console.error('reCAPTCHA error:', error);
+                        btn.disabled = false;
+                        btn.textContent = 'Create Account';
+                        alert('Verification failed. Please try again.');
+                    });
+            });
+        });
+    });
+</script>
 </html>
