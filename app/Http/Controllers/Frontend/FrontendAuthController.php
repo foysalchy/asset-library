@@ -79,7 +79,7 @@ class FrontendAuthController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'recaptcha_token' => ['required', new Recaptcha()],  
+            'recaptcha_token' => ['required', new Recaptcha()],
 
         ]);
 
@@ -125,6 +125,10 @@ class FrontendAuthController extends Controller
                 ->withErrors(['email' => 'Invalid credentials.'])
                 ->onlyInput('email');
         }
+        $user->update([
+            'last_login_at' => now()
+        ]);
+
 
         auth()->login($user, $request->boolean('remember'));
 
