@@ -17,7 +17,7 @@ class HomeController extends Controller
         $user = Auth::user();
 
         $latestAssets = Asset::with(['media' => function ($q) {
-            $q->where('media_type', 'image')->orderBy('sort_order');
+            $q->orderBy('sort_order');
         }])
             ->withCount(['media as static_count' => function ($q) {
                 $q->where('media_type', 'image');
