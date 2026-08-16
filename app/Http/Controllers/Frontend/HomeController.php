@@ -25,7 +25,7 @@ class HomeController extends Controller
             ->where('status', 'active')
             ->orderBy('sort_order')
             ->limit(8)
-            ->select('id', 'title', 'slug', 'status', 'sort_order')
+            ->addSelect('id', 'title', 'slug', 'status', 'sort_order')
             ->get();
 
         $concerns = Project::CONCERNS;
@@ -143,14 +143,13 @@ class HomeController extends Controller
                 $assetQuery->whereRaw('1 = 0');
             }
             // নতুন যোগ করা লজিক: ভিডিও ফিল্টার
-if ($request->has('video_only')) {
-    $assetQuery->whereHas('media', function($q) {
-        $q->where('media_type', 'video');
-    });
-    // ভিডিও মোডে থাকলে ক্যাম্পেইন দেখানোর দরকার নেই
-    $campaignQuery->whereRaw('1 = 0');
-}
-
+            if ($request->has('video_only')) {
+                $assetQuery->whereHas('media', function ($q) {
+                    $q->where('media_type', 'video');
+                });
+                // ভিডিও মোডে থাকলে ক্যাম্পেইন দেখানোর দরকার নেই
+                $campaignQuery->whereRaw('1 = 0');
+            }
         }
 
         $sort = $request->get('sort', 'latest');
