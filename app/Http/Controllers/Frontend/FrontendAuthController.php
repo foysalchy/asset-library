@@ -75,18 +75,22 @@ class FrontendAuthController extends Controller
 
     public function signup(Request $request)
     {
+        $prefixes = \App\Models\Project::CONCERN_PREFIXES;
+        $selectedPrefix = $prefixes[$request->concern] ?? '';
         $request->validate([
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'email', 'unique:users,email'],
+            'concern'             => ['required', 'in:' . implode(',', array_keys(\App\Models\Project::CONCERNS))],
+            'employee_id_suffix'  => ['required', 'string', 'max:50'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'recaptcha_token' => ['required', new Recaptcha()],
 
         ]);
-
+        $fullEmployeeId = $selectedPrefix . $request->employee_id_suffix;
         $user = User::create([
             'name'              => $request->name,
             'email'             => $request->email,
-            'employee_id'       => $request->employee_id,
+            'employee_id'   => strtoupper($fullEmployeeId),
             'password'          => Hash::make($request->password),
             'status'            => 'active',
 
@@ -123,6 +127,11 @@ class FrontendAuthController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             return back()
                 ->withErrors(['email' => 'Invalid credentials.'])
+                ->onlyInput('email');
+        }
+        if ($user->status !== 'active') {
+            return back()
+                ->withErrors(['email' => 'Your account is inactive. Please contact support.'])
                 ->onlyInput('email');
         }
         $user->update([
