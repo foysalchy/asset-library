@@ -20,6 +20,30 @@ use App\Rules\Recaptcha;
 
 class FrontendAuthController extends Controller
 {
+    // FrontendAuthController.php এর ভেতর যোগ করুন
+    public function autoLogin(Request $request)
+    {
+        $email = $request->query('email');
+        $signature = $request->query('signature');
+        $secret = env('PORTAL_SECRET_KEY');
+
+        if (!$email || !$signature || !$secret) {
+            return redirect()->route('signin')->with('error', 'Invalid request.');
+        }
+
+        $expectedSignature = hash_hmac('sha256', $email, $secret);
+
+        if (hash_equals($expectedSignature, $signature)) {
+            $user = User::where('email', $email)->first();
+
+            if ($user) {
+                auth()->login($user);
+                return redirect()->route('home.index');
+            }
+        }
+
+        return redirect()->route('signin')->with('error', 'Auto-login failed.');
+    }
     //profile
     public function index()
     {
