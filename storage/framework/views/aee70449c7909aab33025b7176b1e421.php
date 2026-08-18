@@ -6,78 +6,107 @@
     <meta name="robots" content="noindex, nofollow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
 </head>
-@php $settings = site_settings(); @endphp
+<?php $settings = site_settings(); ?>
 
 <body class="bg-gray-50 dark:bg-gray-950 min-h-screen flex items-center justify-center p-4 font-['Outfit']">
 
     <div class="w-full max-w-md">
-        {{-- Logo --}}
+        
         <div class="flex justify-center mb-8">
             <div class="w-32 px-4 py-3   bg-gray-200 flex items-center justify-center">
-                @if($settings && $settings->logo)
-                    <img src="{{ url($settings->logo_url) }}" alt="{{ $settings->site_name }}">
-                @else
+                <?php if($settings && $settings->logo): ?>
+                    <img src="<?php echo e(url($settings->logo_url)); ?>" alt="<?php echo e($settings->site_name); ?>">
+                <?php else: ?>
                     <span style="color:#fff; font-size:24px; font-weight:bold;">
-                        {{ strtoupper(substr($settings->site_name ?? 'Bhaiya Asset', 0, 1)) }}
+                        <?php echo e(strtoupper(substr($settings->site_name ?? 'Bhaiya Asset', 0, 1))); ?>
+
                     </span>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
-        @if($errors->any())
+        <?php if($errors->any()): ?>
             <div
                 class="mb-5 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 dark:border-red-800 dark:bg-red-900/20">
                 <svg class="shrink-0 text-red-500 mt-0.5" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" clip-rule="evenodd"
                         d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" />
                 </svg>
-                <p class="text-sm text-red-700 dark:text-red-400">{{ $errors->first() }}</p>
+                <p class="text-sm text-red-700 dark:text-red-400"><?php echo e($errors->first()); ?></p>
             </div>
-        @endif
+        <?php endif; ?>
         <div class="rounded-xl border border-gray-100 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="mb-6">
                 <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">Create Account</h1>
                 <p class="text-lg text-gray-500 dark:text-gray-400 mt-1">Join us today! Please enter your details.</p>
             </div>
 
-            <form action="{{ route('signup') }}" method="POST" id="signupForm">
-                @csrf
+            <form action="<?php echo e(route('signup')); ?>" method="POST" id="signupForm">
+                <?php echo csrf_field(); ?>
                 <input type="hidden" name="recaptcha_token" id="recaptcha_token_signup">
 
                 <div class="space-y-4">
-                    {{-- Full Name --}}
+                    
                     <div>
                         <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Full
                             Name</label>
-                        <input type="text" name="name" value="{{ old('name') }}" placeholder="Enter Your Name" required
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white @error('name') border-red-500 @enderror" />
-                        @error('name')
-                        <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+                        <input type="text" name="name" value="<?php echo e(old('name')); ?>" placeholder="Enter Your Name" required
+                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" />
+                        <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="text-sm text-red-500 mt-1"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
 
-                    {{-- Email --}}
+                    
                     <div>
                         <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Email
                             Address</label>
-                        <input type="email" name="email" value="{{ old('email') }}" placeholder="test@gmail.com"
+                        <input type="email" name="email" value="<?php echo e(old('email')); ?>" placeholder="test@gmail.com"
                             required
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white @error('email') border-red-500 @enderror" />
-                        @error('email')
-                        <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" />
+                        <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="text-sm text-red-500 mt-1"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
 <div class="mb-4">
     <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Select Concern</label>
     <select name="concern" id="concern_select" required
         class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white">
         <option value="">-- Select Concern --</option>
-        @foreach(\App\Models\Project::CONCERNS as $key => $label)
-            <option value="{{ $key }}" {{ old('concern') == $key ? 'selected' : '' }}>{{ $label }}</option>
-        @endforeach
+        <?php $__currentLoopData = \App\Models\Project::CONCERNS; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($key); ?>" <?php echo e(old('concern') == $key ? 'selected' : ''); ?>><?php echo e($label); ?></option>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </select>
 </div>
 
-{{-- Employee ID with Prefix --}}
+
 <div class="mb-4">
     <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Employee Id</label>
     <div class="flex">
@@ -88,25 +117,46 @@
         </span>
         <!-- ইউজার শুধু আইডি নম্বর লিখবে -->
         <input type="text" name="employee_id_suffix" id="employee_id_suffix"
-            value="{{ old('employee_id_suffix') }}"
+            value="<?php echo e(old('employee_id_suffix')); ?>"
             placeholder="Enter ID Number" required
             class="flex-1 rounded-r-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 outline-none focus:border-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white" />
     </div>
-    @error('employee_id') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+    <?php $__errorArgs = ['employee_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="text-sm text-red-500 mt-1"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
 </div>
 
 
-                    {{-- Password --}}
+                    
                     <div>
                         <label
                             class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Password</label>
                         <input type="password" name="password" placeholder="••••••••" required
-                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white @error('password') border-red-500 @enderror" />
-                        @error('password')
-                        <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+                            class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" />
+                        <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="text-sm text-red-500 mt-1"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
 
-                    {{-- Confirm Password --}}
+                    
                     <div>
                         <label class="mb-1.5 block text-lg font-medium text-gray-700 dark:text-gray-400">Confirm
                             Password</label>
@@ -114,7 +164,7 @@
                             class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white" />
                     </div>
 
-                    {{-- Submit --}}
+                    
                     <button type="button" id="signupSubmitBtn"
                         class="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white shadow-md hover:bg-blue-700 transition-all">
                         Create Account
@@ -123,17 +173,17 @@
             </form>
 
 
-            {{-- Login Link --}}
+            
             <div class="mt-6 text-center">
                 <p class="text-sm text-gray-500 dark:text-gray-400">
                     Already have an account?
-                    <a href="{{ route('signin') }}" class="text-blue-600 hover:underline font-medium">Sign in</a>
+                    <a href="<?php echo e(route('signin')); ?>" class="text-blue-600 hover:underline font-medium">Sign in</a>
                 </p>
             </div>
             <div class="mt-4 text-center">
                 <p class="text-lg text-gray-400 dark:text-gray-500">
                     Having trouble signing in or signing up?
-                    <a href="{{ route('guest.tickets.create') }}" rel="noopener noreferrer"
+                    <a href="<?php echo e(route('guest.tickets.create')); ?>" rel="noopener noreferrer"
                         class="inline-flex items-center gap-1 text-green-600 hover:underline font-medium">
 
                         Create a ticket
@@ -143,7 +193,7 @@
         </div>
     </div>
 </body>
-<script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+<script src="https://www.google.com/recaptcha/api.js?render=<?php echo e(config('services.recaptcha.site_key')); ?>"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const btn = document.getElementById('signupSubmitBtn');
@@ -161,7 +211,7 @@
             btn.textContent = 'Please wait...';
 
             grecaptcha.ready(function () {
-                grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', { action: 'signup' })
+                grecaptcha.execute('<?php echo e(config('services.recaptcha.site_key')); ?>', { action: 'signup' })
                     .then(function (token) {
                         document.getElementById('recaptcha_token_signup').value = token;
                         form.submit();
@@ -177,7 +227,7 @@
     });
 </script>
 <script>
-    const concernPrefixes = @json(\App\Models\Project::CONCERN_PREFIXES);
+    const concernPrefixes = <?php echo json_encode(\App\Models\Project::CONCERN_PREFIXES, 15, 512) ?>;
 
     document.getElementById('concern_select').addEventListener('change', function() {
         const prefix = concernPrefixes[this.value] || '---';
@@ -193,3 +243,4 @@
     });
 </script>
 </html>
+<?php /**PATH C:\laragon\www\asset-library\resources\views/frontend/auth/signup.blade.php ENDPATH**/ ?>

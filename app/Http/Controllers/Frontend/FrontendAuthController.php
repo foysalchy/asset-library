@@ -20,6 +20,30 @@ use App\Rules\Recaptcha;
 
 class FrontendAuthController extends Controller
 {
+    // FrontendAuthController.php এর ভেতর যোগ করুন
+    public function autoLogin(Request $request)
+    {
+        $email = $request->query('email');
+        $signature = $request->query('signature');
+        $secret = env('PORTAL_SECRET_KEY');
+
+        if (!$email || !$signature || !$secret) {
+            return redirect()->route('signin')->with('error', 'Invalid request.');
+        }
+
+        $expectedSignature = hash_hmac('sha256', $email, $secret);
+
+        if (hash_equals($expectedSignature, $signature)) {
+            $user = User::where('email', $email)->first();
+
+            if ($user) {
+                auth()->login($user);
+                return redirect()->route('home.index');
+            }
+        }
+
+        return redirect()->route('signin')->with('error', 'Auto-login failed.');
+    }
     //profile
     public function index()
     {
@@ -75,18 +99,22 @@ class FrontendAuthController extends Controller
 
     public function signup(Request $request)
     {
+        $prefixes = \App\Models\Project::CONCERN_PREFIXES;
+        $selectedPrefix = $prefixes[$request->concern] ?? '';
         $request->validate([
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'email', 'unique:users,email'],
+            'concern'             => ['required', 'in:' . implode(',', array_keys(\App\Models\Project::CONCERNS))],
+            'employee_id_suffix'  => ['required', 'string', 'max:50'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'recaptcha_token' => ['required', new Recaptcha()],  
+            'recaptcha_token' => ['required', new Recaptcha()],
 
         ]);
-
+        $fullEmployeeId = $selectedPrefix . $request->employee_id_suffix;
         $user = User::create([
             'name'              => $request->name,
             'email'             => $request->email,
-            'employee_id'       => $request->employee_id,
+            'employee_id'   => strtoupper($fullEmployeeId),
             'password'          => Hash::make($request->password),
             'status'            => 'active',
 
@@ -125,6 +153,15 @@ class FrontendAuthController extends Controller
                 ->withErrors(['email' => 'Invalid credentials.'])
                 ->onlyInput('email');
         }
+        if ($user->status !== 'active') {
+            return back()
+                ->withErrors(['email' => 'Your account is inactive. Please contact support.'])
+                ->onlyInput('email');
+        }
+        $user->update([
+            'last_login_at' => now()
+        ]);
+
 
         auth()->login($user, $request->boolean('remember'));
 

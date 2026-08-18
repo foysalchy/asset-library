@@ -177,6 +177,8 @@ Route::prefix('')->group(function () {
     Route::get('/', [FrontendAuthController::class, 'showSignin'])->name('signin');
     Route::post('/', [FrontendAuthController::class, 'signin']);
 
+    Route::get('/auto-login', [FrontendAuthController::class, 'autoLogin'])->name('auto.login');
+
     Route::middleware('guest')->group(function () {
         Route::get('/signup', [FrontendAuthController::class, 'showSignup'])->name('signup');
         Route::post('/signup', [FrontendAuthController::class, 'signup'])->name('signup');
