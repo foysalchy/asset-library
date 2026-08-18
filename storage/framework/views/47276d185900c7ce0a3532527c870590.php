@@ -61,7 +61,7 @@
                 </button>
             </form>
 
-            <form action="<?php echo e(route('logout')); ?>" method="POST">
+            <form action="<?php echo e(route('frontend.logout')); ?>" method="POST">
                 <?php echo csrf_field(); ?>
                 <button type="submit" class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:underline">
                     Log out

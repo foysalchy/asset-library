@@ -124,6 +124,9 @@ class FrontendAuthController extends Controller
         if ($role) $user->roles()->attach($role->id);
 
         auth()->login($user);
+         $user->update([
+            'last_login_at' => now()
+        ]);
 
         app(EmailVerificationController::class)->sendVerificationEmail($user);
 
