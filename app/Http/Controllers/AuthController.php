@@ -31,16 +31,27 @@ class AuthController extends Controller
                 ->withErrors(['email' => 'These credentials do not match our records.']);
         }
 
+        $user = Auth::user();
+
+        if ($user->roles->isEmpty()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'You are not authorized to access the admin panel.']);
+        }
+
         // Inactive user check
-        if (Auth::user()->status === 'inactive') {
+        if ($user->status === 'inactive') {
             Auth::logout();
             return back()
                 ->withInput($request->only('email'))
                 ->withErrors(['email' => 'Your account has been deactivated. Please contact admin.']);
         }
 
-        // Update last login
-        Auth::user()->update(['last_login_at' => now()]);
+
 
         $request->session()->regenerate();
 
