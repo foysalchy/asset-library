@@ -14,13 +14,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'permission' => \App\Http\Middleware\CheckPermission::class,
             'frontend.auth' => \App\Http\Middleware\FrontendAuth::class,
+            'admin.only'     => \App\Http\Middleware\EnsureIsAdmin::class,
+
         ]);
 
         $middleware->redirectGuestsTo(function ($request) {
             if ($request->is('admin') || $request->is('admin/*')) {
-                return route('login');  
+                return route('login');
             }
-            return route('signin');      
+            return route('signin');
         });
     })
     ->withExceptions(function (Exceptions $exceptions): void {

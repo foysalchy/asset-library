@@ -14,7 +14,7 @@ class CheckPermission
         }
 
         if (!auth()->user()->hasPermission($permission)) {
-            abort(403, 'Unauthorized.');
+            return redirect()->route('home.index');
         }
 
         return $next($request);
