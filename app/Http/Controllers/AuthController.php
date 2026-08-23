@@ -15,48 +15,54 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email'    => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+  public function login(Request $request)
+{
+    $request->validate([
+        'email'    => ['required', 'email'],
+        'password' => ['required', 'string'],
+    ]);
 
-        $credentials = $request->only('email', 'password');
-        $remember    = $request->boolean('remember');
+    $credentials = $request->only('email', 'password');
+    $remember    = $request->boolean('remember');
 
-        if (!Auth::attempt($credentials, $remember)) {
-            return back()
-                ->withInput($request->only('email'))
-                ->withErrors(['email' => 'These credentials do not match our records.']);
-        }
-
-        $user = Auth::user();
-
-        if ($user->roles->isEmpty()) {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return back()
-                ->withInput($request->only('email'))
-                ->withErrors(['email' => 'You are not authorized to access the admin panel.']);
-        }
-
-        // Inactive user check
-        if ($user->status === 'inactive') {
-            Auth::logout();
-            return back()
-                ->withInput($request->only('email'))
-                ->withErrors(['email' => 'Your account has been deactivated. Please contact admin.']);
-        }
-
-
-
-        $request->session()->regenerate();
-
-        return redirect()->intended(route('dashboard'));
+    if (!Auth::attempt($credentials, $remember)) {
+        return back()
+            ->withInput($request->only('email'))
+            ->withErrors(['email' => 'These credentials do not match our records.']);
     }
+
+    $user = Auth::user();
+
+    // role empty অথবা শুধু 'frontend_user' role থাকলে admin panel এ ঢুকতে পারবে না
+    $roleNames = $user->roles->pluck('name');
+
+    if ($roleNames->isEmpty() || $roleNames->contains('frontend_user')) {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return back()
+            ->withInput($request->only('email'))
+            ->withErrors(['email' => 'You are not authorized to access the admin panel.']);
+    }
+
+    // Inactive user check
+    if ($user->status === 'inactive') {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return back()
+            ->withInput($request->only('email'))
+            ->withErrors(['email' => 'Your account has been deactivated. Please contact admin.']);
+    }
+
+    $user->update(['last_login_at' => now()]);
+
+    $request->session()->regenerate();
+
+    return redirect()->intended(route('dashboard'));
+}
 
     public function logout(Request $request)
     {
