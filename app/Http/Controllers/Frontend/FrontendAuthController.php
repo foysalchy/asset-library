@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Helpers\SiteSettingsHelper;
 use App\Http\Controllers\Controller;
 use App\Models\DownloadLog;
 use App\Models\Role;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use App\Http\Controllers\Frontend\EmailVerificationController;
+use App\Models\SiteSetting;
 use App\Rules\Recaptcha;
 
 class FrontendAuthController extends Controller
@@ -124,7 +126,7 @@ class FrontendAuthController extends Controller
         if ($role) $user->roles()->attach($role->id);
 
         auth()->login($user);
-         $user->update([
+        $user->update([
             'last_login_at' => now()
         ]);
 
@@ -205,7 +207,9 @@ class FrontendAuthController extends Controller
         // Same response whether the user exists or not - avoids leaking
         // which emails are registered in the system.
         if (!$user) {
-            return back()->with('success', $successMessage);
+            return back()
+                ->withInput()
+                ->with('error', 'No user account exists with this email address.');
         }
 
         $token = FacadesPassword::createToken($user);
@@ -214,7 +218,7 @@ class FrontendAuthController extends Controller
             'token' => $token,
             'email' => $user->email,
         ]);
-
+        $settings = SiteSettingsHelper::get();
         try {
             $response = Http::timeout(30)
                 ->withHeaders([
@@ -225,6 +229,10 @@ class FrontendAuthController extends Controller
                     'to'      => $user->email,
                     'subject' => 'Reset Your Password',
                     'data'    => [
+                        'site_name' => optional($settings)->site_name ?? config('app.name'),
+                        'site_logo' => optional($settings)->logo
+                            ? (str_starts_with($settings->logo, 'http') ? $settings->logo : asset($settings->logo))
+                            : asset('img/logo.png'),
                         'eyebrow'           => 'Password Reset',
                         'heading'           => 'Reset your password',
                         'name'              => $user->name,
