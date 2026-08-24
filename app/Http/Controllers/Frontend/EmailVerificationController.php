@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Helpers\SiteSettingsHelper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -71,6 +72,7 @@ class EmailVerificationController extends Controller
                 'hash' => sha1($user->getEmailForVerification()),
             ]
         );
+        $settings = SiteSettingsHelper::get();
 
         try {
             $response = Http::timeout(30)
@@ -82,6 +84,8 @@ class EmailVerificationController extends Controller
                     'to'      => $user->email,
                     'subject' => 'Verify Your Account',
                     'data'    => [
+                        'site_name' => optional($settings)->site_name ?? config('app.name'),
+                        'site_logo' => 'https://asset.bhaiyahousing.com/storage/settings/2043f208-bd04-4331-8894-0f6f1fc83d14.png',
                         'eyebrow'           => 'Account Security',
                         'heading'           => 'Verify your account',
                         'name'              => $user->name,
@@ -89,6 +93,7 @@ class EmailVerificationController extends Controller
                         'button_text'       => 'Verify Account',
                         'verification_link' => $verificationUrl,
                     ],
+
                 ]);
 
             if (!$response->successful()) {
