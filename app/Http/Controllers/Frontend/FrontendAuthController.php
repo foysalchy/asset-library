@@ -230,7 +230,7 @@ class FrontendAuthController extends Controller
                     'subject' => 'Reset Your Password',
                     'data'    => [
                         'site_name' => optional($settings)->site_name ?? config('app.name'),
-                        'site_logo' => optional($settings)->logo
+                        'site_logo' => 'https://asset.bhaiyahousing.com/storage/settings/2043f208-bd04-4331-8894-0f6f1fc83d14.png'
                             ? (str_starts_with($settings->logo, 'http') ? $settings->logo : asset($settings->logo))
                             : asset('img/logo.png'),
                         'eyebrow'           => 'Password Reset',
