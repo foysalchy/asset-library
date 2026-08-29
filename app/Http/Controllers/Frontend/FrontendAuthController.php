@@ -161,6 +161,7 @@ class FrontendAuthController extends Controller
         if ($user->status !== 'active') {
             return back()
                 ->withErrors(['email' => 'Your account is inactive. Please contact support.'])
+                ->with('show_ticket_link', true)
                 ->onlyInput('email');
         }
         $user->update([
