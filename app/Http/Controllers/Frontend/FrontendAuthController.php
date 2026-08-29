@@ -158,12 +158,12 @@ class FrontendAuthController extends Controller
                 ->withErrors(['email' => 'Invalid credentials.'])
                 ->onlyInput('email');
         }
-        if ($user->status !== 'active') {
-            return back()
-                ->withErrors(['email' => 'Your account is inactive. Please contact support.'])
-                ->with('show_ticket_link', true)
-                ->onlyInput('email');
-        }
+     if ($user->status !== 'active') {
+    return back()
+        ->withErrors(['email' => 'Your account is inactive. Please create a support ticket or contact with  Bhaiya Digital.'])
+        ->with('show_ticket_link', true)
+        ->onlyInput('email');
+}
         $user->update([
             'last_login_at' => now()
         ]);
