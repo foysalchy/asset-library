@@ -25,8 +25,14 @@
             0 => ['label' => 'Open',        'class' => 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400'],
             1 => ['label' => 'In Progress', 'class' => 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'],
             2 => ['label' => 'Closed',      'class' => 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'],
+            3 => ['label' => 'Solved',      'class' => 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'],
         ];
-        $s = $statusConfig[$ticket->status];
+        $s = $statusConfig[$ticket->status] ?? $statusConfig[0];
+
+        // Fallback display name (use this if Ticket model doesn't already have a display_name accessor)
+        $ticketDisplayName = $ticket->user_id
+            ? ($ticket->user->name ?? 'User')
+            : ($ticket->name ?? 'Guest User');
     @endphp
 
     <div class="grid grid-cols-1 gap-6">
@@ -44,21 +50,45 @@
                         </svg>
                     </a>
                     <div class="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium shrink-0">
-                        {{ strtoupper(substr($ticket->display_name, 0, 1)) }}
+                        {{ strtoupper(substr($ticketDisplayName, 0, 1)) }}
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $ticket->subject }}</p>
-                        <p class="text-xs text-gray-400 dark:text-gray-500">
-                            #{{ $ticket->id }} · {{ $ticket->display_name }}
+                        <p class="text-xs text-gray-400 dark:text-gray-500 truncate">
+                            #{{ $ticket->id }} · {{ $ticketDisplayName }}
                             @if(!$ticket->user_id)
                                 <span class="text-amber-500">(Guest)</span>
                             @endif
                             · {{ $ticket->created_at->format('d M Y') }}
                         </p>
+                        <p class="text-[11px] text-gray-400 dark:text-gray-500 truncate mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5">
+                            @if($ticket->phone)
+                                <span class="inline-flex items-center gap-1">
+                                    <svg width="11" height="11" viewBox="0 0 20 20" fill="currentColor" class="shrink-0"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-1C7.82 18 2 12.18 2 5V4a1 1 0 010-1z"/></svg>
+                                    {{ $ticket->phone }}
+                                </span>
+                            @endif
+                            @if($ticket->employee_id)
+                                <span class="inline-flex items-center gap-1">
+                                    <svg width="11" height="11" viewBox="0 0 20 20" fill="currentColor" class="shrink-0"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z"/><path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15a24.974 24.974 0 01-8-1.308z"/></svg>
+                                    ID: {{ $ticket->employee_id }}
+                                </span>
+                            @endif
+                        </p>
                     </div>
-                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium {{ $s['class'] }} shrink-0">
-                        {{ $s['label'] }}
-                    </span>
+
+                    <!-- Status dropdown -->
+                    <form action="{{ route('tickets.updateStatus', $ticket) }}" method="POST" class="shrink-0">
+                        @csrf
+                        <select name="status" onchange="this.form.submit()"
+                            class="text-xs font-medium rounded-full px-2.5 py-1.5 border-0 cursor-pointer focus:ring-2 focus:ring-blue-400 outline-none {{ $s['class'] }}">
+                            <option value="0" @selected($ticket->status == 0)>Open</option>
+                            <option value="1" @selected($ticket->status == 1)>In Progress</option>
+                            <option value="3" @selected($ticket->status == 3)>Solved</option>
+                            <option value="2" @selected($ticket->status == 2)>Closed</option>
+                        </select>
+                    </form>
+
                     @if($ticket->status !== 2)
                         <form action="{{ route('tickets.close', $ticket) }}" method="POST">
                             @csrf
@@ -78,10 +108,10 @@
                         <!-- My ticket — right -->
                         <div class="flex items-end gap-2 flex-row-reverse">
                             <div class="w-7 h-7 rounded-full bg-[#001e3e] flex items-center justify-center text-white text-xs font-medium shrink-0">
-                                {{ strtoupper(substr($ticket->display_name, 0, 1)) }}
+                                {{ strtoupper(substr($ticketDisplayName, 0, 1)) }}
                             </div>
                             <div class="max-w-[68%]">
-                                <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 mr-1 text-right">{{ $ticket->display_name }} · {{ $ticket->created_at->diffForHumans() }}</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 mr-1 text-right">{{ $ticketDisplayName }} · {{ $ticket->created_at->diffForHumans() }}</p>
                                 <div class="bg-[#0071c5] px-4 py-2.5 rounded-tl-2xl rounded-bl-2xl rounded-br-2xl">
                                     <p class="text-sm text-white leading-relaxed">{{ $ticket->description }}</p>
                                 </div>
@@ -95,11 +125,11 @@
                         <!-- Other user / Guest ticket — left -->
                         <div class="flex items-end gap-2">
                             <div class="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-medium shrink-0">
-                                {{ strtoupper(substr($ticket->display_name, 0, 1)) }}
+                                {{ strtoupper(substr($ticketDisplayName, 0, 1)) }}
                             </div>
                             <div class="max-w-[68%]">
                                 <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 ml-1">
-                                    {{ $ticket->display_name }}
+                                    {{ $ticketDisplayName }}
                                     @if(!$ticket->user_id)
                                         <span class="text-amber-500">(Guest)</span>
                                     @endif
@@ -118,14 +148,19 @@
 
                     <!-- Replies -->
                     @foreach($ticket->replies as $reply)
+                        @php
+                            $replyDisplayName = $reply->user_id
+                                ? ($reply->user->name ?? 'User')
+                                : ($reply->name ?? 'Guest User');
+                        @endphp
                         @if($reply->user_id === auth()->id())
                             <!-- My message — right -->
                             <div class="flex items-end gap-2 flex-row-reverse">
                                 <div class="w-7 h-7 rounded-full bg-[#001e3e] flex items-center justify-center text-white text-xs font-medium shrink-0">
-                                    {{ strtoupper(substr($reply->display_name, 0, 1)) }}
+                                    {{ strtoupper(substr($replyDisplayName, 0, 1)) }}
                                 </div>
                                 <div class="max-w-[68%]">
-                                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 mr-1 text-right">{{ $reply->display_name }} · {{ $reply->created_at->diffForHumans() }}</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 mr-1 text-right">{{ $replyDisplayName }} · {{ $reply->created_at->diffForHumans() }}</p>
                                     <div class="bg-[#0071c5] px-4 py-2.5 rounded-tl-2xl rounded-bl-2xl rounded-br-2xl">
                                         <p class="text-sm text-white leading-relaxed">{{ $reply->message }}</p>
                                     </div>
@@ -139,10 +174,10 @@
                             <!-- Other message — left -->
                             <div class="flex items-end gap-2">
                                 <div class="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-medium shrink-0">
-                                    {{ strtoupper(substr($reply->display_name, 0, 1)) }}
+                                    {{ strtoupper(substr($replyDisplayName, 0, 1)) }}
                                 </div>
                                 <div class="max-w-[68%]">
-                                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 ml-1">{{ $reply->display_name }} · {{ $reply->created_at->diffForHumans() }}</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-1 ml-1">{{ $replyDisplayName }} · {{ $reply->created_at->diffForHumans() }}</p>
                                     <div class="bg-white dark:bg-white/10 border border-gray-200 dark:border-gray-700 px-4 py-2.5 rounded-tr-2xl rounded-br-2xl rounded-bl-2xl">
                                         <p class="text-sm text-gray-800 dark:text-white/90 leading-relaxed">{{ $reply->message }}</p>
                                     </div>

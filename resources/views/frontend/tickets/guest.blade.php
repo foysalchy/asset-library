@@ -88,7 +88,15 @@
                             placeholder="+880 1XX-XXXXXXX" required
                             class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('phone') border-red-400 dark:border-red-500 @enderror" />
                     </div>
-
+{{-- Employee ID --}}
+<div>
+    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+        Employee ID <span class="text-red-500">*</span>
+    </label>
+    <input type="text" name="employee_id" value="{{ old('employee_id') }}"
+        placeholder="Your employee ID" required
+        class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 @error('employee_id') border-red-400 dark:border-red-500 @enderror" />
+</div>
                     {{-- Subject --}}
                     <div>
                         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">

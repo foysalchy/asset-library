@@ -58,18 +58,19 @@ class TicketController extends Controller
     public function guestStore(Request $request)
     {
         $validated = $request->validate([
-            'subject'     => 'required|string|max:255',
-            'phone'   =>
-            'required|string|regex:/^\+?[0-9\s\-()]{7,18}$/',
-
-            'description' => 'required|string',
-            'image'       => 'nullable|image|max:2048',
+            'name' => 'required|string|max:255',
+            'subject'         => 'required|string|max:255',
+            'phone'           => 'required|string|regex:/^\+?[0-9\s\-()]{7,18}$/',
+            'employee_id'     => 'required|string|max:255',
+            'description'     => 'required|string',
+            'image'           => 'nullable|image|max:2048',
             'recaptcha_token' => ['required', new Recaptcha()],
-
         ]);
 
         $data = [
-            'phone' => $request->phone,
+            'name'        => $request->name,
+            'phone'       => $request->phone,
+            'employee_id' => $request->employee_id,
             'subject'     => $request->subject,
             'description' => $request->description,
             'status'      => 0,
@@ -80,7 +81,7 @@ class TicketController extends Controller
         }
 
         unset($validated['recaptcha_token']);
-        
+
         Ticket::create($data);
 
         return redirect()->back()->with('success', 'Ticket submitted successfully.');
@@ -195,5 +196,17 @@ class TicketController extends Controller
     {
         $ticket->delete();
         return redirect()->route('ticket.admin')->with('success', 'Ticket #' . $ticket->id . ' deleted successfully.');
+    }
+    public function updateStatus(Request $request, Ticket $ticket)
+    {
+        $request->validate([
+            'status' => 'required|integer|in:0,1,2,3',
+        ]);
+
+        $ticket->update([
+            'status' => $request->status,
+        ]);
+
+        return redirect()->back()->with('success', 'Ticket status updated.');
     }
 }

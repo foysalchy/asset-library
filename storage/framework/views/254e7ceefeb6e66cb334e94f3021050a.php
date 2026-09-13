@@ -104,6 +104,21 @@ endif;
 unset($__errorArgs, $__bag); ?>" />
                     </div>
 
+<div>
+    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+        Employee ID <span class="text-red-500">*</span>
+    </label>
+    <input type="text" name="employee_id" value="<?php echo e(old('employee_id')); ?>"
+        placeholder="Your employee ID" required
+        class="shadow-theme-xs h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 <?php $__errorArgs = ['employee_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-400 dark:border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" />
+</div>
                     
                     <div>
                         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">

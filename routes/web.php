@@ -170,6 +170,8 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('tickets/{ticket}', [TicketController::class, 'showAdmin'])->name('admin.tickets.show');
     Route::post('tickets/{ticket}/reply', [TicketController::class, 'adminReply'])->name('admin.tickets.reply');
     Route::delete('tickets/{ticket}', [TicketController::class, 'destroy'])->name('admin.tickets.destroy');
+    Route::post('/tickets/{ticket}/status', [TicketController::class, 'updateStatus'])
+        ->name('tickets.updateStatus');
 });
 Route::prefix('')->group(function () {
 

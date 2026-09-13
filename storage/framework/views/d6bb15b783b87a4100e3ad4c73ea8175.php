@@ -19,6 +19,15 @@
     </div>
     <?php endif; ?>
 
+    <?php
+        $statusOptions = [
+            0 => 'Pending',
+            1 => 'Open',
+            3 => 'Solved',
+            2 => 'Closed',
+        ];
+    ?>
+
     <div class="rounded-xl border border-gray-100 bg-white pt-4 dark:border-gray-800 dark:bg-white/[0.03]"
         x-data="{
                 deleteModal: false,
@@ -44,6 +53,7 @@
                         <option value="">All Status</option>
                         <option value="0" <?php echo e(request('status') === '0' ? 'selected' : ''); ?>>Pending</option>
                         <option value="1" <?php echo e(request('status') === '1' ? 'selected' : ''); ?>>Open</option>
+                        <option value="3" <?php echo e(request('status') === '3' ? 'selected' : ''); ?>>Solved</option>
                         <option value="2" <?php echo e(request('status') === '2' ? 'selected' : ''); ?>>Closed</option>
                     </select>
                     <?php if(request('search')): ?>
@@ -79,7 +89,11 @@
                             <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
                                 Ticket</th>
                             <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                                User</th>
+                                Name</th>
+                            <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                                Phone</th>
+                            <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                                Employee ID</th>
                             <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
                                 Read</th>
                             <th class="px-4 py-3 font-normal text-gray-500 text-start text-theme-sm dark:text-gray-400">
@@ -94,6 +108,11 @@
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                         <?php $__empty_1 = true; $__currentLoopData = $tickets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ticket): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                        <?php
+                            $displayName = $ticket->user_id
+                                ? ($ticket->user->name ?? 'User')
+                                : ($ticket->name ?? 'Guest User');
+                        ?>
                         <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
 
                             
@@ -118,44 +137,66 @@
                             </td>
 
                             
-                            <?php if($ticket->user): ?>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <p class="text-sm text-gray-600 dark:text-gray-400"><?php echo e($ticket->user->name); ?></p>
-                                <p class="text-xs text-gray-400 mt-0.5"><?php echo e($ticket->user->email); ?></p>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-medium shrink-0">
+                                        <?php echo e(strtoupper(substr($displayName, 0, 1))); ?>
+
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-700 dark:text-gray-300 font-medium"><?php echo e($displayName); ?></p>
+                                        <?php if($ticket->user): ?>
+                                            <p class="text-xs text-gray-400 mt-0.5"><?php echo e($ticket->user->email); ?></p>
+                                        <?php else: ?>
+                                            <span class="text-[10px] text-amber-500 font-medium">Guest</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
                             </td>
-                            <?php else: ?>
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Guest User</p>
-                                <p class="text-xs text-gray-400 mt-0.5"><?php echo e($ticket->phone); ?></p>
-                            </td>
-                            <?php endif; ?>
-   <td class="py-3 px-4">
-                <?php if($ticket->is_read): ?>
-                    <span class="inline-flex items-center gap-1 text-xs text-gray-400">
-                        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
-                        </svg>
-                        Read
-                    </span>
-                <?php else: ?>
-                    <span class="inline-flex items-center gap-1 text-xs font-semibold text-blue-600">
-                        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"/>
-                        </svg>
-                        New
-                    </span>
-                <?php endif; ?>
-            </td>
+
                             
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span
-                                    class="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium
-                                                bg-<?php echo e($ticket->status_color); ?>-50 text-<?php echo e($ticket->status_color); ?>-700
-                                                dark:bg-<?php echo e($ticket->status_color); ?>-900/30 dark:text-<?php echo e($ticket->status_color); ?>-400 border border-<?php echo e($ticket->status_color); ?>-100 dark:border-<?php echo e($ticket->status_color); ?>-800/50">
-                                    <?php echo e($ticket->status_label); ?>
+                                <span class="text-sm text-gray-600 dark:text-gray-400"><?php echo e($ticket->phone ?? '—'); ?></span>
+                            </td>
 
-                                </span>
+                            
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <span class="text-sm text-gray-600 dark:text-gray-400"><?php echo e($ticket->employee_id ?? '—'); ?></span>
+                            </td>
+
+                            
+                            <td class="py-4 px-4 whitespace-nowrap">
+                                <?php if($ticket->is_read): ?>
+                                    <span class="inline-flex items-center gap-1 text-xs text-gray-400">
+                                        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
+                                        </svg>
+                                        Read
+                                    </span>
+                                <?php else: ?>
+                                    <span class="inline-flex items-center gap-1 text-xs font-semibold text-blue-600">
+                                        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                        </svg>
+                                        New
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+
+                            
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <form action="<?php echo e(route('tickets.updateStatus', $ticket)); ?>" method="POST">
+                                    <?php echo csrf_field(); ?>
+                                    <select name="status" onchange="this.form.submit()"
+                                        class="text-xs font-medium rounded-md px-2.5 py-1.5 border cursor-pointer focus:ring-2 focus:ring-blue-400 outline-none
+                                                bg-<?php echo e($ticket->status_color); ?>-50 text-<?php echo e($ticket->status_color); ?>-700
+                                                dark:bg-<?php echo e($ticket->status_color); ?>-900/30 dark:text-<?php echo e($ticket->status_color); ?>-400 border-<?php echo e($ticket->status_color); ?>-100 dark:border-<?php echo e($ticket->status_color); ?>-800/50">
+                                        <?php $__currentLoopData = $statusOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($value); ?>" <?php if($ticket->status == $value): echo 'selected'; endif; ?>><?php echo e($label); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                </form>
                             </td>
 
                             
@@ -201,7 +242,7 @@
                         </tr>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
-                            <td colspan="6" class="px-4 py-16 text-center">
+                            <td colspan="9" class="px-4 py-16 text-center">
                                 <div class="flex flex-col items-center gap-3">
                                     <div
                                         class="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
