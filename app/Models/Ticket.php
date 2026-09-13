@@ -15,6 +15,7 @@ class Ticket extends Model
         'name',
         'phone',
         'subject',
+        'employee_id',
         'description',
         'image',
         'status',
